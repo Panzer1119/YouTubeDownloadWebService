@@ -154,7 +154,11 @@ public class AuthorizationToken implements Comparable<AuthorizationToken> {
     }
     
     public static final String generateRandomToken(int length) {
-        return RandomUtil.randomBase64String(length);
+        return RandomUtil.randomUrlBase64String(length);
+    }
+    
+    public static AuthorizationToken createRootToken() {
+        return createRootToken((Instant) null);
     }
     
     public static AuthorizationToken createRootToken(Duration validDuration) {
@@ -205,7 +209,7 @@ public class AuthorizationToken implements Comparable<AuthorizationToken> {
         public boolean isThisHigherOrEqual(AuthorizationTokenLevel level) {
             return level == null || this.level >= level.level;
         }
-    
+        
         public boolean isEqual(AuthorizationTokenLevel level) {
             return level != null && this.level == level.level;
         }
