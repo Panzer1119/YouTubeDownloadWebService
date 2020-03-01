@@ -33,6 +33,8 @@ public class AuthorizationToken implements Comparable<AuthorizationToken> {
     private final AuthorizationTokenLevel level;
     private final Instant created;
     private final Instant expiration;
+    //
+    private transient int used = 0;
     
     public AuthorizationToken(String token, AuthorizationTokenLevel level) {
         this(token, level, null);
@@ -67,6 +69,15 @@ public class AuthorizationToken implements Comparable<AuthorizationToken> {
     
     public Instant getExpiration() {
         return expiration;
+    }
+    
+    public int getUsed() {
+        return used;
+    }
+    
+    public AuthorizationToken setUsed(int used) {
+        this.used = used;
+        return this;
     }
     
     public boolean isCreatedNow() {
@@ -145,7 +156,7 @@ public class AuthorizationToken implements Comparable<AuthorizationToken> {
     
     @Override
     public String toString() {
-        return "AuthorizationToken{" + "token='" + token + '\'' + ", level=" + level + ", created=" + created + ", expiration=" + expiration + '}';
+        return "AuthorizationToken{" + "token='" + token + '\'' + ", level=" + level + ", created=" + created + ", expiration=" + expiration + ", used=" + used + '}';
     }
     
     @Override
