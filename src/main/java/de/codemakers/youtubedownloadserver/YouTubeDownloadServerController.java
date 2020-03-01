@@ -16,10 +16,8 @@
 
 package de.codemakers.youtubedownloadserver;
 
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import de.codemakers.youtubedownloadserver.security.AuthorizationUtil;
+import org.springframework.web.bind.annotation.*;
 
 import java.time.ZonedDateTime;
 
@@ -27,13 +25,19 @@ import java.time.ZonedDateTime;
 public class YouTubeDownloadServerController {
     
     @RequestMapping(value = "/requesters/byTag/{tag}", method = RequestMethod.GET)
-    public String getRequesterByTag(@PathVariable(value = "tag") String tag) {
+    public String getRequesterByTag(@PathVariable(value = "tag") String tag, @RequestParam(value = "authToken") String authToken) {
+        if (!AuthorizationUtil.isValidToken(authToken)) {
+            return String.format("Unauthorized");
+        }
         //TODO Return jsonObject form of the Requester object
         return String.format("{%n\"tag\":\"%s\",%n\"timestamp\":\"%s\"%n%n}", tag, ZonedDateTime.now().toString());
     }
     
     @RequestMapping(value = "/requesters/{requester_id}", method = RequestMethod.GET)
-    public String getRequester(@PathVariable(value = "requester_id") int requesterId) {
+    public String getRequester(@PathVariable(value = "requester_id") int requesterId, @RequestParam(value = "authToken") String authToken) {
+        if (!AuthorizationUtil.isValidToken(authToken)) {
+            return String.format("Unauthorized");
+        }
         //TODO Return jsonObject form of the Requester object
         return String.format("{%n\"requesterId\":%d,%n\"timestamp\":\"%s\"%n%n}", requesterId, ZonedDateTime.now().toString());
     }
