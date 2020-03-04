@@ -24,7 +24,7 @@ import java.time.Instant;
 
 public class AuthorizationUtil {
     
-    protected static final String IDENTIFIER_TABLE_AUTHORIZATION_TOKENS = "authorizationToken";
+    protected static final String IDENTIFIER_TABLE_AUTHORIZATION_TOKENS = "authorizationTokens";
     protected static final String IDENTIFIER_TABLE_AUTHORIZATION_TOKENS_COLUMN_TOKEN = "token";
     protected static final String IDENTIFIER_TABLE_AUTHORIZATION_TOKENS_COLUMN_LEVEL = "level";
     protected static final String IDENTIFIER_TABLE_AUTHORIZATION_TOKENS_COLUMN_CREATED = "created";
