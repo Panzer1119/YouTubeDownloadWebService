@@ -41,8 +41,8 @@ public class YouTubeDownloadServerController {
         return String.format("{%n\"tag\":\"%s\",%n\"timestamp\":\"%s\"%n%n}", tag, ZonedDateTime.now().toString());
     }
     
-    @RequestMapping(value = "/requesters/{requester.id}", method = RequestMethod.GET)
-    public String getRequester(@PathVariable(value = "requester.id") int requesterId, @RequestParam(value = "authToken") String authToken) {
+    @RequestMapping(value = "/requesters/{requester_id}", method = RequestMethod.GET)
+    public String getRequester(@PathVariable(value = "requester_id") int requesterId, @RequestParam(value = "authToken") String authToken) {
         if (!AuthorizationUtil.isValidToken(authToken)) {
             return String.format("Unauthorized"); //TODO How to return the right HttpStatus?
         }
@@ -50,8 +50,8 @@ public class YouTubeDownloadServerController {
         return String.format("{%n\"requesterId\":%d,%n\"timestamp\":\"%s\"%n%n}", requesterId, ZonedDateTime.now().toString());
     }
     
-    @RequestMapping("/download/{video.id}")
-    public Mono<Void> download(ServerHttpResponse serverHttpResponse, @PathVariable(value = "video.id") String videoId, @RequestParam(value = "fileType", defaultValue = "B") String fileType, @RequestParam(value = "authToken") String authToken) {
+    @RequestMapping("/download/{video_id}")
+    public Mono<Void> download(ServerHttpResponse serverHttpResponse, @PathVariable(value = "video_id") String videoId, @RequestParam(value = "fileType", defaultValue = "B") String fileType, @RequestParam(value = "authToken") String authToken) {
         if (!AuthorizationUtil.isValidToken(authToken)) {
             serverHttpResponse.setStatusCode(HttpStatus.UNAUTHORIZED);
             //TODO Does this work?
