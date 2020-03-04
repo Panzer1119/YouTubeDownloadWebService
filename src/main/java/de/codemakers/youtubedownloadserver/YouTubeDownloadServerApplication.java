@@ -16,13 +16,25 @@
 
 package de.codemakers.youtubedownloadserver;
 
+import de.codemakers.base.logger.LogLevel;
+import de.codemakers.base.logger.Logger;
+import de.codemakers.base.util.DefaultSettings;
+import de.codemakers.io.file.AdvancedFile;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
 public class YouTubeDownloadServerApplication {
     
+    private static final AdvancedFile DATABASE_FILE = new AdvancedFile("data/database.txt"); //TODO Only temporary?
+    
     public static void main(String[] args) {
+        Logger.getDefaultAdvancedLeveledLogger().setMinimumLogLevel(LogLevel.FINE); //TODO DEBUG Remove this?
+        final DefaultSettings settings = new DefaultSettings(DATABASE_FILE);
+        settings.loadSettings();
+        YouTubeDownloadServer.connectToDatabase(settings.getProperty("host"), settings.getProperty("database"), settings.getProperty("username"), settings.getProperty("password").getBytes()); //FIXME Change this?
+        settings.clear();
+        Logger.logDebug("YouTubeDownloadServer.getDatabase()=" + YouTubeDownloadServer.getDatabase()); //TODO DEBUG Remove this
         SpringApplication.run(YouTubeDownloadServerApplication.class, args);
     }
     
