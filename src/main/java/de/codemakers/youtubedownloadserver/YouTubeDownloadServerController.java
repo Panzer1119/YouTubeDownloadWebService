@@ -16,8 +16,10 @@
 
 package de.codemakers.youtubedownloadserver;
 
+import de.codemakers.base.logger.Logger;
 import de.codemakers.download.YouTubeDL;
 import de.codemakers.download.database.entities.AuthorizationToken;
+import de.codemakers.download.database.entities.impl.QueuedYouTubeVideo;
 import de.codemakers.io.file.AdvancedFile;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -55,7 +57,26 @@ public class YouTubeDownloadServerController {
         return String.format("{%n\"requesterId\":%d,%n\"timestamp\":\"%s\"%n%n}", requesterId, ZonedDateTime.now().toString());
     }
     
-    @RequestMapping("/download/{video_id}")
+    @RequestMapping(value = "/request/{video_id}", method = RequestMethod.POST)
+    public String request(@PathVariable(value = "video_id") String videoId, @RequestParam(value = "priority", defaultValue = "-1") int priority, @RequestParam(value = "fileType", defaultValue = "B") String fileType, @RequestParam(value = "authToken") String authToken) {
+        if (!isValidToken(authToken)) {
+            return String.format("Unauthorized"); //TODO How to return the right HttpStatus?
+        }
+        //TODO Hmmm restrict priority to level of permission?
+        final List<QueuedYouTubeVideo> queuedYouTubeVideos = YouTubeDownloadServer.useDatabaseOrNull((database) -> database.getQueuedVideosByVideoId(videoId));
+        if (queuedYouTubeVideos != null && !queuedYouTubeVideos.isEmpty()) {
+            //TODO Check and only error, if the same fileType is already queued?
+            return String.format("Already queued"); //TODO How to return the right HttpStatus? //TODO IMPORTANT Should we even stop this?
+        }
+        //TODO IMPORTANT Check already downloaded MediaFiles!!! And then do not request a same download again
+        final boolean b1 = YouTubeDownloadServer.useDatabaseOrFalse((database) -> database.prepareVideo(videoId));
+        Logger.logDebug("b1=" + b1);
+        final boolean b2 = YouTubeDownloadServer.useDatabaseOrFalse((database) -> database.addQueuedVideo(new QueuedYouTubeVideo(videoId, priority, -1, fileType)));
+        Logger.logDebug("b2=" + b2);
+        return String.format("Video queued for Download...?");
+    }
+    
+    @RequestMapping(value = "/download/{video_id}", method = RequestMethod.GET)
     public Mono<Void> download(ServerHttpResponse serverHttpResponse, @PathVariable(value = "video_id") String videoId, @RequestParam(value = "fileType", defaultValue = "B") String fileType, @RequestParam(value = "authToken") String authToken) {
         if (!isValidToken(authToken)) {
             serverHttpResponse.setStatusCode(HttpStatus.UNAUTHORIZED);
@@ -63,8 +84,8 @@ public class YouTubeDownloadServerController {
             return null;
         }
         //FIXME Check if MediaFile for Video and File Type exist...
-        final AdvancedFile advancedFile = null; //TODO
-        final String filename = ""; //TODO
+        final AdvancedFile advancedFile = new AdvancedFile("data/test.txt"); //TODO TEST only
+        final String filename = "test.txt"; //TODO TEST only
         if (advancedFile == null || !advancedFile.exists()) {
             serverHttpResponse.setStatusCode(HttpStatus.NO_CONTENT);
             //TODO Does this work?
@@ -83,7 +104,7 @@ public class YouTubeDownloadServerController {
         return zeroCopyHttpOutputMessage.writeWith(file, 0, file.length());
     }
     
-    @RequestMapping("/download/videoIds/byPlaylistId/{playlist_id}")
+    @RequestMapping(value = "/download/videoIds/byPlaylistId/{playlist_id}", method = RequestMethod.GET)
     public List<String> downloadVideoIdsByPlaylistId(@PathVariable(value = "playlist_id") String playlistId, @RequestParam(value = "authToken") String authToken) {
         if (!isValidToken(authToken)) {
             return null; //TODO How to return the right HttpStatus?
@@ -92,7 +113,7 @@ public class YouTubeDownloadServerController {
         return YouTubeDL.downloadVideoIdsFromURL(String.format("https://www.youtube.com/playlist?list=%s", playlistId));
     }
     
-    @RequestMapping("/generate/authorizationToken")
+    @RequestMapping(value = "/generate/authorizationToken", method = RequestMethod.GET)
     public String generateAuthorizationToken(@RequestParam(value = "unlimited", defaultValue = "0") boolean unlimited, @RequestParam(value = "granting", defaultValue = "0") boolean granting, @RequestParam(value = "duration", defaultValue = "100000") long durationMillis, @RequestParam(value = "authToken") String authToken) {
         if (!isValidToken(authToken)) {
             return String.format("Unauthorized"); //TODO How to return the right HttpStatus?
