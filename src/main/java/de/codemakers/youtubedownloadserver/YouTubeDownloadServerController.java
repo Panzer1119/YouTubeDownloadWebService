@@ -80,7 +80,10 @@ public class YouTubeDownloadServerController {
     }
     
     @RequestMapping("/download/videoIds/byPlaylistId/{playlist_id}")
-    public List<String> downloadVideoIdsByPlaylistId(@PathVariable(value = "playlist_id") String playlistId) {
+    public List<String> downloadVideoIdsByPlaylistId(@PathVariable(value = "playlist_id") String playlistId, @RequestParam(value = "authToken") String authToken) {
+        if (!AuthorizationUtil.isValidToken(authToken)) {
+            return null; //TODO How to return the right HttpStatus?
+        }
         return YouTubeDL.downloadVideoIdsFromURL(String.format("https://www.youtube.com/playlist?list=%s", playlistId));
     }
     
