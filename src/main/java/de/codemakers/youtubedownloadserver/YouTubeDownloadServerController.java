@@ -16,6 +16,7 @@
 
 package de.codemakers.youtubedownloadserver;
 
+import de.codemakers.download.YouTubeDL;
 import de.codemakers.io.file.AdvancedFile;
 import de.codemakers.youtubedownloadserver.security.AuthorizationUtil;
 import org.springframework.http.HttpHeaders;
@@ -28,6 +29,7 @@ import reactor.core.publisher.Mono;
 
 import java.io.File;
 import java.time.ZonedDateTime;
+import java.util.List;
 
 @RestController
 public class YouTubeDownloadServerController {
@@ -75,6 +77,11 @@ public class YouTubeDownloadServerController {
             return null;
         }
         return zeroCopyHttpOutputMessage.writeWith(file, 0, file.length());
+    }
+    
+    @RequestMapping("/download/videoIds/byPlaylistId/{playlist_id}")
+    public List<String> downloadVideoIdsByPlaylistId(@PathVariable(value = "playlist_id") String playlistId) {
+        return YouTubeDL.downloadVideoIdsFromURL(String.format("https://www.youtube.com/playlist?list=%s", playlistId));
     }
     
 }
