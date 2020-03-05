@@ -15,7 +15,7 @@ repositories {
 
 dependencies {
     implementation 'com.github.Panzer1119:CJP-Base:6e174b3f' //01.03.2020 21:12
-    implementation 'com.github.Panzer1119:JavaYouTubeDownloadLibrary:40f9fd60' //04.03.2020 23:17
+    implementation 'com.github.Panzer1119:JavaYouTubeDownloadLibrary:4dd18d42' //05.03.2020 10:11
     implementation 'org.springframework.boot:spring-boot-starter-actuator'
     implementation 'org.springframework.boot:spring-boot-starter-webflux'
     testImplementation('org.springframework.boot:spring-boot-starter-test') {
