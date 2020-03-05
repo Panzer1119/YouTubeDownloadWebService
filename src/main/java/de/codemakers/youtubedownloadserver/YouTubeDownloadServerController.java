@@ -32,7 +32,6 @@ import reactor.core.publisher.Mono;
 
 import java.io.File;
 import java.time.Duration;
-import java.time.Instant;
 import java.time.ZonedDateTime;
 import java.util.List;
 
@@ -64,7 +63,6 @@ public class YouTubeDownloadServerController {
         if (!isValidToken(authToken)) {
             return String.format("Unauthorized"); //TODO How to return the right HttpStatus?
         }
-        final Instant instant = Instant.now();
         //TODO Hmmm restrict priority to level of permission?
         final List<QueuedYouTubeVideo> queuedYouTubeVideos = YouTubeDownloadServer.useDatabaseOrNull((database) -> database.getQueuedVideosByVideoId(videoId));
         if (queuedYouTubeVideos != null && !queuedYouTubeVideos.isEmpty()) {
@@ -76,7 +74,7 @@ public class YouTubeDownloadServerController {
         
         final YouTubeVideo youTubeVideo = YouTubeDownloadServer.useDatabaseOrNull((database) -> database.updateVideoInstanceInfo(videoId));
         Logger.logDebug("youTubeVideo=" + youTubeVideo);
-        final int requesterId_ = YouTubeDownloadServer.useDatabaseOrFalse((database) -> database.hasRequester(requesterId)) ? requesterId : -1;
+        final int requesterId_ = YouTubeDownloadServer.useDatabaseOrFalse((database) -> database.hasRequester(requesterId)) ? requesterId : -1; //TODO How to create a missing/new Requester without the tag (or even the name)?
         final QueuedYouTubeVideo queuedYouTubeVideo = YouTubeDownloadServer.useDatabaseOrNull((database) -> database.createQueuedVideo(videoId, priority, requesterId_, fileType));
         Logger.logDebug("queuedYouTubeVideo=" + queuedYouTubeVideo);
         return String.format("Video queued for Download...?");
