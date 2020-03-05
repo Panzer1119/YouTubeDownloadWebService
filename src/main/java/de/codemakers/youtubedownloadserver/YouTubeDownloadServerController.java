@@ -20,6 +20,7 @@ import de.codemakers.base.logger.Logger;
 import de.codemakers.download.YouTubeDL;
 import de.codemakers.download.database.entities.AuthorizationToken;
 import de.codemakers.download.database.entities.impl.QueuedYouTubeVideo;
+import de.codemakers.download.database.entities.impl.YouTubeVideo;
 import de.codemakers.io.file.AdvancedFile;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -31,6 +32,7 @@ import reactor.core.publisher.Mono;
 
 import java.io.File;
 import java.time.Duration;
+import java.time.Instant;
 import java.time.ZonedDateTime;
 import java.util.List;
 
@@ -58,10 +60,11 @@ public class YouTubeDownloadServerController {
     }
     
     @RequestMapping(value = "/request/{video_id}", method = RequestMethod.POST)
-    public String request(@PathVariable(value = "video_id") String videoId, @RequestParam(value = "priority", defaultValue = "-1") int priority, @RequestParam(value = "fileType", defaultValue = "B") String fileType, @RequestParam(value = "authToken") String authToken) {
+    public String request(@PathVariable(value = "video_id") String videoId, @RequestParam(value = "priority", defaultValue = "-1") int priority, @RequestParam(value = "requesterId", defaultValue = "-1") int requesterId, @RequestParam(value = "fileType", defaultValue = "B") String fileType, @RequestParam(value = "authToken") String authToken) {
         if (!isValidToken(authToken)) {
             return String.format("Unauthorized"); //TODO How to return the right HttpStatus?
         }
+        final Instant instant = Instant.now();
         //TODO Hmmm restrict priority to level of permission?
         final List<QueuedYouTubeVideo> queuedYouTubeVideos = YouTubeDownloadServer.useDatabaseOrNull((database) -> database.getQueuedVideosByVideoId(videoId));
         if (queuedYouTubeVideos != null && !queuedYouTubeVideos.isEmpty()) {
@@ -69,10 +72,13 @@ public class YouTubeDownloadServerController {
             return String.format("Already queued"); //TODO How to return the right HttpStatus? //TODO IMPORTANT Should we even stop this?
         }
         //TODO IMPORTANT Check already downloaded MediaFiles!!! And then do not request a same download again
-        final boolean b1 = YouTubeDownloadServer.useDatabaseOrFalse((database) -> database.prepareVideo(videoId));
-        Logger.logDebug("b1=" + b1);
-        final boolean b2 = YouTubeDownloadServer.useDatabaseOrFalse((database) -> database.addQueuedVideo(new QueuedYouTubeVideo(videoId, priority, -1, fileType)));
-        Logger.logDebug("b2=" + b2);
+        
+        
+        final YouTubeVideo youTubeVideo = YouTubeDownloadServer.useDatabaseOrNull((database) -> database.updateVideoInstanceInfo(videoId));
+        Logger.logDebug("youTubeVideo=" + youTubeVideo);
+        final int requesterId_ = YouTubeDownloadServer.useDatabaseOrFalse((database) -> database.hasRequester(requesterId)) ? requesterId : -1;
+        final QueuedYouTubeVideo queuedYouTubeVideo = YouTubeDownloadServer.useDatabaseOrNull((database) -> database.createQueuedVideo(videoId, priority, requesterId_, fileType));
+        Logger.logDebug("queuedYouTubeVideo=" + queuedYouTubeVideo);
         return String.format("Video queued for Download...?");
     }
     
