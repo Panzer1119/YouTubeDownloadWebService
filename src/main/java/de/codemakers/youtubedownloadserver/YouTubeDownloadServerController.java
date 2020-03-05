@@ -16,6 +16,7 @@
 
 package de.codemakers.youtubedownloadserver;
 
+import de.codemakers.base.Standard;
 import de.codemakers.base.logger.Logger;
 import de.codemakers.download.YouTubeDL;
 import de.codemakers.download.database.entities.AuthorizationToken;
@@ -69,14 +70,14 @@ public class YouTubeDownloadServerController {
             //TODO Check and only error, if the same fileType is already queued?
             return String.format("Already queued"); //TODO How to return the right HttpStatus? //TODO IMPORTANT Should we even stop this?
         }
-        //TODO IMPORTANT Check already downloaded MediaFiles!!! And then do not request a same download again
-        
-        
-        final YouTubeVideo youTubeVideo = YouTubeDownloadServer.useDatabaseOrNull((database) -> database.updateVideoInstanceInfo(videoId));
-        Logger.logDebug("youTubeVideo=" + youTubeVideo);
-        final int requesterId_ = YouTubeDownloadServer.useDatabaseOrFalse((database) -> database.hasRequester(requesterId)) ? requesterId : -1; //TODO How to create a missing/new Requester without the tag (or even the name)?
-        final QueuedYouTubeVideo queuedYouTubeVideo = YouTubeDownloadServer.useDatabaseOrNull((database) -> database.createQueuedVideo(videoId, priority, requesterId_, fileType));
-        Logger.logDebug("queuedYouTubeVideo=" + queuedYouTubeVideo);
+        Standard.async(() -> {
+            //TODO IMPORTANT Check already downloaded MediaFiles!!! And then do not request a same download again
+            final YouTubeVideo youTubeVideo = YouTubeDownloadServer.useDatabaseOrNull((database) -> database.updateVideoInstanceInfo(videoId));
+            Logger.logDebug("youTubeVideo=" + youTubeVideo);
+            final int requesterId_ = YouTubeDownloadServer.useDatabaseOrFalse((database) -> database.hasRequester(requesterId)) ? requesterId : -1; //TODO How to create a missing/new Requester without the tag (or even the name)?
+            final QueuedYouTubeVideo queuedYouTubeVideo = YouTubeDownloadServer.useDatabaseOrNull((database) -> database.createQueuedVideo(videoId, priority, requesterId_, fileType));
+            Logger.logDebug("queuedYouTubeVideo=" + queuedYouTubeVideo);
+        });
         return String.format("Video queued for Download...?");
     }
     
