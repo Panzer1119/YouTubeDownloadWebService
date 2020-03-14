@@ -14,13 +14,13 @@
  *    limitations under the License.
  */
 
-package de.codemakers.youtubedownloadserver;
+package de.codemakers.download;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
-class YouTubeDownloadServerApplicationTests {
+class YouTubeDownloadWebServiceApplicationTests {
     
     @Test
     void contextLoads() {

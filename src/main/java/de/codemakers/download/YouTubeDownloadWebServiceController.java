@@ -14,11 +14,10 @@
  *    limitations under the License.
  */
 
-package de.codemakers.youtubedownloadserver;
+package de.codemakers.download;
 
 import de.codemakers.base.Standard;
 import de.codemakers.base.logger.Logger;
-import de.codemakers.download.YouTubeDL;
 import de.codemakers.download.database.entities.AuthorizationToken;
 import de.codemakers.download.database.entities.impl.QueuedYouTubeVideo;
 import de.codemakers.download.database.entities.impl.YouTubeVideo;
@@ -37,7 +36,7 @@ import java.time.ZonedDateTime;
 import java.util.List;
 
 @RestController
-public class YouTubeDownloadServerController {
+public class YouTubeDownloadWebServiceController {
     
     @RequestMapping(value = "/requesters/byTag/{tag}", method = RequestMethod.GET)
     public String getRequesterByTag(@PathVariable(value = "tag") String tag, @RequestParam(value = "authToken") String authToken) {
@@ -65,17 +64,18 @@ public class YouTubeDownloadServerController {
             return String.format("Unauthorized"); //TODO How to return the right HttpStatus?
         }
         //TODO Hmmm restrict priority to level of permission?
-        final List<QueuedYouTubeVideo> queuedYouTubeVideos = YouTubeDownloadServer.useDatabaseOrNull((database) -> database.getQueuedVideosByVideoId(videoId));
+        final List<QueuedYouTubeVideo> queuedYouTubeVideos = YouTubeDownloadWebService.useDatabaseOrNull((database) -> database.getQueuedVideosByVideoId(videoId));
         if (queuedYouTubeVideos != null && !queuedYouTubeVideos.isEmpty()) {
             //TODO Check and only error, if the same fileType is already queued?
             return String.format("Already queued"); //TODO How to return the right HttpStatus? //TODO IMPORTANT Should we even stop this?
         }
+        //TODO IMPORTANT What is with currently live Videos?
         Standard.async(() -> {
             //TODO IMPORTANT Check already downloaded MediaFiles!!! And then do not request a same download again
-            final YouTubeVideo youTubeVideo = YouTubeDownloadServer.useDatabaseOrNull((database) -> database.updateVideoInstanceInfo(videoId));
+            final YouTubeVideo youTubeVideo = YouTubeDownloadWebService.useDatabaseOrNull((database) -> database.updateVideoInstanceInfo(videoId));
             Logger.logDebug("youTubeVideo=" + youTubeVideo);
-            final int requesterId_ = YouTubeDownloadServer.useDatabaseOrFalse((database) -> database.hasRequester(requesterId)) ? requesterId : -1; //TODO How to create a missing/new Requester without the tag (or even the name)?
-            final QueuedYouTubeVideo queuedYouTubeVideo = YouTubeDownloadServer.useDatabaseOrNull((database) -> database.createQueuedVideo(videoId, priority, requesterId_, fileType));
+            final int requesterId_ = YouTubeDownloadWebService.useDatabaseOrFalse((database) -> database.hasRequester(requesterId)) ? requesterId : -1; //TODO How to create a missing/new Requester without the tag (or even the name)?
+            final QueuedYouTubeVideo queuedYouTubeVideo = YouTubeDownloadWebService.useDatabaseOrNull((database) -> database.createQueuedVideo(videoId, priority, requesterId_, fileType));
             Logger.logDebug("queuedYouTubeVideo=" + queuedYouTubeVideo);
         });
         return String.format("Video queued for Download...?");
@@ -138,7 +138,7 @@ public class YouTubeDownloadServerController {
                 authorizationTokenSlave = authorizationTokenMaster.createSingleUseToken(duration);
             }
         }
-        if (authorizationTokenSlave == null || !YouTubeDownloadServer.useDatabaseOrFalse((database) -> database.addAuthorizationToken(authorizationTokenSlave))) {
+        if (authorizationTokenSlave == null || !YouTubeDownloadWebService.useDatabaseOrFalse((database) -> database.addAuthorizationToken(authorizationTokenSlave))) {
             return String.format("Unauthorized"); //TODO How to return the right HttpStatus?
         }
         useToken(authToken);
@@ -146,15 +146,15 @@ public class YouTubeDownloadServerController {
     }
     
     private static final boolean isValidToken(String token) {
-        return YouTubeDownloadServer.useDatabaseOrFalse((database) -> database.isValidAuthorizationToken(token));
+        return YouTubeDownloadWebService.useDatabaseOrFalse((database) -> database.isValidAuthorizationToken(token));
     }
     
     private static final AuthorizationToken getAuthorizationToken(String token) {
-        return YouTubeDownloadServer.useDatabaseOrNull((database) -> database.getAuthorizationTokenByToken(token));
+        return YouTubeDownloadWebService.useDatabaseOrNull((database) -> database.getAuthorizationTokenByToken(token));
     }
     
     private static final boolean useToken(String token) {
-        return YouTubeDownloadServer.useDatabaseOrFalse((database) -> database.useAuthorizationToken(token));
+        return YouTubeDownloadWebService.useDatabaseOrFalse((database) -> database.useAuthorizationToken(token));
     }
     
 }

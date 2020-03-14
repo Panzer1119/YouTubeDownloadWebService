@@ -14,7 +14,7 @@
  *    limitations under the License.
  */
 
-package de.codemakers.youtubedownloadserver;
+package de.codemakers.download;
 
 import de.codemakers.base.logger.LogLevel;
 import de.codemakers.base.logger.Logger;
@@ -24,7 +24,7 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-public class YouTubeDownloadServerApplication {
+public class YouTubeDownloadWebServiceApplication {
     
     private static final AdvancedFile DATABASE_FILE = new AdvancedFile("data/database.txt"); //TODO Only temporary?
     
@@ -32,10 +32,10 @@ public class YouTubeDownloadServerApplication {
         Logger.getDefaultAdvancedLeveledLogger().setMinimumLogLevel(LogLevel.FINE); //TODO DEBUG Remove this?
         final DefaultSettings settings = new DefaultSettings(DATABASE_FILE);
         settings.loadSettings();
-        YouTubeDownloadServer.connectToDatabase(settings.getProperty("host"), settings.getProperty("database"), settings.getProperty("username"), settings.getProperty("password").getBytes()); //FIXME Change this?
+        YouTubeDownloadWebService.connectToDatabase(settings.getProperty("host"), settings.getProperty("database"), settings.getProperty("username"), settings.getProperty("password").getBytes()); //FIXME Change this?
         settings.clear();
-        Logger.logDebug("YouTubeDownloadServer.getDatabase()=" + YouTubeDownloadServer.getDatabase()); //TODO DEBUG Remove this
-        SpringApplication.run(YouTubeDownloadServerApplication.class, args);
+        Logger.logDebug("YouTubeDownloadWebService.getDatabase()=" + YouTubeDownloadWebService.getDatabase()); //TODO DEBUG Remove this
+        SpringApplication.run(YouTubeDownloadWebServiceApplication.class, args);
     }
     
 }

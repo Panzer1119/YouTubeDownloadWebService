@@ -4,18 +4,27 @@ plugins {
     id 'java'
 }
 
-group = 'de.codemakers'
-version = '0.0.1-SNAPSHOT'
+group = 'de.codemakers.download'
+version = 'v1.8.0_172-alpha.1'
+
 sourceCompatibility = '1.8'
+targetCompatibility = '1.8'
 
 repositories {
     mavenCentral()
+    jcenter()
     maven { url 'https://jitpack.io' }
 }
 
 dependencies {
     implementation 'com.github.Panzer1119:CJP-Base:v1.8.0_172-alpha.46' //05.03.2020 12:09
-    implementation 'com.github.Panzer1119:JavaYouTubeDownloadLibrary:662f53c5' //05.03.2020 10:27
+    implementation 'com.github.Panzer1119:YouTubeDownloadJavaLibrary:v1.8.0_172-alpha.2' //14.03.2020 22:03
+    // https://mvnrepository.com/artifact/com.h2database/h2
+    compile group: 'com.h2database', name: 'h2', version: '1.4.200' //31.12.2019 16:29
+    // https://mvnrepository.com/artifact/mysql/mysql-connector-java
+    compile group: 'mysql', name: 'mysql-connector-java', version: '8.0.18' //22.01.2020 23:01
+    // https://mvnrepository.com/artifact/com.jcraft/jsch
+    compile group: 'com.jcraft', name: 'jsch', version: '0.1.55' //21.02.2020 18:18
     implementation 'org.springframework.boot:spring-boot-starter-actuator'
     implementation 'org.springframework.boot:spring-boot-starter-webflux'
     testImplementation('org.springframework.boot:spring-boot-starter-test') {

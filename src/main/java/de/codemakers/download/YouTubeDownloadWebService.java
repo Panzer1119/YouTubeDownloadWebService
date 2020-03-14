@@ -14,19 +14,19 @@
  *    limitations under the License.
  */
 
-package de.codemakers.youtubedownloadserver;
+package de.codemakers.download;
 
 import de.codemakers.base.Standard;
 import de.codemakers.base.util.tough.ToughFunction;
 import de.codemakers.download.database.MySQLConnector;
 import de.codemakers.download.database.YouTubeDatabase;
 
-public class YouTubeDownloadServer {
+public class YouTubeDownloadWebService {
     
     private static volatile YouTubeDatabase<MySQLConnector> DATABASE = null;
     
     private static final void setDatabase(YouTubeDatabase<MySQLConnector> database) {
-        YouTubeDownloadServer.DATABASE = database;
+        YouTubeDownloadWebService.DATABASE = database;
     }
     
     public static final boolean hasDatabase() {
