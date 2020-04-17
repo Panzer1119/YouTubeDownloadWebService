@@ -17,9 +17,9 @@
 
 package de.codemakers.download.database.entities;
 
-import de.codemakers.download.YouTubeDL;
+import de.codemakers.base.exceptions.NotYetImplementedRuntimeException;
+import de.codemakers.base.util.interfaces.StringResolver;
 import de.codemakers.download.database.AbstractDatabase;
-import de.codemakers.download.util.StringResolver;
 import de.codemakers.io.file.AdvancedFile;
 
 import java.sql.Timestamp;
@@ -161,7 +161,8 @@ public abstract class AbstractQueuedVideo<T extends AbstractQueuedVideo, D exten
     
     public AdvancedFile getResolvedConfigFile() {
         if (configFile == null) {
-            return YouTubeDL.getConfigFile(); //Default Config File
+            //return YouTubeDL.getConfigFile(); //Default Config File
+            throw new NotYetImplementedRuntimeException();
         }
         if (configFileResolved == null) {
             return null;

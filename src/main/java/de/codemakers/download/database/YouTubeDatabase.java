@@ -17,18 +17,16 @@
 
 package de.codemakers.download.database;
 
+import com.google.gson.JsonObject;
 import de.codemakers.base.Standard;
 import de.codemakers.base.exceptions.NotYetImplementedRuntimeException;
 import de.codemakers.base.logger.Logger;
 import de.codemakers.base.util.tough.ToughFunction;
 import de.codemakers.base.util.tough.ToughSupplier;
-import de.codemakers.download.YouTubeDL;
 import de.codemakers.download.database.entities.AbstractEntity;
 import de.codemakers.download.database.entities.AuthorizationToken;
 import de.codemakers.download.database.entities.QueuedVideoState;
 import de.codemakers.download.database.entities.impl.*;
-import de.codemakers.download.entities.VideoInstanceInfo;
-import de.codemakers.download.sources.YouTubeSource;
 import de.codemakers.io.IOUtil;
 
 import java.sql.PreparedStatement;
@@ -36,11 +34,14 @@ import java.sql.ResultSet;
 import java.sql.Timestamp;
 import java.sql.Types;
 import java.time.Instant;
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
+
+//import de.codemakers.download.YouTubeDL;
+//import de.codemakers.download.entities.VideoInstanceInfo;
+//import de.codemakers.download.sources.YouTubeSource;
 
 public class YouTubeDatabase<C extends AbstractConnector> extends AbstractDatabase<YouTubeDatabase, MediaFile, ExtraFile, YouTubeVideo, YouTubePlaylist, QueuedYouTubeVideo, YouTubeChannel, YouTubeUploader, YouTubeRequester, C> {
     
@@ -1257,14 +1258,21 @@ public class YouTubeDatabase<C extends AbstractConnector> extends AbstractDataba
         }
     }
     
+    @Override
+    public YouTubeVideo updateVideoInfoByJsonObject(JsonObject jsonObject, boolean overwrite) {
+        throw new NotYetImplementedRuntimeException();
+    }
+    
     public YouTubeVideo updateVideoInstanceInfo(String videoId) {
         return updateVideoInstanceInfo(videoId, false);
     }
     
     public YouTubeVideo updateVideoInstanceInfo(String videoId, boolean overwrite) {
-        return updateVideoInstanceInfo(YouTubeDL.downloadVideoInstanceInfo(YouTubeSource.ofId(videoId)), overwrite);
+        //return updateVideoInstanceInfo(YouTubeDL.downloadVideoInstanceInfo(YouTubeSource.ofId(videoId)), overwrite);
+        throw new NotYetImplementedRuntimeException();
     }
     
+    /*
     @Override
     public YouTubeVideo updateVideoInstanceInfo(VideoInstanceInfo videoInstanceInfo, boolean overwrite) {
         if (videoInstanceInfo == null) {
@@ -1321,6 +1329,8 @@ public class YouTubeDatabase<C extends AbstractConnector> extends AbstractDataba
         }
         return createVideo(videoId, channelId, uploaderId, title, altTitle, duration, uploadDateLong);
     }
+    */
+    
     
     @Override
     public boolean setAuthorizationTokenByToken(AuthorizationToken authorizationToken, String oldToken) {

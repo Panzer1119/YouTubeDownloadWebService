@@ -17,10 +17,10 @@
 
 package de.codemakers.download.database;
 
+import com.google.gson.JsonObject;
 import de.codemakers.download.database.entities.*;
 import de.codemakers.download.database.entities.impl.ExtraFile;
 import de.codemakers.download.database.entities.impl.MediaFile;
-import de.codemakers.download.entities.VideoInstanceInfo;
 
 import java.time.Instant;
 import java.util.List;
@@ -270,11 +270,11 @@ public abstract class AbstractDatabase<T extends AbstractDatabase, M extends Abs
     
     // Sets
     
-    public V updateVideoInstanceInfo(VideoInstanceInfo videoInstanceInfo) {
-        return updateVideoInstanceInfo(videoInstanceInfo, false);
+    public V updateVideoInfoByJsonObject(JsonObject jsonObject) {
+        return updateVideoInfoByJsonObject(jsonObject, false);
     }
     
-    public abstract V updateVideoInstanceInfo(VideoInstanceInfo videoInstanceInfo, boolean overwrite);
+    public abstract V updateVideoInfoByJsonObject(JsonObject jsonObject, boolean overwrite);
     
     public abstract boolean setAuthorizationTokenByToken(AuthorizationToken authorizationToken, String oldToken);
     

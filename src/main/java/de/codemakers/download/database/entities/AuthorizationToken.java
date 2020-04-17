@@ -18,7 +18,7 @@
 package de.codemakers.download.database.entities;
 
 import com.google.gson.JsonObject;
-import de.codemakers.download.util.Misc;
+import de.codemakers.base.exceptions.NotYetImplementedRuntimeException;
 import de.codemakers.security.util.RandomUtil;
 
 import java.time.Duration;
@@ -150,11 +150,13 @@ public class AuthorizationToken implements Comparable<AuthorizationToken> {
     }
     
     public String toJson() {
-        return Misc.GSON.toJson(toJsonObject());
+        //return Misc.GSON.toJson(toJsonObject());
+        throw new NotYetImplementedRuntimeException();
     }
     
     public String toJsonPretty() {
-        return Misc.GSON_PRETTY.toJson(toJsonObject());
+        //return Misc.GSON_PRETTY.toJson(toJsonObject());
+        throw new NotYetImplementedRuntimeException();
     }
     
     @Override

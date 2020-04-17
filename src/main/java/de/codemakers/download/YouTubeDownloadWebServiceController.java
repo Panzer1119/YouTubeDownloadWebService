@@ -17,6 +17,7 @@
 package de.codemakers.download;
 
 import de.codemakers.base.Standard;
+import de.codemakers.base.exceptions.NotYetImplementedRuntimeException;
 import de.codemakers.base.logger.Logger;
 import de.codemakers.download.database.entities.AuthorizationToken;
 import de.codemakers.download.database.entities.impl.QueuedYouTubeVideo;
@@ -115,7 +116,8 @@ public class YouTubeDownloadWebServiceController {
             return null; //TODO How to return the right HttpStatus?
         }
         useToken(authToken);
-        return YouTubeDL.downloadVideoIdsFromURL(String.format("https://www.youtube.com/playlist?list=%s", playlistId));
+        //return YouTubeDL.downloadVideoIdsFromURL(String.format("https://www.youtube.com/playlist?list=%s", playlistId));
+        throw new NotYetImplementedRuntimeException();
     }
     
     @RequestMapping(value = "/generate/authorizationToken", method = RequestMethod.GET)
