@@ -21,6 +21,8 @@ import de.codemakers.download.database.AbstractDatabase;
 
 public interface DatabaseEntity<T extends DatabaseEntity, D extends AbstractDatabase> {
     
+    T setDatabase(D database);
+    
     D getDatabase();
     
     default boolean reload() {
