@@ -1,5 +1,5 @@
 /*
- *    Copyright 2019 - 2020 Paul Hagedorn (Panzer1119)
+ *    Copyright 2020 Paul Hagedorn (Panzer1119)
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -12,7 +12,6 @@
  *    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  *    See the License for the specific language governing permissions and
  *    limitations under the License.
- *
  */
 
 package de.codemakers.download.database;
@@ -30,49 +29,12 @@ public class MySQLConnector extends AbstractConnector {
     protected int port = DEFAULT_PORT;
     protected String database;
     
-    public MySQLConnector(String host) {
-        super();
-        this.host = host;
-    }
-    
-    public MySQLConnector(Connection connection, String host) {
-        super(connection);
-        this.host = host;
-    }
-    
-    public MySQLConnector(String host, int port) {
-        super();
-        this.host = host;
-        this.port = port;
-    }
-    
-    public MySQLConnector(Connection connection, String host, int port) {
-        super(connection);
-        this.host = host;
-        this.port = port;
-    }
-    
     public MySQLConnector(String host, String database) {
-        super();
-        this.host = host;
-        this.database = database;
-    }
-    
-    public MySQLConnector(Connection connection, String host, String database) {
-        super(connection);
         this.host = host;
         this.database = database;
     }
     
     public MySQLConnector(String host, int port, String database) {
-        super();
-        this.host = host;
-        this.port = port;
-        this.database = database;
-    }
-    
-    public MySQLConnector(Connection connection, String host, int port, String database) {
-        super(connection);
         this.host = host;
         this.port = port;
         this.database = database;
