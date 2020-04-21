@@ -16,12 +16,12 @@
 
 package de.codemakers.download.database;
 
-import de.codemakers.base.exceptions.NotYetImplementedRuntimeException;
 import de.codemakers.download.database.entities.impl.AuthorizationToken;
 
 import java.time.Instant;
+import java.util.List;
 
-public abstract class AbstractDatabase<T extends AbstractDatabase, C extends AbstractConnector> {
+public abstract class AbstractDatabase<T extends AbstractDatabase, C extends AbstractConnector, V, P, CH, U, MF, EF, R, Q> {
     
     protected C connector;
     
@@ -46,18 +46,105 @@ public abstract class AbstractDatabase<T extends AbstractDatabase, C extends Abs
     
     // SQL Gets
     
-    public AuthorizationToken getAuthorizationTokenByToken(String token) {
-        throw new NotYetImplementedRuntimeException();
-    }
+    public abstract int getLastInsertId();
     
-    // TODO
+    public abstract List<AuthorizationToken> getAllAuthorizationTokens();
+    
+    public abstract AuthorizationToken getAuthorizationTokenByToken(String token);
+    
+    public abstract boolean hasAuthorizationToken(String token);
+    
+    public abstract boolean hasChannel(String channelId);
+    
+    public abstract boolean hasUploader(String uploaderId);
+    
+    public abstract boolean hasRequester(int requesterId);
+    
+    public abstract boolean hasQueuedVideo(int queuedVideoId);
+    
+    public abstract boolean hasVideo(String videoId);
+    
+    public abstract boolean hasPlaylist(String playlistId);
+    
+    public abstract V getVideoByVideoId(String videoId);
+    
+    public abstract List<V> getAllVideos();
+    
+    public abstract List<V> getVideosByPlaylistId(String playlistId);
+    
+    public abstract List<V> getVideosByChannelId(String channelId);
+    
+    public abstract List<V> getVideosByUploaderId(String uploaderId);
+    
+    public abstract List<String> getAllVideoIds();
+    
+    public abstract List<String> getVideoIdsByPlaylistId(String playlistId);
+    
+    public abstract List<String> getVideoIdsByChannelId(String channelId);
+    
+    public abstract List<String> getVideoIdsByUploaderId(String uploaderId);
+    
+    public abstract boolean playlistContainsVideo(String playlistId, String videoId);
+    
+    public abstract boolean channelHasVideo(String playlistId, String channelId);
+    
+    public abstract boolean uploaderUploadedVideo(String playlistId, String uploaderId);
+    
+    public abstract P getPlaylistByPlaylistId(String playlistId);
+    
+    public abstract List<P> getAllPlaylists();
+    
+    public abstract List<P> getPlaylistsByVideoId(String videoId);
+    
+    public abstract List<P> getPlaylistsByUploaderId(String uploaderId);
+    
+    public abstract List<String> getAllPlaylistIds();
+    
+    public abstract List<String> getPlaylistIdsByVideoId(String videoId);
+    
+    public abstract List<String> getPlaylistIdsByUploaderId(String uploaderId);
+    
+    public abstract int getIndexInPlaylist(String playlistId, String videoId);
+    
+    public abstract boolean uploaderCreatedPlaylist(String uploaderId, String playlistId);
+    
+    public abstract List<CH> getAllChannels();
+    
+    public abstract List<String> getAllChannelIds();
+    
+    public abstract CH getChannelByChannelId(String channelId);
+    
+    public abstract List<U> getAllUploaders();
+    
+    public abstract List<String> getAllUploaderIds();
+    
+    public abstract U getUploaderByUploaderId(String uploaderId);
+    
+    public abstract MF getMediaFileByVideoIdAndFile(String videoId, String file);
+    
+    public abstract List<MF> getMediaFilesByVideoId(String videoId);
+    
+    public abstract EF getExtraFileByVideoIdAndFile(String videoId, String file);
+    
+    public abstract List<EF> getExtraFilesByVideoId(String videoId);
+    
+    public abstract List<R> getAllRequesters();
+    
+    public abstract List<Integer> getAllRequesterIds();
+    
+    public abstract R getRequesterByRequesterId(int requesterId);
+    
+    public abstract R getRequesterByRequesterId(String tag);
+    
+    public abstract Q getNextQueuedVideo();
+    
+    public abstract List<Q> getNextQueuedVideos();
+    
     // SQL Adds
     // TODO
     // SQL Sets
     
-    public boolean setAuthorizationTokenTimesUsedByToken(String token, int timesUsed) {
-        throw new NotYetImplementedRuntimeException();
-    }
+    public abstract boolean setAuthorizationTokenTimesUsedByToken(String token, int timesUsed);
     
     // TODO
     // SQL Removes
