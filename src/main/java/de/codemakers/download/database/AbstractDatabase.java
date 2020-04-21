@@ -17,6 +17,7 @@
 package de.codemakers.download.database;
 
 import de.codemakers.download.database.entities.impl.AuthorizationToken;
+import de.codemakers.download.databaseOLD.entities.QueuedVideoState;
 
 import java.time.Instant;
 import java.util.List;
@@ -141,14 +142,107 @@ public abstract class AbstractDatabase<T extends AbstractDatabase, C extends Abs
     public abstract List<Q> getNextQueuedVideos();
     
     // SQL Adds
-    // TODO
+    
+    public abstract CH createChannel(String channelId, String name);
+    
+    public abstract U createUploader(String uploaderId, String name);
+    
+    public abstract R createRequester(String tag, String name);
+    
+    public abstract V createVideo(String videoId, String channelId, String uploaderId, String title, String altTitle, long duration, Instant uploadTimestamp);
+    
+    public Q createQueuedVideo(String videoId, int priority, int requesterId, String fileType) {
+        return createQueuedVideo(videoId, priority, requesterId, fileType, null, null, null);
+    }
+    
+    public Q createQueuedVideo(String videoId, int priority, int requesterId, String fileType, String arguments, String configFile, String outputDirectory) {
+        return createQueuedVideo(videoId, priority, Instant.now(), requesterId, fileType, arguments, configFile, outputDirectory, QueuedVideoState.QUEUED);
+    }
+    
+    public abstract Q createQueuedVideo(String videoId, int priority, Instant requestedTimestamp, int requesterId, String fileType, String arguments, String configFile, String outputDirectory, QueuedVideoState state);
+    
+    public boolean addVideoToPlaylist(P playlist, V video) {
+        return addVideoToPlaylist(playlist, video, -1);
+    }
+    
+    public abstract boolean addVideoToPlaylist(P playlist, V video, int index);
+    
+    public boolean addVideoToPlaylist(String playlistId, String videoId) {
+        return addVideoToPlaylist(playlistId, videoId, -1);
+    }
+    
+    public abstract boolean addVideoToPlaylist(String playlistId, String videoId, int index);
+    
+    public abstract boolean addVideoToPlaylists(V video, List<P> playlists);
+    
+    public abstract boolean addVideoToPlaylists(String videoId, List<String> playlistIds);
+    
+    public abstract boolean addVideosToPlaylist(P playlist, List<V> videos);
+    
+    public abstract boolean addVideosToPlaylist(String playlistId, List<String> videoIds);
+    
+    public abstract boolean addPlaylist(P playlist);
+    
+    public abstract boolean addAuthorizationToken(AuthorizationToken authorizationToken);
+    
+    public abstract boolean addQueuedVideo(Q queuedVideo);
+    
+    public abstract boolean addVideo(V video);
+    
+    public abstract boolean addChannel(CH channel);
+    
+    public abstract boolean addUploader(U uploader);
+    
+    public abstract boolean addRequester(R requester);
+    
     // SQL Sets
+    
+    public abstract boolean setAuthorizationTokenByToken(AuthorizationToken authorizationToken, String token);
     
     public abstract boolean setAuthorizationTokenTimesUsedByToken(String token, int timesUsed);
     
-    // TODO
+    public abstract boolean setPlaylistVideoIndex(P playlist, V video, int index);
+    
+    public abstract boolean setVideoByVideoId(V video, String videoId);
+    
+    public abstract boolean setPlaylistByPlaylistId(P playlist, String playlistId);
+    
+    public abstract boolean setMediaFileByVideoIdAndFile(MF mediaFile, String videoId, String file);
+    
+    public abstract boolean setMediaFilesByVideoId(List<MF> mediaFiles, String videoId);
+    
+    public abstract boolean setExtraFileByVideoIdAndFile(EF extraFile, String videoId, String file);
+    
+    public abstract boolean setExtraFilesByVideoId(List<EF> extraFiles, String videoId);
+    
+    public abstract boolean setChannelByChannelId(CH channel, String channelId);
+    
+    public abstract boolean setUploaderByUploaderId(U uploader, String uploaderId);
+    
+    public abstract boolean setQueuedVideoById(Q queuedVideo, int id);
+    
+    public abstract boolean setRequesterByRequesterId(R requester, int requesterId);
+    
+    public abstract boolean setRequesterByRequesterTag(R requester, String tag);
+    
     // SQL Removes
-    // TODO
+    
+    public abstract boolean removeAllAuthorizationTokens();
+    
+    public abstract boolean removeAuthorizationTokenByToken(String token);
+    
+    public abstract boolean removeVideoFromPlaylist(P playlist, V video);
+    
+    public abstract boolean removeVideoIdFromPlaylistId(String playlistId, String videoId);
+    
+    public abstract boolean removeAllQueuedVideos();
+    
+    public abstract boolean removeQueuedVideoById(int id);
+    
+    public abstract boolean removeQueuedVideosByVideoId(String videoId);
+    
+    public abstract boolean removeQueuedVideosByRequesterId(int requesterId);
+    
     //
     
     public boolean isTokenValid(AuthorizationToken token) {
