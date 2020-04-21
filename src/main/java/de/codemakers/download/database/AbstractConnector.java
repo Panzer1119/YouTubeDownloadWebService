@@ -1,5 +1,5 @@
 /*
- *    Copyright 2019 - 2020 Paul Hagedorn (Panzer1119)
+ *    Copyright 2020 Paul Hagedorn (Panzer1119)
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -12,7 +12,6 @@
  *    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  *    See the License for the specific language governing permissions and
  *    limitations under the License.
- *
  */
 
 package de.codemakers.download.database;
@@ -37,7 +36,7 @@ public abstract class AbstractConnector implements Closeable {
     }
     
     public boolean isConnected() {
-        return connection != null;
+        return connection != null && Standard.silentError(() -> connection.isValid(10));
     }
     
     public boolean createConnection() {
@@ -45,27 +44,18 @@ public abstract class AbstractConnector implements Closeable {
     }
     
     public boolean createConnection(String username, byte[] password) {
-        if (connection != null) {
+        if (isConnected()) {
             return true;
         }
         connection = createConnectionIntern(username, password);
-        return connection != null;
+        return isConnected();
     }
-    
-    abstract Connection createConnectionIntern(String username, byte[] password);
     
     private Connection createConnectionIntern() {
         return createConnectionIntern(null, null);
     }
     
-    protected boolean closeConnection() {
-        if (connection == null) {
-            return true;
-        }
-        final boolean good = Standard.silentError(connection::close) == null;
-        connection = null;
-        return good;
-    }
+    abstract Connection createConnectionIntern(String username, byte[] password);
     
     public Connection getConnection() {
         return connection;
@@ -90,6 +80,15 @@ public abstract class AbstractConnector implements Closeable {
             return null;
         }
         return connection.prepareStatement(sql);
+    }
+    
+    protected boolean closeConnection() {
+        if (!isConnected()) {
+            return true;
+        }
+        final boolean good = Standard.silentError(connection::close) == null;
+        connection = null;
+        return good;
     }
     
     @Override
