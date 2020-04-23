@@ -145,6 +145,18 @@ public abstract class AbstractDatabase<T extends AbstractDatabase, C extends Abs
     
     public abstract R getRequesterByRequesterId(String tag);
     
+    public abstract Q getQueuedVideoById(int id);
+    
+    public abstract List<Q> getAllQueuedVideos();
+    
+    public abstract List<String> getQueuedVideoIdsByVideoId(String videoId);
+    
+    public abstract List<Q> getQueuedVideosByVideoId(String videoId);
+    
+    public abstract List<String> getQueuedVideoIdsByRequesterId(int requesterId);
+    
+    public abstract List<Q> getQueuedVideosByRequesterId(int requesterId);
+    
     public abstract Q getNextQueuedVideo();
     
     public abstract List<Q> getNextQueuedVideos();
