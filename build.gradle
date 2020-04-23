@@ -18,7 +18,7 @@ repositories {
 
 dependencies {
     implementation 'com.github.Panzer1119:CJP-Base:v1.8.0_172-alpha.50' //17.04.2020 15:45
-    implementation 'com.github.Panzer1119:YouTubeDownloadJavaBase:v1.8.0_172-alpha.5' //18.04.2020 03:30
+    implementation 'com.github.Panzer1119:YouTubeDownloadJavaBase:v1.8.0_172-alpha.8' //23.04.2020 12:19
     // https://mvnrepository.com/artifact/com.h2database/h2
     compile group: 'com.h2database', name: 'h2', version: '1.4.200' //31.12.2019 16:29
     // https://mvnrepository.com/artifact/mysql/mysql-connector-java
