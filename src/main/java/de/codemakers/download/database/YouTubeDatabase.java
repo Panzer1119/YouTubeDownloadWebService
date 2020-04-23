@@ -338,9 +338,7 @@ public class YouTubeDatabase<C extends AbstractConnector> extends AbstractDataba
         preparedStatement_setChannelByChannelId = createPreparedStatement(YouTubeDatabaseConstants.QUERY_TABLE_CHANNELS_UPDATE_BY_CHANNEL_ID);
         // Table: File Extra
         preparedStatement_setExtraFileByVideoIdAndFile = createPreparedStatement(YouTubeDatabaseConstants.QUERY_TABLE_EXTRA_FILES_UPDATE_BY_VIDEO_ID_AND_FILE);
-        // Table: File Logs
-        //TODO
-        
+        // Table: File Logs //Hmmm, there should be no need to edit an entry in this table, because it exists, or not...
         // Table: File Media
         preparedStatement_setMediaFileByVideoIdAndFile = createPreparedStatement(YouTubeDatabaseConstants.QUERY_TABLE_MEDIA_FILES_UPDATE_BY_VIDEO_ID_AND_FILE);
         // Table: Log
@@ -360,9 +358,7 @@ public class YouTubeDatabase<C extends AbstractConnector> extends AbstractDataba
         preparedStatement_setUploaderByUploaderId = createPreparedStatement(YouTubeDatabaseConstants.QUERY_TABLE_UPLOADERS_UPDATE_BY_UPLOADER_ID);
         // Table: Video
         preparedStatement_setVideoByVideoId = createPreparedStatement(YouTubeDatabaseConstants.QUERY_TABLE_VIDEOS_UPDATE_BY_VIDEO_ID);
-        // Table: Video Logs
-        //TODO
-        
+        // Table: Video Logs //Hmmm, there should be no need to edit an entry in this table, because it exists, or not...
         // Table: Video Queue
         preparedStatement_setQueuedVideoById = createPreparedStatement(YouTubeDatabaseConstants.QUERY_TABLE_VIDEO_QUEUE_UPDATE_BY_ID);
         //
@@ -513,9 +509,7 @@ public class YouTubeDatabase<C extends AbstractConnector> extends AbstractDataba
         IOUtil.closeQuietly(preparedStatement_setChannelByChannelId);
         // Table: File Extra
         IOUtil.closeQuietly(preparedStatement_setExtraFileByVideoIdAndFile);
-        // Table: File Logs
-        //TODO
-        
+        // Table: File Logs //Hmmm, there should be no need to edit an entry in this table, because it exists, or not...
         // Table: File Media
         IOUtil.closeQuietly(preparedStatement_setMediaFileByVideoIdAndFile);
         // Table: Log
@@ -535,9 +529,7 @@ public class YouTubeDatabase<C extends AbstractConnector> extends AbstractDataba
         IOUtil.closeQuietly(preparedStatement_setUploaderByUploaderId);
         // Table: Video
         IOUtil.closeQuietly(preparedStatement_setVideoByVideoId);
-        // Table: Video Logs
-        //TODO
-        
+        // Table: Video Logs //Hmmm, there should be no need to edit an entry in this table, because it exists, or not...
         // Table: Video Queue
         IOUtil.closeQuietly(preparedStatement_setQueuedVideoById);
         //
