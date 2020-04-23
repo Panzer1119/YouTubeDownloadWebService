@@ -19,9 +19,10 @@ package de.codemakers.download.database.entities.impl;
 import de.codemakers.download.database.YouTubeDatabase;
 import de.codemakers.download.database.entities.DatabaseEntity;
 import de.codemakers.download.entities.impl.BasicYouTubeChannel;
-import de.codemakers.download.entities.impl.BasicYouTubeVideo;
 
-public class DatabaseYouTubeChannel extends BasicYouTubeChannel<DatabaseYouTubeChannel, BasicYouTubeVideo> implements DatabaseEntity<DatabaseYouTubeChannel, YouTubeDatabase<?>> {
+import java.util.List;
+
+public class DatabaseYouTubeChannel extends BasicYouTubeChannel<DatabaseYouTubeChannel, DatabaseYouTubeVideo> implements DatabaseEntity<DatabaseYouTubeChannel, YouTubeDatabase<?>> {
     
     private transient YouTubeDatabase<?> database = null;
     
@@ -31,6 +32,34 @@ public class DatabaseYouTubeChannel extends BasicYouTubeChannel<DatabaseYouTubeC
     
     public DatabaseYouTubeChannel(String channelId, String name) {
         super(channelId, name);
+    }
+    
+    @Override
+    public int getVideoCount() {
+        return useDatabase((database) -> database.getVideoCountByChannelId(getChannelId()), -1);
+    }
+    
+    @Override
+    public List<String> getVideoIds() {
+        return useDatabaseOrNull((database) -> database.getVideoIdsByChannelId(getChannelId()));
+    }
+    
+    @Override
+    public List<DatabaseYouTubeVideo> getVideos() {
+        return useDatabaseOrNull((database) -> database.getVideosByChannelId(getChannelId()));
+    }
+    
+    @Override
+    public boolean hasVideo(String videoId) {
+        return useDatabaseOrFalse((database) -> database.channelHasVideo(getChannelId(), videoId));
+    }
+    
+    @Override
+    public boolean hasVideo(DatabaseYouTubeVideo video) {
+        if (video == null) {
+            return false;
+        }
+        return useDatabaseOrFalse((database) -> database.channelHasVideo(getChannelId(), video.getVideoId()));
     }
     
     @Override
