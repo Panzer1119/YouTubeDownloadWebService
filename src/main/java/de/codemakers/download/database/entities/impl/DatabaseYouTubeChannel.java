@@ -89,7 +89,7 @@ public class DatabaseYouTubeChannel extends BasicYouTubeChannel<DatabaseYouTubeC
             //TODO Maybe just set every value in this object to null?
             return;
         }
-        //setChannelId(databaseYouTubeChannel.getChannelId()); //TODO Maybe this is not necessary?
+        setChannelId(databaseYouTubeChannel.getChannelId());
         setName(databaseYouTubeChannel.getName());
         setTimestamp(databaseYouTubeChannel.getTimestamp());
     }

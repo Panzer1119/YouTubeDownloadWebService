@@ -119,7 +119,7 @@ public class DatabaseYouTubePlaylist extends BasicYouTubePlaylist<DatabaseYouTub
             //TODO Maybe just set every value in this object to null?
             return;
         }
-        //setPlaylistId(databaseYouTubePlaylist.getPlaylistId()); //TODO Maybe this is not necessary?
+        setPlaylistId(databaseYouTubePlaylist.getPlaylistId());
         setTitle(databaseYouTubePlaylist.getTitle());
         setPlaylist(databaseYouTubePlaylist.getPlaylist());
         setUploaderId(databaseYouTubePlaylist.getUploaderId());

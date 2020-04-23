@@ -135,7 +135,7 @@ public class DatabaseYouTubeVideo extends BasicYouTubeVideo<DatabaseYouTubeVideo
             //TODO Maybe just set every value in this object to null?
             return;
         }
-        //setVideoId(databaseYouTubeVideo.getVideoId()); //TODO Maybe this is not necessary?
+        setVideoId(databaseYouTubeVideo.getVideoId());
         setChannelId(databaseYouTubeVideo.getChannelId());
         setUploaderId(databaseYouTubeVideo.getUploaderId());
         setTitle(databaseYouTubeVideo.getTitle());
