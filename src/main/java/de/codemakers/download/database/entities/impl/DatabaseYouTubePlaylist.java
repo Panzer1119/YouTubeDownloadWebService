@@ -81,7 +81,7 @@ public class DatabaseYouTubePlaylist extends BasicYouTubePlaylist<DatabaseYouTub
     
     @Override
     public int getIndex(String videoId) {
-        return useDatabaseOrNull((database) -> database.getIndexInPlaylist(getPlaylistId(), videoId));
+        return useDatabase((database) -> database.getIndexInPlaylist(getPlaylistId(), videoId), -1);
     }
     
     @Override
@@ -89,7 +89,7 @@ public class DatabaseYouTubePlaylist extends BasicYouTubePlaylist<DatabaseYouTub
         if (video == null) {
             return -1;
         }
-        return useDatabaseOrNull((database) -> database.getIndexInPlaylist(getPlaylistId(), video.getVideoId()));
+        return useDatabase((database) -> database.getIndexInPlaylist(getPlaylistId(), video.getVideoId()), -1);
     }
     
     @Override

@@ -16,7 +16,6 @@
 
 package de.codemakers.download.database.entities.impl;
 
-import de.codemakers.base.exceptions.NotYetImplementedRuntimeException;
 import de.codemakers.download.database.YouTubeDatabase;
 import de.codemakers.download.database.entities.DatabaseEntity;
 import de.codemakers.download.entities.impl.BasicYouTubePlaylist;
@@ -85,22 +84,28 @@ public class DatabaseYouTubeVideo extends BasicYouTubeVideo<DatabaseYouTubeVideo
     
     @Override
     public boolean isInPlaylist(String playlistId) {
-        throw new NotYetImplementedRuntimeException();
+        return useDatabaseOrFalse((database) -> database.playlistContainsVideo(playlistId, getVideoId()));
     }
     
     @Override
     public boolean isInPlaylist(BasicYouTubePlaylist playlist) {
-        throw new NotYetImplementedRuntimeException();
+        if (playlist == null) {
+            return false;
+        }
+        return useDatabaseOrFalse((database) -> database.playlistContainsVideo(playlist.getPlaylistId(), getVideoId()));
     }
     
     @Override
     public int getIndexInPlaylist(String playlistId) {
-        throw new NotYetImplementedRuntimeException();
+        return useDatabase((database) -> database.getIndexInPlaylist(playlistId, getVideoId()), -1);
     }
     
     @Override
     public int getIndexInPlaylist(BasicYouTubePlaylist playlist) {
-        throw new NotYetImplementedRuntimeException();
+        if (playlist == null) {
+            return -1;
+        }
+        return useDatabase((database) -> database.getIndexInPlaylist(playlist.getPlaylistId(), getVideoId()), -1);
     }
     
     @Override
