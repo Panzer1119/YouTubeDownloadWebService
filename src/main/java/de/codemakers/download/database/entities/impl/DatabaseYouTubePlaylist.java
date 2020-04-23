@@ -128,7 +128,7 @@ public class DatabaseYouTubePlaylist extends BasicYouTubePlaylist<DatabaseYouTub
     
     @Override
     public String toString() {
-        return "DatabaseYouTubePlaylist{" + "playlist='" + playlist + '\'' + ", uploaderId='" + uploaderId + '\'' + ", title='" + title + '\'' + ", source=" + source + ", id='" + id + '\'' + ", timestamp=" + timestamp + '}';
+        return "DatabaseYouTubePlaylist{" + "database=" + database + ", playlist='" + playlist + '\'' + ", uploaderId='" + uploaderId + '\'' + ", title='" + title + '\'' + ", source=" + source + ", id='" + id + '\'' + ", timestamp=" + timestamp + '}';
     }
     
 }

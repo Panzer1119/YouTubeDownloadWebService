@@ -141,7 +141,7 @@ public class DatabaseYouTubeVideo extends BasicYouTubeVideo<DatabaseYouTubeVideo
     
     @Override
     public String toString() {
-        return "DatabaseYouTubeVideo{" + "channelId='" + channelId + '\'' + ", altTitle='" + altTitle + '\'' + ", uploaderId='" + uploaderId + '\'' + ", title='" + title + '\'' + ", durationMillis=" + durationMillis + ", source=" + source + ", id='" + id + '\'' + ", timestamp=" + timestamp + '}';
+        return "DatabaseYouTubeVideo{" + "database=" + database + ", channelId='" + channelId + '\'' + ", altTitle='" + altTitle + '\'' + ", uploaderId='" + uploaderId + '\'' + ", title='" + title + '\'' + ", durationMillis=" + durationMillis + ", source=" + source + ", id='" + id + '\'' + ", timestamp=" + timestamp + '}';
     }
     
     public static LocalDate uploadDateToLocalDate(String uploadDate) {
