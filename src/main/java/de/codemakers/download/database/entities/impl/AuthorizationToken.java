@@ -60,6 +60,14 @@ public class AuthorizationToken extends BasicToken implements Comparable<Authori
     }
     
     @Override
+    public boolean isValid(Instant timestamp) {
+        if (!super.isValid(timestamp)) {
+            return false;
+        }
+        return getLevel().hasUnlimitedUses() || getTimesUsed() < getLevel().getUses();
+    }
+    
+    @Override
     public String toString() {
         return "DatabaseToken{" + "level=" + level + ", timesUsed=" + timesUsed + ", created=" + created + ", expiration=" + expiration + ", token='" + token + '\'' + '}';
     }
