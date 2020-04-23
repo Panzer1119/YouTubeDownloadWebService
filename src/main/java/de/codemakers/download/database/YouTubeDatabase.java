@@ -249,48 +249,48 @@ public class YouTubeDatabase<C extends AbstractConnector> extends AbstractDataba
         // // Selects / Gets
         preparedStatement_getLastInsertId = createPreparedStatement(YouTubeDatabaseConstants.QUERY_SELECT_LAST_INSERT_ID);
         // Table: Channel
-        preparedStatement_getAllChannels = createPreparedStatement(YouTubeDatabaseConstants.QUERY_TABLE_CHANNELS_SELECT_ALL);
-        preparedStatement_getChannelByChannelId = createPreparedStatement(YouTubeDatabaseConstants.QUERY_TABLE_CHANNELS_SELECT_BY_CHANNEL_ID);
+        preparedStatement_getAllChannels = createPreparedStatement(YouTubeDatabaseConstants.QUERY_TABLE_CHANNEL_SELECT_ALL);
+        preparedStatement_getChannelByChannelId = createPreparedStatement(YouTubeDatabaseConstants.QUERY_TABLE_CHANNEL_SELECT_BY_CHANNEL_ID);
         // Table: File Extra
-        preparedStatement_getAllExtraFiles = createPreparedStatement(YouTubeDatabaseConstants.QUERY_TABLE_EXTRA_FILES_SELECT_ALL);
-        preparedStatement_getExtraFilesByVideoId = createPreparedStatement(YouTubeDatabaseConstants.QUERY_TABLE_EXTRA_FILES_SELECT_ALL_BY_VIDEO_ID);
-        preparedStatement_getExtraFilesByFileType = createPreparedStatement(YouTubeDatabaseConstants.QUERY_TABLE_EXTRA_FILES_SELECT_ALL_BY_FILE_TYPE);
-        preparedStatement_getExtraFileByVideoIdAndFile = createPreparedStatement(YouTubeDatabaseConstants.QUERY_TABLE_EXTRA_FILES_SELECT_BY_VIDEO_ID_AND_FILE);
+        preparedStatement_getAllFilesExtra = createPreparedStatement(YouTubeDatabaseConstants.QUERY_TABLE_FILE_EXTRA_SELECT_ALL);
+        preparedStatement_getFilesExtraByVideoId = createPreparedStatement(YouTubeDatabaseConstants.QUERY_TABLE_FILE_EXTRA_SELECT_ALL_BY_VIDEO_ID);
+        preparedStatement_getFilesExtraByFileType = createPreparedStatement(YouTubeDatabaseConstants.QUERY_TABLE_FILE_EXTRA_SELECT_ALL_BY_FILE_TYPE);
+        preparedStatement_getFileExtraByVideoIdAndFile = createPreparedStatement(YouTubeDatabaseConstants.QUERY_TABLE_FILE_EXTRA_SELECT_BY_VIDEO_ID_AND_FILE);
         // Table: File Logs
         //TODO
         
         // Table: File Media
-        preparedStatement_getAllMediaFiles = createPreparedStatement(YouTubeDatabaseConstants.QUERY_TABLE_MEDIA_FILES_SELECT_ALL);
-        preparedStatement_getMediaFilesByVideoId = createPreparedStatement(YouTubeDatabaseConstants.QUERY_TABLE_MEDIA_FILES_SELECT_ALL_BY_VIDEO_ID);
-        preparedStatement_getMediaFilesByFileType = createPreparedStatement(YouTubeDatabaseConstants.QUERY_TABLE_MEDIA_FILES_SELECT_ALL_BY_FILE_TYPE);
-        preparedStatement_getMediaFileByVideoIdAndFile = createPreparedStatement(YouTubeDatabaseConstants.QUERY_TABLE_MEDIA_FILES_SELECT_BY_VIDEO_ID_AND_FILE);
+        preparedStatement_getAllFilesMedia = createPreparedStatement(YouTubeDatabaseConstants.QUERY_TABLE_FILE_MEDIA_SELECT_ALL);
+        preparedStatement_getFilesMediaByVideoId = createPreparedStatement(YouTubeDatabaseConstants.QUERY_TABLE_FILE_MEDIA_SELECT_ALL_BY_VIDEO_ID);
+        preparedStatement_getFilesMediaByFileType = createPreparedStatement(YouTubeDatabaseConstants.QUERY_TABLE_FILE_MEDIA_SELECT_ALL_BY_FILE_TYPE);
+        preparedStatement_getFileMediaByVideoIdAndFile = createPreparedStatement(YouTubeDatabaseConstants.QUERY_TABLE_FILE_MEDIA_SELECT_BY_VIDEO_ID_AND_FILE);
         // Table: Log
         //TODO
         
         // Table: Playlist
-        preparedStatement_getAllPlaylists = createPreparedStatement(YouTubeDatabaseConstants.QUERY_TABLE_PLAYLISTS_SELECT_ALL);
-        preparedStatement_getPlaylistByPlaylistId = createPreparedStatement(YouTubeDatabaseConstants.QUERY_TABLE_PLAYLISTS_SELECT_BY_PLAYLIST_ID);
-        preparedStatement_getPlaylistsByUploaderId = createPreparedStatement(YouTubeDatabaseConstants.QUERY_TABLE_PLAYLISTS_SELECT_ALL_UPLOADER_ID);
+        preparedStatement_getAllPlaylists = createPreparedStatement(YouTubeDatabaseConstants.QUERY_TABLE_PLAYLIST_SELECT_ALL);
+        preparedStatement_getPlaylistByPlaylistId = createPreparedStatement(YouTubeDatabaseConstants.QUERY_TABLE_PLAYLIST_SELECT_BY_PLAYLIST_ID);
+        preparedStatement_getPlaylistsByUploaderId = createPreparedStatement(YouTubeDatabaseConstants.QUERY_TABLE_PLAYLIST_SELECT_ALL_UPLOADER_ID);
         // Table: Playlist Videos
         preparedStatement_getAllPlaylistVideos = createPreparedStatement(YouTubeDatabaseConstants.QUERY_TABLE_PLAYLIST_VIDEOS_SELECT_ALL);
         preparedStatement_getPlaylistVideosByVideoId = createPreparedStatement(YouTubeDatabaseConstants.QUERY_TABLE_PLAYLIST_VIDEOS_SELECT_ALL_BY_VIDEO_ID);
         preparedStatement_getPlaylistVideosByPlaylistId = createPreparedStatement(YouTubeDatabaseConstants.QUERY_TABLE_PLAYLIST_VIDEOS_SELECT_ALL_BY_PLAYLIST_ID);
         preparedStatement_getPlaylistVideoByPlaylistIdAndVideoId = createPreparedStatement(YouTubeDatabaseConstants.QUERY_TABLE_PLAYLIST_VIDEOS_SELECT_BY_PLAYLIST_ID_AND_VIDEO_ID);
         // Table: Requester
-        preparedStatement_getAllRequesters = createPreparedStatement(YouTubeDatabaseConstants.QUERY_TABLE_REQUESTERS_SELECT_ALL);
-        preparedStatement_getRequesterByRequesterId = createPreparedStatement(YouTubeDatabaseConstants.QUERY_TABLE_REQUESTERS_SELECT_BY_REQUESTER_ID);
-        preparedStatement_getRequesterByTag = createPreparedStatement(YouTubeDatabaseConstants.QUERY_TABLE_REQUESTERS_SELECT_BY_TAG);
+        preparedStatement_getAllRequesters = createPreparedStatement(YouTubeDatabaseConstants.QUERY_TABLE_REQUESTER_SELECT_ALL);
+        preparedStatement_getRequesterByRequesterId = createPreparedStatement(YouTubeDatabaseConstants.QUERY_TABLE_REQUESTER_SELECT_BY_REQUESTER_ID);
+        preparedStatement_getRequesterByTag = createPreparedStatement(YouTubeDatabaseConstants.QUERY_TABLE_REQUESTER_SELECT_BY_TAG);
         // Table: Token
-        preparedStatement_getAllAuthorizationTokens = createPreparedStatement(YouTubeDatabaseConstants.QUERY_TABLE_AUTHORIZATION_TOKENS_SELECT_ALL);
-        preparedStatement_getAuthorizationTokenByToken = createPreparedStatement(YouTubeDatabaseConstants.QUERY_TABLE_AUTHORIZATION_TOKENS_SELECT_BY_TOKEN);
+        preparedStatement_getAllTokens = createPreparedStatement(YouTubeDatabaseConstants.QUERY_TABLE_TOKEN_SELECT_ALL);
+        preparedStatement_getTokenByToken = createPreparedStatement(YouTubeDatabaseConstants.QUERY_TABLE_TOKEN_SELECT_BY_TOKEN);
         // Table: Uploader
-        preparedStatement_getAllUploaders = createPreparedStatement(YouTubeDatabaseConstants.QUERY_TABLE_UPLOADERS_SELECT_ALL);
-        preparedStatement_getUploaderByUploaderId = createPreparedStatement(YouTubeDatabaseConstants.QUERY_TABLE_UPLOADERS_SELECT_BY_UPLOADER_ID);
+        preparedStatement_getAllUploaders = createPreparedStatement(YouTubeDatabaseConstants.QUERY_TABLE_UPLOADER_SELECT_ALL);
+        preparedStatement_getUploaderByUploaderId = createPreparedStatement(YouTubeDatabaseConstants.QUERY_TABLE_UPLOADER_SELECT_BY_UPLOADER_ID);
         // Table: Video
-        preparedStatement_getAllVideos = createPreparedStatement(YouTubeDatabaseConstants.QUERY_TABLE_VIDEOS_SELECT_ALL);
-        preparedStatement_getVideoByVideoId = createPreparedStatement(YouTubeDatabaseConstants.QUERY_TABLE_VIDEOS_SELECT_BY_VIDEO_ID);
-        preparedStatement_getVideosByChannelId = createPreparedStatement(YouTubeDatabaseConstants.QUERY_TABLE_VIDEOS_SELECT_ALL_BY_CHANNEL_ID);
-        preparedStatement_getVideosByUploaderId = createPreparedStatement(YouTubeDatabaseConstants.QUERY_TABLE_VIDEOS_SELECT_ALL_BY_UPLOADER_ID);
+        preparedStatement_getAllVideos = createPreparedStatement(YouTubeDatabaseConstants.QUERY_TABLE_VIDEO_SELECT_ALL);
+        preparedStatement_getVideoByVideoId = createPreparedStatement(YouTubeDatabaseConstants.QUERY_TABLE_VIDEO_SELECT_BY_VIDEO_ID);
+        preparedStatement_getVideosByChannelId = createPreparedStatement(YouTubeDatabaseConstants.QUERY_TABLE_VIDEO_SELECT_ALL_BY_CHANNEL_ID);
+        preparedStatement_getVideosByUploaderId = createPreparedStatement(YouTubeDatabaseConstants.QUERY_TABLE_VIDEO_SELECT_ALL_BY_UPLOADER_ID);
         // Table: Video Logs
         //TODO
         
@@ -304,29 +304,29 @@ public class YouTubeDatabase<C extends AbstractConnector> extends AbstractDataba
         //
         // // Inserts / Adds
         // Table: Channel
-        preparedStatement_addChannel = createPreparedStatement(YouTubeDatabaseConstants.QUERY_TABLE_CHANNELS_INSERT);
+        preparedStatement_addChannel = createPreparedStatement(YouTubeDatabaseConstants.QUERY_TABLE_CHANNEL_INSERT);
         // Table: File Extra
-        preparedStatement_addExtraFile = createPreparedStatement(YouTubeDatabaseConstants.QUERY_TABLE_EXTRA_FILES_INSERT);
+        preparedStatement_addFileExtra = createPreparedStatement(YouTubeDatabaseConstants.QUERY_TABLE_FILE_EXTRA_INSERT);
         // Table: File Logs
         //TODO
         
         // Table: File Media
-        preparedStatement_addMediaFile = createPreparedStatement(YouTubeDatabaseConstants.QUERY_TABLE_MEDIA_FILES_INSERT);
+        preparedStatement_addFileMedia = createPreparedStatement(YouTubeDatabaseConstants.QUERY_TABLE_FILE_MEDIA_INSERT);
         // Table: Log
         //TODO
         
         // Table: Playlist
-        preparedStatement_addPlaylist = createPreparedStatement(YouTubeDatabaseConstants.QUERY_TABLE_PLAYLISTS_INSERT);
+        preparedStatement_addPlaylist = createPreparedStatement(YouTubeDatabaseConstants.QUERY_TABLE_PLAYLIST_INSERT);
         // Table: Playlist Videos
         preparedStatement_addPlaylistVideo = createPreparedStatement(YouTubeDatabaseConstants.QUERY_TABLE_PLAYLIST_VIDEOS_INSERT);
         // Table: Requester
-        preparedStatement_addRequester = createPreparedStatement(YouTubeDatabaseConstants.QUERY_TABLE_REQUESTERS_INSERT);
+        preparedStatement_addRequester = createPreparedStatement(YouTubeDatabaseConstants.QUERY_TABLE_REQUESTER_INSERT);
         // Table: Token
-        preparedStatement_addAuthorizationToken = createPreparedStatement(YouTubeDatabaseConstants.QUERY_TABLE_AUTHORIZATION_TOKENS_INSERT);
+        preparedStatement_addToken = createPreparedStatement(YouTubeDatabaseConstants.QUERY_TABLE_TOKEN_INSERT);
         // Table: Uploader
-        preparedStatement_addUploader = createPreparedStatement(YouTubeDatabaseConstants.QUERY_TABLE_UPLOADERS_INSERT);
+        preparedStatement_addUploader = createPreparedStatement(YouTubeDatabaseConstants.QUERY_TABLE_UPLOADER_INSERT);
         // Table: Video
-        preparedStatement_addVideo = createPreparedStatement(YouTubeDatabaseConstants.QUERY_TABLE_VIDEOS_INSERT);
+        preparedStatement_addVideo = createPreparedStatement(YouTubeDatabaseConstants.QUERY_TABLE_VIDEO_INSERT);
         // Table: Video Log
         //TODO
         
@@ -335,75 +335,75 @@ public class YouTubeDatabase<C extends AbstractConnector> extends AbstractDataba
         //
         // // Updates / Sets
         // Table: Channel
-        preparedStatement_setChannelByChannelId = createPreparedStatement(YouTubeDatabaseConstants.QUERY_TABLE_CHANNELS_UPDATE_BY_CHANNEL_ID);
+        preparedStatement_setChannelByChannelId = createPreparedStatement(YouTubeDatabaseConstants.QUERY_TABLE_CHANNEL_UPDATE_BY_CHANNEL_ID);
         // Table: File Extra
-        preparedStatement_setExtraFileByVideoIdAndFile = createPreparedStatement(YouTubeDatabaseConstants.QUERY_TABLE_EXTRA_FILES_UPDATE_BY_VIDEO_ID_AND_FILE);
+        preparedStatement_setFileExtraByVideoIdAndFile = createPreparedStatement(YouTubeDatabaseConstants.QUERY_TABLE_FILE_EXTRA_UPDATE_BY_VIDEO_ID_AND_FILE);
         // Table: File Logs //Hmmm, there should be no need to edit an entry in this table, because it exists, or not...
         // Table: File Media
-        preparedStatement_setMediaFileByVideoIdAndFile = createPreparedStatement(YouTubeDatabaseConstants.QUERY_TABLE_MEDIA_FILES_UPDATE_BY_VIDEO_ID_AND_FILE);
+        preparedStatement_setFileMediaByVideoIdAndFile = createPreparedStatement(YouTubeDatabaseConstants.QUERY_TABLE_FILE_MEDIA_UPDATE_BY_VIDEO_ID_AND_FILE);
         // Table: Log
         //TODO
         
         // Table: Playlist
-        preparedStatement_setPlaylistByPlaylistId = createPreparedStatement(YouTubeDatabaseConstants.QUERY_TABLE_PLAYLISTS_UPDATE_BY_PLAYLIST_ID);
+        preparedStatement_setPlaylistByPlaylistId = createPreparedStatement(YouTubeDatabaseConstants.QUERY_TABLE_PLAYLIST_UPDATE_BY_PLAYLIST_ID);
         // Table: Playlist Videos
         preparedStatement_setPlaylistVideoByPlaylistIdAndVideoId = createPreparedStatement(YouTubeDatabaseConstants.QUERY_TABLE_PLAYLIST_VIDEOS_UPDATE_BY_PLAYLIST_ID_AND_VIDEO_ID);
         // Table: Requester
-        preparedStatement_setRequesterByRequesterId = createPreparedStatement(YouTubeDatabaseConstants.QUERY_TABLE_REQUESTERS_UPDATE_BY_REQUESTER_ID);
-        preparedStatement_setRequesterByTag = createPreparedStatement(YouTubeDatabaseConstants.QUERY_TABLE_REQUESTERS_UPDATE_BY_TAG);
+        preparedStatement_setRequesterByRequesterId = createPreparedStatement(YouTubeDatabaseConstants.QUERY_TABLE_REQUESTER_UPDATE_BY_REQUESTER_ID);
+        preparedStatement_setRequesterByTag = createPreparedStatement(YouTubeDatabaseConstants.QUERY_TABLE_REQUESTER_UPDATE_BY_TAG);
         // Table: Token
-        preparedStatement_setAuthorizationTokenByToken = createPreparedStatement(YouTubeDatabaseConstants.QUERY_TABLE_AUTHORIZATION_TOKENS_UPDATE_BY_TOKEN);
-        preparedStatement_setAuthorizationTokenTimesUsedByToken = createPreparedStatement(YouTubeDatabaseConstants.QUERY_TABLE_AUTHORIZATION_TOKENS_UPDATE_USED_BY_TOKEN);
+        preparedStatement_setTokenByToken = createPreparedStatement(YouTubeDatabaseConstants.QUERY_TABLE_TOKEN_UPDATE_BY_TOKEN);
+        preparedStatement_setTokenTimesUsedByToken = createPreparedStatement(YouTubeDatabaseConstants.QUERY_TABLE_TOKEN_UPDATE_USED_BY_TOKEN);
         // Table: Uploader
-        preparedStatement_setUploaderByUploaderId = createPreparedStatement(YouTubeDatabaseConstants.QUERY_TABLE_UPLOADERS_UPDATE_BY_UPLOADER_ID);
+        preparedStatement_setUploaderByUploaderId = createPreparedStatement(YouTubeDatabaseConstants.QUERY_TABLE_UPLOADER_UPDATE_BY_UPLOADER_ID);
         // Table: Video
-        preparedStatement_setVideoByVideoId = createPreparedStatement(YouTubeDatabaseConstants.QUERY_TABLE_VIDEOS_UPDATE_BY_VIDEO_ID);
+        preparedStatement_setVideoByVideoId = createPreparedStatement(YouTubeDatabaseConstants.QUERY_TABLE_VIDEO_UPDATE_BY_VIDEO_ID);
         // Table: Video Logs //Hmmm, there should be no need to edit an entry in this table, because it exists, or not...
         // Table: Video Queue
         preparedStatement_setQueuedVideoById = createPreparedStatement(YouTubeDatabaseConstants.QUERY_TABLE_VIDEO_QUEUE_UPDATE_BY_ID);
         //
         // // Deletes / Removes
         // Table: Channel
-        preparedStatement_removeAllChannels = createPreparedStatement(YouTubeDatabaseConstants.QUERY_TABLE_CHANNELS_DELETE_ALL);
-        preparedStatement_removeChannelByChannelId = createPreparedStatement(YouTubeDatabaseConstants.QUERY_TABLE_CHANNELS_DELETE_BY_CHANNEL_ID);
+        preparedStatement_removeAllChannels = createPreparedStatement(YouTubeDatabaseConstants.QUERY_TABLE_CHANNEL_DELETE_ALL);
+        preparedStatement_removeChannelByChannelId = createPreparedStatement(YouTubeDatabaseConstants.QUERY_TABLE_CHANNEL_DELETE_BY_CHANNEL_ID);
         // Table: File Extra
-        preparedStatement_removeAllExtraFiles = createPreparedStatement(YouTubeDatabaseConstants.QUERY_TABLE_EXTRA_FILES_DELETE_ALL);
-        preparedStatement_removeExtraFilesByVideoId = createPreparedStatement(YouTubeDatabaseConstants.QUERY_TABLE_EXTRA_FILES_DELETE_ALL_BY_VIDEO_ID);
-        preparedStatement_removeExtraFileByVideoIdAndFile = createPreparedStatement(YouTubeDatabaseConstants.QUERY_TABLE_EXTRA_FILES_DELETE_BY_VIDEO_ID_AND_FILE);
+        preparedStatement_removeAllFilesExtra = createPreparedStatement(YouTubeDatabaseConstants.QUERY_TABLE_FILE_EXTRA_DELETE_ALL);
+        preparedStatement_removeFilesExtraByVideoId = createPreparedStatement(YouTubeDatabaseConstants.QUERY_TABLE_FILE_EXTRA_DELETE_ALL_BY_VIDEO_ID);
+        preparedStatement_removeFileExtraByVideoIdAndFile = createPreparedStatement(YouTubeDatabaseConstants.QUERY_TABLE_FILE_EXTRA_DELETE_BY_VIDEO_ID_AND_FILE);
         // Table: File Logs
         //TODO
         
         // Table: File Media
-        preparedStatement_removeAllMediaFiles = createPreparedStatement(YouTubeDatabaseConstants.QUERY_TABLE_MEDIA_FILES_DELETE_ALL);
-        preparedStatement_removeMediaFilesByVideoId = createPreparedStatement(YouTubeDatabaseConstants.QUERY_TABLE_MEDIA_FILES_DELETE_ALL_BY_VIDEO_ID);
-        preparedStatement_removeMediaFileByVideoIdAndFile = createPreparedStatement(YouTubeDatabaseConstants.QUERY_TABLE_MEDIA_FILES_DELETE_BY_VIDEO_ID_AND_FILE);
+        preparedStatement_removeAllFilesMedia = createPreparedStatement(YouTubeDatabaseConstants.QUERY_TABLE_FILE_MEDIA_DELETE_ALL);
+        preparedStatement_removeFilesMediaByVideoId = createPreparedStatement(YouTubeDatabaseConstants.QUERY_TABLE_FILE_MEDIA_DELETE_ALL_BY_VIDEO_ID);
+        preparedStatement_removeFileMediaByVideoIdAndFile = createPreparedStatement(YouTubeDatabaseConstants.QUERY_TABLE_FILE_MEDIA_DELETE_BY_VIDEO_ID_AND_FILE);
         // Table: Log
         //TODO
         
         // Table: Playlist
-        preparedStatement_removeAllPlaylists = createPreparedStatement(YouTubeDatabaseConstants.QUERY_TABLE_PLAYLISTS_DELETE_ALL);
-        preparedStatement_removePlaylistByPlaylistId = createPreparedStatement(YouTubeDatabaseConstants.QUERY_TABLE_PLAYLISTS_DELETE_BY_PLAYLIST_ID);
-        preparedStatement_removePlaylistsByUploaderId = createPreparedStatement(YouTubeDatabaseConstants.QUERY_TABLE_PLAYLISTS_DELETE_ALL_BY_UPLOADER_ID);
+        preparedStatement_removeAllPlaylists = createPreparedStatement(YouTubeDatabaseConstants.QUERY_TABLE_PLAYLIST_DELETE_ALL);
+        preparedStatement_removePlaylistByPlaylistId = createPreparedStatement(YouTubeDatabaseConstants.QUERY_TABLE_PLAYLIST_DELETE_BY_PLAYLIST_ID);
+        preparedStatement_removePlaylistsByUploaderId = createPreparedStatement(YouTubeDatabaseConstants.QUERY_TABLE_PLAYLIST_DELETE_ALL_BY_UPLOADER_ID);
         // Table: Playlist Videos
         preparedStatement_removeAllPlaylistVideos = createPreparedStatement(YouTubeDatabaseConstants.QUERY_TABLE_PLAYLIST_VIDEOS_DELETE_ALL);
         preparedStatement_removePlaylistVideosByPlaylistId = createPreparedStatement(YouTubeDatabaseConstants.QUERY_TABLE_PLAYLIST_VIDEOS_DELETE_ALL_BY_PLAYLIST_ID);
         preparedStatement_removePlaylistVideosByVideoId = createPreparedStatement(YouTubeDatabaseConstants.QUERY_TABLE_PLAYLIST_VIDEOS_DELETE_ALL_BY_VIDEO_ID);
         preparedStatement_removePlaylistVideoByPlaylistIdAndVideoId = createPreparedStatement(YouTubeDatabaseConstants.QUERY_TABLE_PLAYLIST_VIDEOS_DELETE_BY_PLAYLIST_ID_AND_VIDEO_ID);
         // Table: Requester
-        preparedStatement_removeAllRequesters = createPreparedStatement(YouTubeDatabaseConstants.QUERY_TABLE_REQUESTERS_DELETE_ALL);
-        preparedStatement_removeRequesterByRequesterId = createPreparedStatement(YouTubeDatabaseConstants.QUERY_TABLE_REQUESTERS_DELETE_BY_REQUESTER_ID);
-        preparedStatement_removeRequesterByTag = createPreparedStatement(YouTubeDatabaseConstants.QUERY_TABLE_REQUESTERS_DELETE_BY_TAG);
+        preparedStatement_removeAllRequesters = createPreparedStatement(YouTubeDatabaseConstants.QUERY_TABLE_REQUESTER_DELETE_ALL);
+        preparedStatement_removeRequesterByRequesterId = createPreparedStatement(YouTubeDatabaseConstants.QUERY_TABLE_REQUESTER_DELETE_BY_REQUESTER_ID);
+        preparedStatement_removeRequesterByTag = createPreparedStatement(YouTubeDatabaseConstants.QUERY_TABLE_REQUESTER_DELETE_BY_TAG);
         // Table: Token
-        preparedStatement_removeAllAuthorizationTokens = createPreparedStatement(YouTubeDatabaseConstants.QUERY_TABLE_AUTHORIZATION_TOKENS_DELETE_ALL);
-        preparedStatement_removeAuthorizationTokenByToken = createPreparedStatement(YouTubeDatabaseConstants.QUERY_TABLE_AUTHORIZATION_TOKENS_DELETE_BY_TOKEN);
+        preparedStatement_removeAllTokens = createPreparedStatement(YouTubeDatabaseConstants.QUERY_TABLE_TOKEN_DELETE_ALL);
+        preparedStatement_removeTokenByToken = createPreparedStatement(YouTubeDatabaseConstants.QUERY_TABLE_TOKEN_DELETE_BY_TOKEN);
         // Table: Uploader
-        preparedStatement_removeAllUploaders = createPreparedStatement(YouTubeDatabaseConstants.QUERY_TABLE_UPLOADERS_DELETE_ALL);
-        preparedStatement_removeUploaderByUploaderId = createPreparedStatement(YouTubeDatabaseConstants.QUERY_TABLE_UPLOADERS_DELETE_BY_CHANNEL_ID);
+        preparedStatement_removeAllUploaders = createPreparedStatement(YouTubeDatabaseConstants.QUERY_TABLE_UPLOADER_DELETE_ALL);
+        preparedStatement_removeUploaderByUploaderId = createPreparedStatement(YouTubeDatabaseConstants.QUERY_TABLE_UPLOADER_DELETE_BY_CHANNEL_ID);
         // Table: Video
-        preparedStatement_removeAllVideos = createPreparedStatement(YouTubeDatabaseConstants.QUERY_TABLE_VIDEOS_DELETE_ALL);
-        preparedStatement_removeVideoByVideoId = createPreparedStatement(YouTubeDatabaseConstants.QUERY_TABLE_VIDEOS_DELETE_BY_VIDEO_ID);
-        preparedStatement_removeVideosByChannelId = createPreparedStatement(YouTubeDatabaseConstants.QUERY_TABLE_VIDEOS_DELETE_ALL_BY_CHANNEL_ID);
-        preparedStatement_removeVideosByUploaderId = createPreparedStatement(YouTubeDatabaseConstants.QUERY_TABLE_VIDEOS_DELETE_ALL_BY_UPLOADER_ID);
+        preparedStatement_removeAllVideos = createPreparedStatement(YouTubeDatabaseConstants.QUERY_TABLE_VIDEO_DELETE_ALL);
+        preparedStatement_removeVideoByVideoId = createPreparedStatement(YouTubeDatabaseConstants.QUERY_TABLE_VIDEO_DELETE_BY_VIDEO_ID);
+        preparedStatement_removeVideosByChannelId = createPreparedStatement(YouTubeDatabaseConstants.QUERY_TABLE_VIDEO_DELETE_ALL_BY_CHANNEL_ID);
+        preparedStatement_removeVideosByUploaderId = createPreparedStatement(YouTubeDatabaseConstants.QUERY_TABLE_VIDEO_DELETE_ALL_BY_UPLOADER_ID);
         // Table: Video Logs
         //TODO
         
@@ -423,18 +423,18 @@ public class YouTubeDatabase<C extends AbstractConnector> extends AbstractDataba
         IOUtil.closeQuietly(preparedStatement_getAllChannels);
         IOUtil.closeQuietly(preparedStatement_getChannelByChannelId);
         // Table: File Extra
-        IOUtil.closeQuietly(preparedStatement_getAllExtraFiles);
-        IOUtil.closeQuietly(preparedStatement_getExtraFilesByVideoId);
-        IOUtil.closeQuietly(preparedStatement_getExtraFilesByFileType);
-        IOUtil.closeQuietly(preparedStatement_getExtraFileByVideoIdAndFile);
+        IOUtil.closeQuietly(preparedStatement_getAllFilesExtra);
+        IOUtil.closeQuietly(preparedStatement_getFilesExtraByVideoId);
+        IOUtil.closeQuietly(preparedStatement_getFilesExtraByFileType);
+        IOUtil.closeQuietly(preparedStatement_getFileExtraByVideoIdAndFile);
         // Table: File Logs
         //TODO
         
         // Table: File Media
-        IOUtil.closeQuietly(preparedStatement_getAllMediaFiles);
-        IOUtil.closeQuietly(preparedStatement_getMediaFilesByVideoId);
-        IOUtil.closeQuietly(preparedStatement_getMediaFilesByFileType);
-        IOUtil.closeQuietly(preparedStatement_getMediaFileByVideoIdAndFile);
+        IOUtil.closeQuietly(preparedStatement_getAllFilesMedia);
+        IOUtil.closeQuietly(preparedStatement_getFilesMediaByVideoId);
+        IOUtil.closeQuietly(preparedStatement_getFilesMediaByFileType);
+        IOUtil.closeQuietly(preparedStatement_getFileMediaByVideoIdAndFile);
         // Table: Log
         //TODO
         
@@ -452,8 +452,8 @@ public class YouTubeDatabase<C extends AbstractConnector> extends AbstractDataba
         IOUtil.closeQuietly(preparedStatement_getRequesterByRequesterId);
         IOUtil.closeQuietly(preparedStatement_getRequesterByTag);
         // Table: Token
-        IOUtil.closeQuietly(preparedStatement_getAllAuthorizationTokens);
-        IOUtil.closeQuietly(preparedStatement_getAuthorizationTokenByToken);
+        IOUtil.closeQuietly(preparedStatement_getAllTokens);
+        IOUtil.closeQuietly(preparedStatement_getTokenByToken);
         // Table: Uploader
         IOUtil.closeQuietly(preparedStatement_getAllUploaders);
         IOUtil.closeQuietly(preparedStatement_getUploaderByUploaderId);
@@ -477,12 +477,12 @@ public class YouTubeDatabase<C extends AbstractConnector> extends AbstractDataba
         // Table: Channel
         IOUtil.closeQuietly(preparedStatement_addChannel);
         // Table: File Extra
-        IOUtil.closeQuietly(preparedStatement_addExtraFile);
+        IOUtil.closeQuietly(preparedStatement_addFileExtra);
         // Table: File Logs
         //TODO
         
         // Table: File Media
-        IOUtil.closeQuietly(preparedStatement_addMediaFile);
+        IOUtil.closeQuietly(preparedStatement_addFileMedia);
         // Table: Log
         //TODO
         
@@ -493,7 +493,7 @@ public class YouTubeDatabase<C extends AbstractConnector> extends AbstractDataba
         // Table: Requester
         IOUtil.closeQuietly(preparedStatement_addRequester);
         // Table: Token
-        IOUtil.closeQuietly(preparedStatement_addAuthorizationToken);
+        IOUtil.closeQuietly(preparedStatement_addToken);
         // Table: Uploader
         IOUtil.closeQuietly(preparedStatement_addUploader);
         // Table: Video
@@ -508,10 +508,10 @@ public class YouTubeDatabase<C extends AbstractConnector> extends AbstractDataba
         // Table: Channel
         IOUtil.closeQuietly(preparedStatement_setChannelByChannelId);
         // Table: File Extra
-        IOUtil.closeQuietly(preparedStatement_setExtraFileByVideoIdAndFile);
+        IOUtil.closeQuietly(preparedStatement_setFileExtraByVideoIdAndFile);
         // Table: File Logs //Hmmm, there should be no need to edit an entry in this table, because it exists, or not...
         // Table: File Media
-        IOUtil.closeQuietly(preparedStatement_setMediaFileByVideoIdAndFile);
+        IOUtil.closeQuietly(preparedStatement_setFileMediaByVideoIdAndFile);
         // Table: Log
         //TODO
         
@@ -523,8 +523,8 @@ public class YouTubeDatabase<C extends AbstractConnector> extends AbstractDataba
         IOUtil.closeQuietly(preparedStatement_setRequesterByRequesterId);
         IOUtil.closeQuietly(preparedStatement_setRequesterByTag);
         // Table: Token
-        IOUtil.closeQuietly(preparedStatement_setAuthorizationTokenByToken);
-        IOUtil.closeQuietly(preparedStatement_setAuthorizationTokenTimesUsedByToken);
+        IOUtil.closeQuietly(preparedStatement_setTokenByToken);
+        IOUtil.closeQuietly(preparedStatement_setTokenTimesUsedByToken);
         // Table: Uploader
         IOUtil.closeQuietly(preparedStatement_setUploaderByUploaderId);
         // Table: Video
@@ -538,16 +538,16 @@ public class YouTubeDatabase<C extends AbstractConnector> extends AbstractDataba
         IOUtil.closeQuietly(preparedStatement_removeAllChannels);
         IOUtil.closeQuietly(preparedStatement_removeChannelByChannelId);
         // Table: File Extra
-        IOUtil.closeQuietly(preparedStatement_removeAllExtraFiles);
-        IOUtil.closeQuietly(preparedStatement_removeExtraFilesByVideoId);
-        IOUtil.closeQuietly(preparedStatement_removeExtraFileByVideoIdAndFile);
+        IOUtil.closeQuietly(preparedStatement_removeAllFilesExtra);
+        IOUtil.closeQuietly(preparedStatement_removeFilesExtraByVideoId);
+        IOUtil.closeQuietly(preparedStatement_removeFileExtraByVideoIdAndFile);
         // Table: File Logs
         //TODO
         
         // Table: File Media
-        IOUtil.closeQuietly(preparedStatement_removeAllMediaFiles);
-        IOUtil.closeQuietly(preparedStatement_removeMediaFilesByVideoId);
-        IOUtil.closeQuietly(preparedStatement_removeMediaFileByVideoIdAndFile);
+        IOUtil.closeQuietly(preparedStatement_removeAllFilesMedia);
+        IOUtil.closeQuietly(preparedStatement_removeFilesMediaByVideoId);
+        IOUtil.closeQuietly(preparedStatement_removeFileMediaByVideoIdAndFile);
         // Table: Log
         //TODO
         
@@ -565,8 +565,8 @@ public class YouTubeDatabase<C extends AbstractConnector> extends AbstractDataba
         IOUtil.closeQuietly(preparedStatement_removeRequesterByRequesterId);
         IOUtil.closeQuietly(preparedStatement_removeRequesterByTag);
         // Table: Token
-        IOUtil.closeQuietly(preparedStatement_removeAllAuthorizationTokens);
-        IOUtil.closeQuietly(preparedStatement_removeAuthorizationTokenByToken);
+        IOUtil.closeQuietly(preparedStatement_removeAllTokens);
+        IOUtil.closeQuietly(preparedStatement_removeTokenByToken);
         // Table: Uploader
         IOUtil.closeQuietly(preparedStatement_removeAllUploaders);
         IOUtil.closeQuietly(preparedStatement_removeUploaderByUploaderId);
