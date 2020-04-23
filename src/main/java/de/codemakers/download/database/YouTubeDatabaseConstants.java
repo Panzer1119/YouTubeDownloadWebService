@@ -820,6 +820,23 @@ public class YouTubeDatabaseConstants {
      * 1. Argument: Uploader ID
      */
     public static final String QUERY_TABLE_UPLOADER_DELETE_BY_CHANNEL_ID = String.format("DELETE FROM %s WHERE %s = ?;", IDENTIFIER_TABLE_UPLOADER, IDENTIFIER_TABLE_UPLOADER_COLUMN_ID);
+    // Table: Video
+    /**
+     * No arguments
+     */
+    public static final String QUERY_TABLE_VIDEO_DELETE_ALL = String.format("DELETE FROM %s;", IDENTIFIER_TABLE_VIDEO);
+    /**
+     * 1. Argument: Video ID
+     */
+    public static final String QUERY_TABLE_VIDEO_DELETE_BY_VIDEO_ID = String.format("DELETE FROM %s WHERE %s = ?;", IDENTIFIER_TABLE_VIDEO, IDENTIFIER_TABLE_VIDEO_COLUMN_ID);
+    /**
+     * 1. Argument: Channel ID
+     */
+    public static final String QUERY_TABLE_VIDEO_DELETE_ALL_BY_CHANNEL_ID = String.format("DELETE FROM %s WHERE %s = ?;", IDENTIFIER_TABLE_VIDEO, IDENTIFIER_TABLE_VIDEO_COLUMN_CHANNEL_ID);
+    /**
+     * 1. Argument: Uploader ID
+     */
+    public static final String QUERY_TABLE_VIDEO_DELETE_ALL_BY_UPLOADER_ID = String.format("DELETE FROM %s WHERE %s = ?;", IDENTIFIER_TABLE_VIDEO, IDENTIFIER_TABLE_VIDEO_COLUMN_UPLOADER_ID);
     // Table: Video Logs
     /**
      * No arguments
@@ -839,23 +856,6 @@ public class YouTubeDatabaseConstants {
      * 2. Argument: Log ID
      */
     public static final String QUERY_TABLE_VIDEO_LOGS_DELETE_BY_VIDEO_ID_AND_LOG_ID = String.format("DELETE FROM %s WHERE %s = ? AND %s = ?;", IDENTIFIER_TABLE_VIDEO_LOGS, IDENTIFIER_TABLE_VIDEO_LOGS_COLUMN_VIDEO_ID, IDENTIFIER_TABLE_VIDEO_LOGS_COLUMN_LOG_ID);
-    // Table: Video
-    /**
-     * No arguments
-     */
-    public static final String QUERY_TABLE_VIDEO_DELETE_ALL = String.format("DELETE FROM %s;", IDENTIFIER_TABLE_VIDEO);
-    /**
-     * 1. Argument: Video ID
-     */
-    public static final String QUERY_TABLE_VIDEO_DELETE_BY_VIDEO_ID = String.format("DELETE FROM %s WHERE %s = ?;", IDENTIFIER_TABLE_VIDEO, IDENTIFIER_TABLE_VIDEO_COLUMN_ID);
-    /**
-     * 1. Argument: Channel ID
-     */
-    public static final String QUERY_TABLE_VIDEO_DELETE_ALL_BY_CHANNEL_ID = String.format("DELETE FROM %s WHERE %s = ?;", IDENTIFIER_TABLE_VIDEO, IDENTIFIER_TABLE_VIDEO_COLUMN_CHANNEL_ID);
-    /**
-     * 1. Argument: Uploader ID
-     */
-    public static final String QUERY_TABLE_VIDEO_DELETE_ALL_BY_UPLOADER_ID = String.format("DELETE FROM %s WHERE %s = ?;", IDENTIFIER_TABLE_VIDEO, IDENTIFIER_TABLE_VIDEO_COLUMN_UPLOADER_ID);
     // Table: Video Queue
     /**
      * No arguments
