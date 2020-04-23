@@ -20,6 +20,8 @@ import de.codemakers.download.database.YouTubeDatabase;
 import de.codemakers.download.database.entities.DatabaseEntity;
 import de.codemakers.download.entities.impl.BasicYouTubeUploader;
 
+import java.util.List;
+
 public class DatabaseYouTubeUploader extends BasicYouTubeUploader<DatabaseYouTubeUploader, DatabaseYouTubeVideo, DatabaseYouTubePlaylist> implements DatabaseEntity<DatabaseYouTubeUploader, YouTubeDatabase<?>> {
     
     private transient YouTubeDatabase<?> database = null;
@@ -30,6 +32,62 @@ public class DatabaseYouTubeUploader extends BasicYouTubeUploader<DatabaseYouTub
     
     public DatabaseYouTubeUploader(String uploaderId, String name) {
         super(uploaderId, name);
+    }
+    
+    @Override
+    public int getVideoCount() {
+        return useDatabase((database) -> database.getVideoCountByUploaderId(getUploaderId()), -1);
+    }
+    
+    @Override
+    public List<String> getUploadedVideoIds() {
+        return useDatabaseOrNull((database) -> database.getVideoIdsByUploaderId(getUploaderId()));
+    }
+    
+    @Override
+    public List<DatabaseYouTubeVideo> getUploadedVideos() {
+        return useDatabaseOrNull((database) -> database.getVideosByUploaderId(getUploaderId()));
+    }
+    
+    @Override
+    public boolean hasVideoUploaded(String videoId) {
+        return useDatabaseOrFalse((database) -> database.uploaderUploadedVideo(getUploaderId(), videoId));
+    }
+    
+    @Override
+    public boolean hasVideoUploaded(DatabaseYouTubeVideo video) {
+        if (video == null) {
+            return false;
+        }
+        return useDatabaseOrFalse((database) -> database.uploaderUploadedVideo(getUploaderId(), video.getVideoId()));
+    }
+    
+    @Override
+    public int getPlaylistCount() {
+        return useDatabase((database) -> database.getPlaylistCountByUploaderId(getUploaderId()), -1);
+    }
+    
+    @Override
+    public List<String> getCreatedPlaylistIds() {
+        return useDatabaseOrNull((database) -> database.getPlaylistIdsByUploaderId(getUploaderId()));
+    }
+    
+    @Override
+    public List<DatabaseYouTubePlaylist> getCreatedPlaylists() {
+        return useDatabaseOrNull((database) -> database.getPlaylistsByUploaderId(getUploaderId()));
+    }
+    
+    @Override
+    public boolean hasPlaylistCreated(String playlistId) {
+        return useDatabaseOrFalse((database) -> database.uploaderCreatedPlaylist(getUploaderId(), playlistId));
+    }
+    
+    @Override
+    public boolean hasPlaylistCreated(DatabaseYouTubePlaylist playlist) {
+        if (playlist == null) {
+            return false;
+        }
+        return useDatabaseOrFalse((database) -> database.uploaderCreatedPlaylist(getUploaderId(), playlist.getPlaylistId()));
     }
     
     @Override
