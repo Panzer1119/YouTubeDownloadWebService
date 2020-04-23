@@ -17,7 +17,7 @@
 package de.codemakers.download.database;
 
 import de.codemakers.download.database.entities.impl.AuthorizationToken;
-import de.codemakers.download.databaseOLD.entities.QueuedVideoState;
+import de.codemakers.download.database.entities.impl.QueuedVideoState;
 
 import java.time.Instant;
 import java.util.List;
