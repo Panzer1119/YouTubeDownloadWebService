@@ -93,9 +93,9 @@ public abstract class AbstractDatabase<T extends AbstractDatabase, C extends Abs
     
     public abstract boolean playlistContainsVideo(String playlistId, String videoId);
     
-    public abstract boolean channelHasVideo(String playlistId, String channelId);
+    public abstract boolean channelHasVideo(String channelId, String videoId);
     
-    public abstract boolean uploaderUploadedVideo(String playlistId, String uploaderId);
+    public abstract boolean uploaderUploadedVideo(String uploaderId, String videoId);
     
     public abstract P getPlaylistByPlaylistId(String playlistId);
     
