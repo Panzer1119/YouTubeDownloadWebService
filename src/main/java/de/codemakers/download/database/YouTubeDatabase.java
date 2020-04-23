@@ -16,11 +16,21 @@
 
 package de.codemakers.download.database;
 
+import de.codemakers.base.Standard;
 import de.codemakers.base.exceptions.NotYetImplementedRuntimeException;
+import de.codemakers.base.logger.Logger;
+import de.codemakers.base.util.tough.ToughFunction;
+import de.codemakers.base.util.tough.ToughSupplier;
+import de.codemakers.download.database.entities.DatabaseEntity;
 import de.codemakers.download.database.entities.impl.*;
+import de.codemakers.io.IOUtil;
 
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.Timestamp;
+import java.sql.Types;
 import java.time.Instant;
+import java.util.ArrayList;
 import java.util.List;
 
 public class YouTubeDatabase<C extends AbstractConnector> extends AbstractDatabase<YouTubeDatabase, C, DatabaseYouTubeVideo, DatabaseYouTubePlaylist, DatabaseYouTubeChannel, DatabaseYouTubeUploader, DatabaseMediaFile, DatabaseExtraFile, DatabaseRequester, DatabaseQueuedYouTubeVideo> {
@@ -211,12 +221,306 @@ public class YouTubeDatabase<C extends AbstractConnector> extends AbstractDataba
     
     @Override
     public boolean start(String username, byte[] password) {
-        throw new NotYetImplementedRuntimeException();
+        if (isConnected()) {
+            return false;
+        }
+        if (!connector.createConnection(username, password)) {
+            return false;
+        }
+        createStatements();
+        return true;
     }
     
     @Override
     public boolean stop() {
-        throw new NotYetImplementedRuntimeException();
+        if (!isConnected()) {
+            return false;
+        }
+        closeStatements();
+        connector.closeWithoutException();
+        return true;
+    }
+    
+    private PreparedStatement createPreparedStatement(String sql) {
+        return createPreparedStatement(connector, sql);
+    }
+    
+    private void createStatements() {
+        // // Selects / Gets
+        preparedStatement_getLastInsertId = createPreparedStatement(YouTubeDatabaseConstants.QUERY_SELECT_LAST_INSERT_ID);
+        // Table: Authorization Tokens
+        preparedStatement_getAllAuthorizationTokens = createPreparedStatement(YouTubeDatabaseConstants.QUERY_TABLE_AUTHORIZATION_TOKENS_SELECT_ALL);
+        preparedStatement_getAuthorizationTokenByToken = createPreparedStatement(YouTubeDatabaseConstants.QUERY_TABLE_AUTHORIZATION_TOKENS_SELECT_BY_TOKEN);
+        // Table: Channels
+        preparedStatement_getAllChannels = createPreparedStatement(YouTubeDatabaseConstants.QUERY_TABLE_CHANNELS_SELECT_ALL);
+        preparedStatement_getChannelByChannelId = createPreparedStatement(YouTubeDatabaseConstants.QUERY_TABLE_CHANNELS_SELECT_BY_CHANNEL_ID);
+        // Table: Extra Files
+        preparedStatement_getAllExtraFiles = createPreparedStatement(YouTubeDatabaseConstants.QUERY_TABLE_EXTRA_FILES_SELECT_ALL);
+        preparedStatement_getExtraFilesByVideoId = createPreparedStatement(YouTubeDatabaseConstants.QUERY_TABLE_EXTRA_FILES_SELECT_ALL_BY_VIDEO_ID);
+        preparedStatement_getExtraFilesByFileType = createPreparedStatement(YouTubeDatabaseConstants.QUERY_TABLE_EXTRA_FILES_SELECT_ALL_BY_FILE_TYPE);
+        preparedStatement_getExtraFileByVideoIdAndFile = createPreparedStatement(YouTubeDatabaseConstants.QUERY_TABLE_EXTRA_FILES_SELECT_BY_VIDEO_ID_AND_FILE);
+        // Table: Media Files
+        preparedStatement_getAllMediaFiles = createPreparedStatement(YouTubeDatabaseConstants.QUERY_TABLE_MEDIA_FILES_SELECT_ALL);
+        preparedStatement_getMediaFilesByVideoId = createPreparedStatement(YouTubeDatabaseConstants.QUERY_TABLE_MEDIA_FILES_SELECT_ALL_BY_VIDEO_ID);
+        preparedStatement_getMediaFilesByFileType = createPreparedStatement(YouTubeDatabaseConstants.QUERY_TABLE_MEDIA_FILES_SELECT_ALL_BY_FILE_TYPE);
+        preparedStatement_getMediaFileByVideoIdAndFile = createPreparedStatement(YouTubeDatabaseConstants.QUERY_TABLE_MEDIA_FILES_SELECT_BY_VIDEO_ID_AND_FILE);
+        // Table: Playlists
+        preparedStatement_getAllPlaylists = createPreparedStatement(YouTubeDatabaseConstants.QUERY_TABLE_PLAYLISTS_SELECT_ALL);
+        preparedStatement_getPlaylistByPlaylistId = createPreparedStatement(YouTubeDatabaseConstants.QUERY_TABLE_PLAYLISTS_SELECT_BY_PLAYLIST_ID);
+        preparedStatement_getPlaylistsByUploaderId = createPreparedStatement(YouTubeDatabaseConstants.QUERY_TABLE_PLAYLISTS_SELECT_ALL_UPLOADER_ID);
+        // Table: Playlist Videos
+        preparedStatement_getAllPlaylistVideos = createPreparedStatement(YouTubeDatabaseConstants.QUERY_TABLE_PLAYLIST_VIDEOS_SELECT_ALL);
+        preparedStatement_getPlaylistVideosByVideoId = createPreparedStatement(YouTubeDatabaseConstants.QUERY_TABLE_PLAYLIST_VIDEOS_SELECT_ALL_BY_VIDEO_ID);
+        preparedStatement_getPlaylistVideosByPlaylistId = createPreparedStatement(YouTubeDatabaseConstants.QUERY_TABLE_PLAYLIST_VIDEOS_SELECT_ALL_BY_PLAYLIST_ID);
+        preparedStatement_getPlaylistVideoByPlaylistIdAndVideoId = createPreparedStatement(YouTubeDatabaseConstants.QUERY_TABLE_PLAYLIST_VIDEOS_SELECT_BY_PLAYLIST_ID_AND_VIDEO_ID);
+        // Table: Requesters
+        preparedStatement_getAllRequesters = createPreparedStatement(YouTubeDatabaseConstants.QUERY_TABLE_REQUESTERS_SELECT_ALL);
+        preparedStatement_getRequesterByRequesterId = createPreparedStatement(YouTubeDatabaseConstants.QUERY_TABLE_REQUESTERS_SELECT_BY_REQUESTER_ID);
+        preparedStatement_getRequesterByTag = createPreparedStatement(YouTubeDatabaseConstants.QUERY_TABLE_REQUESTERS_SELECT_BY_TAG);
+        // Table: Uploaders
+        preparedStatement_getAllUploaders = createPreparedStatement(YouTubeDatabaseConstants.QUERY_TABLE_UPLOADERS_SELECT_ALL);
+        preparedStatement_getUploaderByUploaderId = createPreparedStatement(YouTubeDatabaseConstants.QUERY_TABLE_UPLOADERS_SELECT_BY_UPLOADER_ID);
+        // Table: Video Queue
+        preparedStatement_getAllQueuedVideos = createPreparedStatement(YouTubeDatabaseConstants.QUERY_TABLE_VIDEO_QUEUE_SELECT_ALL);
+        preparedStatement_getQueuedVideoById = createPreparedStatement(YouTubeDatabaseConstants.QUERY_TABLE_VIDEO_QUEUE_SELECT_BY_ID);
+        preparedStatement_getQueuedVideosByVideoId = createPreparedStatement(YouTubeDatabaseConstants.QUERY_TABLE_VIDEO_QUEUE_SELECT_ALL_BY_VIDEO_ID);
+        preparedStatement_getQueuedVideosByRequesterId = createPreparedStatement(YouTubeDatabaseConstants.QUERY_TABLE_VIDEO_QUEUE_SELECT_ALL_BY_REQUESTER_ID);
+        preparedStatement_getNextQueuedVideos = createPreparedStatement(YouTubeDatabaseConstants.QUERY_TABLE_VIDEO_QUEUE_SELECT_ALL_NEXT);
+        preparedStatement_getNextQueuedVideo = createPreparedStatement(YouTubeDatabaseConstants.QUERY_TABLE_VIDEO_QUEUE_SELECT_NEXT);
+        // Table: Videos
+        preparedStatement_getAllVideos = createPreparedStatement(YouTubeDatabaseConstants.QUERY_TABLE_VIDEOS_SELECT_ALL);
+        preparedStatement_getVideoByVideoId = createPreparedStatement(YouTubeDatabaseConstants.QUERY_TABLE_VIDEOS_SELECT_BY_VIDEO_ID);
+        preparedStatement_getVideosByChannelId = createPreparedStatement(YouTubeDatabaseConstants.QUERY_TABLE_VIDEOS_SELECT_ALL_BY_CHANNEL_ID);
+        preparedStatement_getVideosByUploaderId = createPreparedStatement(YouTubeDatabaseConstants.QUERY_TABLE_VIDEOS_SELECT_ALL_BY_UPLOADER_ID);
+        //
+        // // Inserts / Adds
+        // Table: Authorization Tokens
+        preparedStatement_addAuthorizationToken = createPreparedStatement(YouTubeDatabaseConstants.QUERY_TABLE_AUTHORIZATION_TOKENS_INSERT);
+        // Table: Channels
+        preparedStatement_addChannel = createPreparedStatement(YouTubeDatabaseConstants.QUERY_TABLE_CHANNELS_INSERT);
+        // Table: Extra Files
+        preparedStatement_addExtraFile = createPreparedStatement(YouTubeDatabaseConstants.QUERY_TABLE_EXTRA_FILES_INSERT);
+        // Table: Media Files
+        preparedStatement_addMediaFile = createPreparedStatement(YouTubeDatabaseConstants.QUERY_TABLE_MEDIA_FILES_INSERT);
+        // Table: Playlists
+        preparedStatement_addPlaylist = createPreparedStatement(YouTubeDatabaseConstants.QUERY_TABLE_PLAYLISTS_INSERT);
+        // Table: Playlist Videos
+        preparedStatement_addPlaylistVideo = createPreparedStatement(YouTubeDatabaseConstants.QUERY_TABLE_PLAYLIST_VIDEOS_INSERT);
+        // Table: Requesters
+        preparedStatement_addRequester = createPreparedStatement(YouTubeDatabaseConstants.QUERY_TABLE_REQUESTERS_INSERT);
+        // Table: Uploaders
+        preparedStatement_addUploader = createPreparedStatement(YouTubeDatabaseConstants.QUERY_TABLE_UPLOADERS_INSERT);
+        // Table: Video Queue
+        preparedStatement_addQueuedVideo = createPreparedStatement(YouTubeDatabaseConstants.QUERY_TABLE_VIDEO_QUEUE_INSERT);
+        // Table: Videos
+        preparedStatement_addVideo = createPreparedStatement(YouTubeDatabaseConstants.QUERY_TABLE_VIDEOS_INSERT);
+        //
+        // // Updates / Sets
+        // Table: Authorization Tokens
+        preparedStatement_setAuthorizationTokenByToken = createPreparedStatement(YouTubeDatabaseConstants.QUERY_TABLE_AUTHORIZATION_TOKENS_UPDATE_BY_TOKEN);
+        preparedStatement_setAuthorizationTokenTimesUsedByToken = createPreparedStatement(YouTubeDatabaseConstants.QUERY_TABLE_AUTHORIZATION_TOKENS_UPDATE_USED_BY_TOKEN);
+        // Table: Channels
+        preparedStatement_setChannelByChannelId = createPreparedStatement(YouTubeDatabaseConstants.QUERY_TABLE_CHANNELS_UPDATE_BY_CHANNEL_ID);
+        // Table: Extra Files
+        preparedStatement_setExtraFileByVideoIdAndFile = createPreparedStatement(YouTubeDatabaseConstants.QUERY_TABLE_EXTRA_FILES_UPDATE_BY_VIDEO_ID_AND_FILE);
+        // Table: Media Files
+        preparedStatement_setMediaFileByVideoIdAndFile = createPreparedStatement(YouTubeDatabaseConstants.QUERY_TABLE_MEDIA_FILES_UPDATE_BY_VIDEO_ID_AND_FILE);
+        // Table: Playlists
+        preparedStatement_setPlaylistByPlaylistId = createPreparedStatement(YouTubeDatabaseConstants.QUERY_TABLE_PLAYLISTS_UPDATE_BY_PLAYLIST_ID);
+        // Table: Playlist Videos
+        preparedStatement_setPlaylistVideoByPlaylistIdAndVideoId = createPreparedStatement(YouTubeDatabaseConstants.QUERY_TABLE_PLAYLIST_VIDEOS_UPDATE_BY_PLAYLIST_ID_AND_VIDEO_ID);
+        // Table: Requesters
+        preparedStatement_setRequesterByRequesterId = createPreparedStatement(YouTubeDatabaseConstants.QUERY_TABLE_REQUESTERS_UPDATE_BY_REQUESTER_ID);
+        preparedStatement_setRequesterByTag = createPreparedStatement(YouTubeDatabaseConstants.QUERY_TABLE_REQUESTERS_UPDATE_BY_TAG);
+        // Table: Uploaders
+        preparedStatement_setUploaderByUploaderId = createPreparedStatement(YouTubeDatabaseConstants.QUERY_TABLE_UPLOADERS_UPDATE_BY_UPLOADER_ID);
+        // Table: Video Queue
+        preparedStatement_setQueuedVideoById = createPreparedStatement(YouTubeDatabaseConstants.QUERY_TABLE_VIDEO_QUEUE_UPDATE_BY_ID);
+        // Table: Videos
+        preparedStatement_setVideoByVideoId = createPreparedStatement(YouTubeDatabaseConstants.QUERY_TABLE_VIDEOS_UPDATE_BY_VIDEO_ID);
+        //
+        // // Deletes / Removes
+        // Table: Authorization Tokens
+        preparedStatement_removeAllAuthorizationTokens = createPreparedStatement(YouTubeDatabaseConstants.QUERY_TABLE_AUTHORIZATION_TOKENS_DELETE_ALL);
+        preparedStatement_removeAuthorizationTokenByToken = createPreparedStatement(YouTubeDatabaseConstants.QUERY_TABLE_AUTHORIZATION_TOKENS_DELETE_BY_TOKEN);
+        // Table: Channels
+        preparedStatement_removeAllChannels = createPreparedStatement(YouTubeDatabaseConstants.QUERY_TABLE_CHANNELS_DELETE_ALL);
+        preparedStatement_removeChannelByChannelId = createPreparedStatement(YouTubeDatabaseConstants.QUERY_TABLE_CHANNELS_DELETE_BY_CHANNEL_ID);
+        // Table: Extra Files
+        preparedStatement_removeAllExtraFiles = createPreparedStatement(YouTubeDatabaseConstants.QUERY_TABLE_EXTRA_FILES_DELETE_ALL);
+        preparedStatement_removeExtraFilesByVideoId = createPreparedStatement(YouTubeDatabaseConstants.QUERY_TABLE_EXTRA_FILES_DELETE_ALL_BY_VIDEO_ID);
+        preparedStatement_removeExtraFileByVideoIdAndFile = createPreparedStatement(YouTubeDatabaseConstants.QUERY_TABLE_EXTRA_FILES_DELETE_BY_VIDEO_ID_AND_FILE);
+        // Table: Media Files
+        preparedStatement_removeAllMediaFiles = createPreparedStatement(YouTubeDatabaseConstants.QUERY_TABLE_MEDIA_FILES_DELETE_ALL);
+        preparedStatement_removeMediaFilesByVideoId = createPreparedStatement(YouTubeDatabaseConstants.QUERY_TABLE_MEDIA_FILES_DELETE_ALL_BY_VIDEO_ID);
+        preparedStatement_removeMediaFileByVideoIdAndFile = createPreparedStatement(YouTubeDatabaseConstants.QUERY_TABLE_MEDIA_FILES_DELETE_BY_VIDEO_ID_AND_FILE);
+        // Table: Playlists
+        preparedStatement_removeAllPlaylists = createPreparedStatement(YouTubeDatabaseConstants.QUERY_TABLE_PLAYLISTS_DELETE_ALL);
+        preparedStatement_removePlaylistByPlaylistId = createPreparedStatement(YouTubeDatabaseConstants.QUERY_TABLE_PLAYLISTS_DELETE_BY_PLAYLIST_ID);
+        preparedStatement_removePlaylistsByUploaderId = createPreparedStatement(YouTubeDatabaseConstants.QUERY_TABLE_PLAYLISTS_DELETE_ALL_BY_UPLOADER_ID);
+        // Table: Playlist Videos
+        preparedStatement_removeAllPlaylistVideos = createPreparedStatement(YouTubeDatabaseConstants.QUERY_TABLE_PLAYLIST_VIDEOS_DELETE_ALL);
+        preparedStatement_removePlaylistVideosByPlaylistId = createPreparedStatement(YouTubeDatabaseConstants.QUERY_TABLE_PLAYLIST_VIDEOS_DELETE_ALL_BY_PLAYLIST_ID);
+        preparedStatement_removePlaylistVideosByVideoId = createPreparedStatement(YouTubeDatabaseConstants.QUERY_TABLE_PLAYLIST_VIDEOS_DELETE_ALL_BY_VIDEO_ID);
+        preparedStatement_removePlaylistVideoByPlaylistIdAndVideoId = createPreparedStatement(YouTubeDatabaseConstants.QUERY_TABLE_PLAYLIST_VIDEOS_DELETE_BY_PLAYLIST_ID_AND_VIDEO_ID);
+        // Table: Requesters
+        preparedStatement_removeAllRequesters = createPreparedStatement(YouTubeDatabaseConstants.QUERY_TABLE_REQUESTERS_DELETE_ALL);
+        preparedStatement_removeRequesterByRequesterId = createPreparedStatement(YouTubeDatabaseConstants.QUERY_TABLE_REQUESTERS_DELETE_BY_REQUESTER_ID);
+        preparedStatement_removeRequesterByTag = createPreparedStatement(YouTubeDatabaseConstants.QUERY_TABLE_REQUESTERS_DELETE_BY_TAG);
+        // Table: Uploaders
+        preparedStatement_removeAllUploaders = createPreparedStatement(YouTubeDatabaseConstants.QUERY_TABLE_UPLOADERS_DELETE_ALL);
+        preparedStatement_removeUploaderByUploaderId = createPreparedStatement(YouTubeDatabaseConstants.QUERY_TABLE_UPLOADERS_DELETE_BY_CHANNEL_ID);
+        // Table: Video Queue
+        preparedStatement_removeAllQueuedVideos = createPreparedStatement(YouTubeDatabaseConstants.QUERY_TABLE_VIDEO_QUEUE_DELETE_ALL);
+        preparedStatement_removeQueuedVideoById = createPreparedStatement(YouTubeDatabaseConstants.QUERY_TABLE_VIDEO_QUEUE_DELETE_BY_ID);
+        preparedStatement_removeQueuedVideosByVideoId = createPreparedStatement(YouTubeDatabaseConstants.QUERY_TABLE_VIDEO_QUEUE_DELETE_ALL_BY_VIDEO_ID);
+        preparedStatement_removeQueuedVideosByRequesterId = createPreparedStatement(YouTubeDatabaseConstants.QUERY_TABLE_VIDEO_QUEUE_DELETE_ALL_BY_REQUESTER_ID);
+        // Table: Videos
+        preparedStatement_removeAllVideos = createPreparedStatement(YouTubeDatabaseConstants.QUERY_TABLE_VIDEOS_DELETE_ALL);
+        preparedStatement_removeVideoByVideoId = createPreparedStatement(YouTubeDatabaseConstants.QUERY_TABLE_VIDEOS_DELETE_BY_VIDEO_ID);
+        preparedStatement_removeVideosByChannelId = createPreparedStatement(YouTubeDatabaseConstants.QUERY_TABLE_VIDEOS_DELETE_ALL_BY_CHANNEL_ID);
+        preparedStatement_removeVideosByUploaderId = createPreparedStatement(YouTubeDatabaseConstants.QUERY_TABLE_VIDEOS_DELETE_ALL_BY_UPLOADER_ID);
+        //
+        // //
+    }
+    
+    private void closeStatements() {
+        // // Selects / Gets
+        IOUtil.closeQuietly(preparedStatement_getLastInsertId);
+        // Table: Authorization Tokens
+        IOUtil.closeQuietly(preparedStatement_getAllAuthorizationTokens);
+        IOUtil.closeQuietly(preparedStatement_getAuthorizationTokenByToken);
+        // Table: Channels
+        IOUtil.closeQuietly(preparedStatement_getAllChannels);
+        IOUtil.closeQuietly(preparedStatement_getChannelByChannelId);
+        // Table: Extra Files
+        IOUtil.closeQuietly(preparedStatement_getAllExtraFiles);
+        IOUtil.closeQuietly(preparedStatement_getExtraFilesByVideoId);
+        IOUtil.closeQuietly(preparedStatement_getExtraFilesByFileType);
+        IOUtil.closeQuietly(preparedStatement_getExtraFileByVideoIdAndFile);
+        // Table: Media Files
+        IOUtil.closeQuietly(preparedStatement_getAllMediaFiles);
+        IOUtil.closeQuietly(preparedStatement_getMediaFilesByVideoId);
+        IOUtil.closeQuietly(preparedStatement_getMediaFilesByFileType);
+        IOUtil.closeQuietly(preparedStatement_getMediaFileByVideoIdAndFile);
+        // Table: Playlists
+        IOUtil.closeQuietly(preparedStatement_getAllPlaylists);
+        IOUtil.closeQuietly(preparedStatement_getPlaylistByPlaylistId);
+        IOUtil.closeQuietly(preparedStatement_getPlaylistsByUploaderId);
+        // Table: Playlist Videos
+        IOUtil.closeQuietly(preparedStatement_getAllPlaylistVideos);
+        IOUtil.closeQuietly(preparedStatement_getPlaylistVideosByVideoId);
+        IOUtil.closeQuietly(preparedStatement_getPlaylistVideosByPlaylistId);
+        IOUtil.closeQuietly(preparedStatement_getPlaylistVideoByPlaylistIdAndVideoId);
+        // Table: Requesters
+        IOUtil.closeQuietly(preparedStatement_getAllRequesters);
+        IOUtil.closeQuietly(preparedStatement_getRequesterByRequesterId);
+        IOUtil.closeQuietly(preparedStatement_getRequesterByTag);
+        // Table: Uploaders
+        IOUtil.closeQuietly(preparedStatement_getAllUploaders);
+        IOUtil.closeQuietly(preparedStatement_getUploaderByUploaderId);
+        // Table: Video Queue
+        IOUtil.closeQuietly(preparedStatement_getAllQueuedVideos);
+        IOUtil.closeQuietly(preparedStatement_getQueuedVideoById);
+        IOUtil.closeQuietly(preparedStatement_getQueuedVideosByVideoId);
+        IOUtil.closeQuietly(preparedStatement_getQueuedVideosByRequesterId);
+        IOUtil.closeQuietly(preparedStatement_getNextQueuedVideos);
+        IOUtil.closeQuietly(preparedStatement_getNextQueuedVideo);
+        // Table: Videos
+        IOUtil.closeQuietly(preparedStatement_getAllVideos);
+        IOUtil.closeQuietly(preparedStatement_getVideoByVideoId);
+        IOUtil.closeQuietly(preparedStatement_getVideosByChannelId);
+        IOUtil.closeQuietly(preparedStatement_getVideosByUploaderId);
+        //
+        // // Inserts / Adds
+        // Table: Authorization Tokens
+        IOUtil.closeQuietly(preparedStatement_addAuthorizationToken);
+        // Table: Channels
+        IOUtil.closeQuietly(preparedStatement_addChannel);
+        // Table: Extra Files
+        IOUtil.closeQuietly(preparedStatement_addExtraFile);
+        // Table: Media Files
+        IOUtil.closeQuietly(preparedStatement_addMediaFile);
+        // Table: Playlists
+        IOUtil.closeQuietly(preparedStatement_addPlaylist);
+        // Table: Playlist Videos
+        IOUtil.closeQuietly(preparedStatement_addPlaylistVideo);
+        // Table: Requesters
+        IOUtil.closeQuietly(preparedStatement_addRequester);
+        // Table: Uploaders
+        IOUtil.closeQuietly(preparedStatement_addUploader);
+        // Table: Video Queue
+        IOUtil.closeQuietly(preparedStatement_addQueuedVideo);
+        // Table: Videos
+        IOUtil.closeQuietly(preparedStatement_addVideo);
+        //
+        // // Updates / Sets
+        // Table: Authorization Tokens
+        IOUtil.closeQuietly(preparedStatement_setAuthorizationTokenByToken);
+        IOUtil.closeQuietly(preparedStatement_setAuthorizationTokenTimesUsedByToken);
+        // Table: Channels
+        IOUtil.closeQuietly(preparedStatement_setChannelByChannelId);
+        // Table: Extra Files
+        IOUtil.closeQuietly(preparedStatement_setExtraFileByVideoIdAndFile);
+        // Table: Media Files
+        IOUtil.closeQuietly(preparedStatement_setMediaFileByVideoIdAndFile);
+        // Table: Playlists
+        IOUtil.closeQuietly(preparedStatement_setPlaylistByPlaylistId);
+        // Table: Playlist Videos
+        IOUtil.closeQuietly(preparedStatement_setPlaylistVideoByPlaylistIdAndVideoId);
+        // Table: Requesters
+        IOUtil.closeQuietly(preparedStatement_setRequesterByRequesterId);
+        IOUtil.closeQuietly(preparedStatement_setRequesterByTag);
+        // Table: Uploaders
+        IOUtil.closeQuietly(preparedStatement_setUploaderByUploaderId);
+        // Table: Video Queue
+        IOUtil.closeQuietly(preparedStatement_setQueuedVideoById);
+        // Table: Videos
+        IOUtil.closeQuietly(preparedStatement_setVideoByVideoId);
+        //
+        // // Deletes / Removes
+        // Table: Authorization Tokens
+        IOUtil.closeQuietly(preparedStatement_removeAllAuthorizationTokens);
+        IOUtil.closeQuietly(preparedStatement_removeAuthorizationTokenByToken);
+        // Table: Channels
+        IOUtil.closeQuietly(preparedStatement_removeAllChannels);
+        IOUtil.closeQuietly(preparedStatement_removeChannelByChannelId);
+        // Table: Extra Files
+        IOUtil.closeQuietly(preparedStatement_removeAllExtraFiles);
+        IOUtil.closeQuietly(preparedStatement_removeExtraFilesByVideoId);
+        IOUtil.closeQuietly(preparedStatement_removeExtraFileByVideoIdAndFile);
+        // Table: Media Files
+        IOUtil.closeQuietly(preparedStatement_removeAllMediaFiles);
+        IOUtil.closeQuietly(preparedStatement_removeMediaFilesByVideoId);
+        IOUtil.closeQuietly(preparedStatement_removeMediaFileByVideoIdAndFile);
+        // Table: Playlists
+        IOUtil.closeQuietly(preparedStatement_removeAllPlaylists);
+        IOUtil.closeQuietly(preparedStatement_removePlaylistByPlaylistId);
+        IOUtil.closeQuietly(preparedStatement_removePlaylistsByUploaderId);
+        // Table: Playlist Videos
+        IOUtil.closeQuietly(preparedStatement_removeAllPlaylistVideos);
+        IOUtil.closeQuietly(preparedStatement_removePlaylistVideosByPlaylistId);
+        IOUtil.closeQuietly(preparedStatement_removePlaylistVideosByVideoId);
+        IOUtil.closeQuietly(preparedStatement_removePlaylistVideoByPlaylistIdAndVideoId);
+        // Table: Requesters
+        IOUtil.closeQuietly(preparedStatement_removeAllRequesters);
+        IOUtil.closeQuietly(preparedStatement_removeRequesterByRequesterId);
+        IOUtil.closeQuietly(preparedStatement_removeRequesterByTag);
+        // Table: Uploaders
+        IOUtil.closeQuietly(preparedStatement_removeAllUploaders);
+        IOUtil.closeQuietly(preparedStatement_removeUploaderByUploaderId);
+        // Table: Video Queue
+        IOUtil.closeQuietly(preparedStatement_removeAllQueuedVideos);
+        IOUtil.closeQuietly(preparedStatement_removeQueuedVideoById);
+        IOUtil.closeQuietly(preparedStatement_removeQueuedVideosByVideoId);
+        IOUtil.closeQuietly(preparedStatement_removeQueuedVideosByRequesterId);
+        // Table: Videos
+        IOUtil.closeQuietly(preparedStatement_removeAllVideos);
+        IOUtil.closeQuietly(preparedStatement_removeVideoByVideoId);
+        IOUtil.closeQuietly(preparedStatement_removeVideosByChannelId);
+        IOUtil.closeQuietly(preparedStatement_removeVideosByUploaderId);
+        //
+        // //
     }
     
     @Override
@@ -707,6 +1011,130 @@ public class YouTubeDatabase<C extends AbstractConnector> extends AbstractDataba
     @Override
     public String toString() {
         return "YouTubeDatabase{" + "connector=" + connector + '}';
+    }
+    
+    private static PreparedStatement createPreparedStatement(AbstractConnector connector, String sql) {
+        try {
+            return connector.prepareStatement(sql);
+        } catch (Exception ex) {
+            return null;
+        }
+    }
+    
+    private static boolean setPreparedStatement(PreparedStatement preparedStatement, Object... arguments) {
+        try {
+            int offset = 0;
+            for (int i = 0; i < arguments.length - offset; i++) {
+                final Object object = arguments[i + offset];
+                final int index = i + 1 + offset;
+                if (object == null) {
+                    //offset++;
+                    //preparedStatement.setNull(index, (Integer) arguments[i + offset + 1]);
+                    preparedStatement.setNull(index, Types.NULL);
+                } else if (object instanceof String) {
+                    preparedStatement.setString(index, (String) object);
+                } else if (object instanceof Integer) {
+                    preparedStatement.setInt(index, (Integer) object);
+                } else if (object instanceof Long) {
+                    preparedStatement.setLong(index, (Long) object);
+                } else if (object instanceof Boolean) {
+                    preparedStatement.setBoolean(index, (Boolean) object);
+                } else if (object instanceof Timestamp) {
+                    preparedStatement.setTimestamp(index, (Timestamp) object);
+                } else if (object instanceof Instant) {
+                    preparedStatement.setTimestamp(index, Timestamp.from((Instant) object));
+                } else {
+                    throw new IllegalArgumentException(String.format("The Class \"%s\" is not yet supported by \"setPreparedStatement\"!", object.getClass().getName()));
+                }
+            }
+            Logger.logDebug("setPreparedStatement:preparedStatement=" + preparedStatement); //TODO DEBUG Remove this!
+            return true;
+        } catch (Exception ex) {
+            Logger.handleError(ex);
+            return false;
+        }
+    }
+    
+    private <T extends DatabaseEntity<T, YouTubeDatabase<?>>> T setDatabase(T entity) {
+        return setDatabase(entity, this);
+    }
+    
+    private static <T extends DatabaseEntity<T, YouTubeDatabase<?>>> T setDatabase(T entity, YouTubeDatabase<?> database) {
+        return entity == null || database == null ? entity : entity.setDatabase(database);
+    }
+    
+    private static <R> R useResultSetAndClose(ToughSupplier<ResultSet> toughSupplier, ToughFunction<ResultSet, R> toughFunction) {
+        if (toughSupplier == null || toughFunction == null) {
+            return null;
+        }
+        final ResultSet resultSet = toughSupplier.getWithoutException();
+        if (resultSet == null || !Standard.silentError(resultSet::next)) {
+            return null;
+        }
+        final R r = toughFunction.applyWithoutException(resultSet);
+        Standard.silentError(resultSet::close);
+        return r;
+    }
+    
+    private static <R> List<R> resultSetToRs(ResultSet resultSet, ToughFunction<ResultSet, R> toughFunction) {
+        if (resultSet == null) {
+            return null; //TODO Hmm Should this be an empty list?
+        }
+        final List<R> rs = new ArrayList<>();
+        do {
+            final R r = resultSetToR(resultSet, toughFunction);
+            if (r != null) {
+                rs.add(r);
+            }
+        } while (Standard.silentError(resultSet::next));
+        return rs;
+    }
+    
+    private static <R> R resultSetToR(ResultSet resultSet, ToughFunction<ResultSet, R> toughFunction) {
+        if (resultSet == null) {
+            return null;
+        }
+        return toughFunction.applyWithoutException(resultSet);
+    }
+    
+    private static List<String> resultSetPlaylistIdsFromPlaylists(ResultSet resultSet) {
+        return resultSetToRs(resultSet, (resultSet_) -> resultSet_.getString(YouTubeDatabaseConstants.IDENTIFIER_TABLE_PLAYLIST_COLUMN_ID));
+    }
+    
+    private static List<String> resultSetVideoIdsFromVideos(ResultSet resultSet) {
+        return resultSetToRs(resultSet, (resultSet_) -> resultSet_.getString(YouTubeDatabaseConstants.IDENTIFIER_TABLE_VIDEO_COLUMN_ID));
+    }
+    
+    private static List<String> resultSetChannelIdsFromChannels(ResultSet resultSet) {
+        return resultSetToRs(resultSet, (resultSet_) -> resultSet_.getString(YouTubeDatabaseConstants.IDENTIFIER_TABLE_CHANNEL_COLUMN_ID));
+    }
+    
+    private static List<String> resultSetUploaderIdsFromUploaders(ResultSet resultSet) {
+        return resultSetToRs(resultSet, (resultSet_) -> resultSet_.getString(YouTubeDatabaseConstants.IDENTIFIER_TABLE_UPLOADER_COLUMN_ID));
+    }
+    
+    private static List<Integer> resultSetRequesterIdsFromRequesters(ResultSet resultSet) {
+        return resultSetToRs(resultSet, (resultSet_) -> resultSet_.getInt(YouTubeDatabaseConstants.IDENTIFIER_TABLE_REQUESTER_COLUMN_ID));
+    }
+    
+    private static List<String> resultSetVideoIdsFromQueuedVideos(ResultSet resultSet) {
+        return resultSetToRs(resultSet, (resultSet_) -> resultSet_.getString(YouTubeDatabaseConstants.IDENTIFIER_TABLE_VIDEO_QUEUE_COLUMN_VIDEO_ID));
+    }
+    
+    private static List<String> resultSetPlaylistIdsFromPlaylistVideos(ResultSet resultSet) {
+        return resultSetToRs(resultSet, (resultSet_) -> resultSet_.getString(YouTubeDatabaseConstants.IDENTIFIER_TABLE_PLAYLIST_VIDEOS_COLUMN_PLAYLIST_ID));
+    }
+    
+    private static List<String> resultSetVideoIdsFromPlaylistVideos(ResultSet resultSet) {
+        return resultSetToRs(resultSet, (resultSet_) -> resultSet_.getString(YouTubeDatabaseConstants.IDENTIFIER_TABLE_PLAYLIST_VIDEOS_COLUMN_VIDEO_ID));
+    }
+    
+    private static int resultSetToPlaylistIndex(ResultSet resultSet) {
+        return resultSetToR(resultSet, (resultSet_) -> resultSet_.getInt(YouTubeDatabaseConstants.IDENTIFIER_TABLE_PLAYLIST_VIDEOS_COLUMN_PLAYLIST_INDEX));
+    }
+    
+    protected static void createTables(YouTubeDatabase<?> database) {
+        //TODO Use the "database_create_tables.sql" to create (if not existing) tables...
     }
     
 }
