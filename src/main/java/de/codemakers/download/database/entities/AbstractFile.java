@@ -1,5 +1,5 @@
 /*
- *    Copyright 2019 - 2020 Paul Hagedorn (Panzer1119)
+ *    Copyright 2020 Paul Hagedorn (Panzer1119)
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -12,27 +12,35 @@
  *    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  *    See the License for the specific language governing permissions and
  *    limitations under the License.
- *
  */
 
 package de.codemakers.download.database.entities;
 
-import de.codemakers.download.database.AbstractDatabase;
+import de.codemakers.download.database.YouTubeDatabase;
 
-public abstract class AbstractFile<T extends AbstractFile, D extends AbstractDatabase> extends AbstractEntity<T, D> {
+import java.time.Instant;
+
+public abstract class AbstractFile<T extends AbstractFile> implements DatabaseEntity<T, YouTubeDatabase<?>> {
     
+    private transient YouTubeDatabase<?> database = null;
     protected String videoId;
     protected String file;
     protected String fileType;
+    protected Instant created;
     
     public AbstractFile() {
         this(null, null, null);
     }
     
     public AbstractFile(String videoId, String file, String fileType) {
+        this(videoId, file, fileType, Instant.now());
+    }
+    
+    public AbstractFile(String videoId, String file, String fileType, Instant created) {
         this.videoId = videoId;
         this.file = file;
         this.fileType = fileType;
+        this.created = created;
     }
     
     public String getVideoId() {
@@ -60,6 +68,31 @@ public abstract class AbstractFile<T extends AbstractFile, D extends AbstractDat
     public T setFileType(String fileType) {
         this.fileType = fileType;
         return (T) this;
+    }
+    
+    public Instant getCreated() {
+        return created;
+    }
+    
+    public T setCreated(Instant created) {
+        this.created = created;
+        return (T) this;
+    }
+    
+    @Override
+    public T setDatabase(YouTubeDatabase<?> database) {
+        this.database = database;
+        return (T) this;
+    }
+    
+    @Override
+    public YouTubeDatabase<?> getDatabase() {
+        return database;
+    }
+    
+    @Override
+    public String toString() {
+        return "AbstractFile{" + "database=" + database + ", videoId='" + videoId + '\'' + ", file='" + file + '\'' + ", fileType='" + fileType + '\'' + ", created=" + created + '}';
     }
     
 }
