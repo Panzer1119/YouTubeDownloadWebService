@@ -104,6 +104,8 @@ public class YouTubeDatabase<C extends AbstractConnector> extends AbstractDataba
     private transient PreparedStatement preparedStatement_addFileLog = null;
     // Table: File Media
     private transient PreparedStatement preparedStatement_addFileMedia = null;
+    // Table: Log
+    private transient PreparedStatement preparedStatement_addLog = null;
     // Table: Playlist
     private transient PreparedStatement preparedStatement_addPlaylist = null;
     // Table: Playlist Videos
