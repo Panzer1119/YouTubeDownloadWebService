@@ -45,7 +45,7 @@ public class YouTubeDownloadWebServiceController {
     @RequestMapping(value = "/requesters/byTag/{tag}", method = RequestMethod.GET)
     public String getRequesterByTag(@PathVariable(value = "tag") String tag, @RequestParam(value = "authToken") String authToken) {
         if (!isValidToken(authToken)) {
-            return String.format("Unauthorized"); //TODO How to return the right HttpStatus?
+            return String.format("Unauthorized authToken"); //TODO How to return the right HttpStatus?
         }
         useToken(authToken);
         //TODO Return jsonObject form of the Requester object
@@ -55,7 +55,7 @@ public class YouTubeDownloadWebServiceController {
     @RequestMapping(value = "/requesters/{requester_id}", method = RequestMethod.GET)
     public String getRequester(@PathVariable(value = "requester_id") int requesterId, @RequestParam(value = "authToken") String authToken) {
         if (!isValidToken(authToken)) {
-            return String.format("Unauthorized"); //TODO How to return the right HttpStatus?
+            return String.format("Unauthorized authToken"); //TODO How to return the right HttpStatus?
         }
         useToken(authToken);
         //TODO Return jsonObject form of the Requester object
@@ -65,7 +65,7 @@ public class YouTubeDownloadWebServiceController {
     @RequestMapping(value = "/request/{video_id}", method = RequestMethod.POST)
     public String request(@PathVariable(value = "video_id") String videoId, @RequestParam(value = "priority", defaultValue = "-1") int priority, @RequestParam(value = "requesterId", defaultValue = "-1") int requesterId, @RequestParam(value = "fileType", defaultValue = "B") String fileType, @RequestParam(value = "authToken") String authToken) {
         if (!isValidToken(authToken)) {
-            return String.format("Unauthorized"); //TODO How to return the right HttpStatus?
+            return String.format("Unauthorized authToken"); //TODO How to return the right HttpStatus?
         }
         //TODO Hmmm restrict priority to level of permission?
         final List<DatabaseQueuedYouTubeVideo> databaseQueuedYouTubeVideos = YouTubeDownloadWebService.useDatabaseOrNull((database) -> database.getQueuedVideosByVideoId(videoId));
@@ -127,7 +127,7 @@ public class YouTubeDownloadWebServiceController {
     @RequestMapping(value = "/generate/authorizationToken", method = RequestMethod.GET)
     public String generateAuthorizationToken(@RequestParam(value = "unlimited", defaultValue = "0") boolean unlimited, @RequestParam(value = "granting", defaultValue = "0") boolean granting, @RequestParam(value = "duration", defaultValue = "100000") long durationMillis, @RequestParam(value = "authToken") String authToken) {
         if (!isValidToken(authToken)) {
-            return String.format("Unauthorized"); //TODO How to return the right HttpStatus?
+            return String.format("Unauthorized authToken"); //TODO How to return the right HttpStatus?
         }
         final AuthorizationToken authorizationTokenMaster = getAuthorizationToken(authToken);
         if (authorizationTokenMaster == null) {

@@ -60,6 +60,12 @@ public class YouTubeDownloadWebService {
         return getDatabase();
     }
     
+    public static final YouTubeDatabase<MySQLConnector> connectToDatabase(String host, int port, String database, String username, byte[] password) {
+        setDatabase(new YouTubeDatabase<>(new MySQLConnector(host, port, database)));
+        getDatabase().start(username, password);
+        return getDatabase();
+    }
+    
     public static final <R> R useDatabaseOrNull(ToughFunction<YouTubeDatabase<MySQLConnector>, R> function) {
         return useDatabase(function, null);
     }

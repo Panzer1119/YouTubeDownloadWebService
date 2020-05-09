@@ -32,7 +32,11 @@ public class YouTubeDownloadWebServiceApplication {
         Logger.getDefaultAdvancedLeveledLogger().setMinimumLogLevel(LogLevel.FINE); //TODO DEBUG Remove this?
         final DefaultSettings settings = new DefaultSettings(DATABASE_FILE);
         settings.loadSettings();
-        YouTubeDownloadWebService.connectToDatabase(settings.getProperty("host"), settings.getProperty("database"), settings.getProperty("username"), settings.getProperty("password").getBytes()); //FIXME Change this?
+        if (settings.hasProperty("port")) {
+            YouTubeDownloadWebService.connectToDatabase(settings.getProperty("host"), Integer.parseInt(settings.getProperty("port")), settings.getProperty("database"), settings.getProperty("username"), settings.getProperty("password").getBytes()); //FIXME Change this?
+        } else {
+            YouTubeDownloadWebService.connectToDatabase(settings.getProperty("host"), settings.getProperty("database"), settings.getProperty("username"), settings.getProperty("password").getBytes()); //FIXME Change this?
+        }
         settings.clear();
         Logger.logDebug("YouTubeDownloadWebService.getDatabase()=" + YouTubeDownloadWebService.getDatabase()); //TODO DEBUG Remove this
         SpringApplication.run(YouTubeDownloadWebServiceApplication.class, args);
