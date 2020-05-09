@@ -673,7 +673,7 @@ public class YouTubeDatabase<C extends AbstractConnector> extends AbstractDataba
             if (!setPreparedStatement(preparedStatement_getTokenByToken, token)) {
                 return false;
             }
-            return useResultSetAndClose(preparedStatement_getTokenByToken::executeQuery, ResultSet::next);
+            return useResultSetAndClose(preparedStatement_getTokenByToken::executeQuery, YouTubeDatabase::resultSetHasNext, false);
         }
     }
     
@@ -686,7 +686,7 @@ public class YouTubeDatabase<C extends AbstractConnector> extends AbstractDataba
             if (!setPreparedStatement(preparedStatement_getChannelByChannelId, channelId)) {
                 return false;
             }
-            return useResultSetAndClose(preparedStatement_getChannelByChannelId::executeQuery, ResultSet::next);
+            return useResultSetAndClose(preparedStatement_getChannelByChannelId::executeQuery, YouTubeDatabase::resultSetHasNext, false);
         }
     }
     
@@ -699,7 +699,7 @@ public class YouTubeDatabase<C extends AbstractConnector> extends AbstractDataba
             if (!setPreparedStatement(preparedStatement_getUploaderByUploaderId, uploaderId)) {
                 return false;
             }
-            return useResultSetAndClose(preparedStatement_getUploaderByUploaderId::executeQuery, ResultSet::next);
+            return useResultSetAndClose(preparedStatement_getUploaderByUploaderId::executeQuery, YouTubeDatabase::resultSetHasNext, false);
         }
     }
     
@@ -712,7 +712,7 @@ public class YouTubeDatabase<C extends AbstractConnector> extends AbstractDataba
             if (!setPreparedStatement(preparedStatement_getRequesterByRequesterId, requesterId)) {
                 return false;
             }
-            return useResultSetAndClose(preparedStatement_getRequesterByRequesterId::executeQuery, ResultSet::next);
+            return useResultSetAndClose(preparedStatement_getRequesterByRequesterId::executeQuery, YouTubeDatabase::resultSetHasNext, false);
         }
     }
     @Override
@@ -724,7 +724,7 @@ public class YouTubeDatabase<C extends AbstractConnector> extends AbstractDataba
             if (!setPreparedStatement(preparedStatement_getRequesterByTag, tag)) {
                 return false;
             }
-            return useResultSetAndClose(preparedStatement_getRequesterByTag::executeQuery, ResultSet::next);
+            return useResultSetAndClose(preparedStatement_getRequesterByTag::executeQuery, YouTubeDatabase::resultSetHasNext, false);
         }
     }
     
@@ -737,7 +737,7 @@ public class YouTubeDatabase<C extends AbstractConnector> extends AbstractDataba
             if (!setPreparedStatement(preparedStatement_getQueuedVideoById, queuedVideoId)) {
                 return false;
             }
-            return useResultSetAndClose(preparedStatement_getQueuedVideoById::executeQuery, ResultSet::next);
+            return useResultSetAndClose(preparedStatement_getQueuedVideoById::executeQuery, YouTubeDatabase::resultSetHasNext, false);
         }
     }
     
@@ -750,7 +750,7 @@ public class YouTubeDatabase<C extends AbstractConnector> extends AbstractDataba
             if (!setPreparedStatement(preparedStatement_getVideoByVideoId, videoId)) {
                 return false;
             }
-            return useResultSetAndClose(preparedStatement_getVideoByVideoId::executeQuery, ResultSet::next);
+            return useResultSetAndClose(preparedStatement_getVideoByVideoId::executeQuery, YouTubeDatabase::resultSetHasNext, false);
         }
     }
     
@@ -763,7 +763,7 @@ public class YouTubeDatabase<C extends AbstractConnector> extends AbstractDataba
             if (!setPreparedStatement(preparedStatement_getPlaylistByPlaylistId, playlistId)) {
                 return false;
             }
-            return useResultSetAndClose(preparedStatement_getPlaylistByPlaylistId::executeQuery, ResultSet::next);
+            return useResultSetAndClose(preparedStatement_getPlaylistByPlaylistId::executeQuery, YouTubeDatabase::resultSetHasNext, false);
         }
     }
     
@@ -912,7 +912,7 @@ public class YouTubeDatabase<C extends AbstractConnector> extends AbstractDataba
             if (!setPreparedStatement(preparedStatement_getPlaylistVideoByPlaylistIdAndVideoId, playlistId, videoId)) {
                 return false;
             }
-            return useResultSetAndClose(preparedStatement_getPlaylistVideoByPlaylistIdAndVideoId::executeQuery, ResultSet::next);
+            return useResultSetAndClose(preparedStatement_getPlaylistVideoByPlaylistIdAndVideoId::executeQuery, YouTubeDatabase::resultSetHasNext, false);
         }
     }
     
@@ -1889,12 +1889,16 @@ public class YouTubeDatabase<C extends AbstractConnector> extends AbstractDataba
     }
     
     private static <R> R useResultSetAndClose(ToughSupplier<ResultSet> toughSupplier, ToughFunction<ResultSet, R> toughFunction) {
+        return useResultSetAndClose(toughSupplier, toughFunction, null);
+    }
+    
+    private static <R> R useResultSetAndClose(ToughSupplier<ResultSet> toughSupplier, ToughFunction<ResultSet, R> toughFunction, R defaultValue) {
         if (toughSupplier == null || toughFunction == null) {
-            return null;
+            return defaultValue;
         }
         final ResultSet resultSet = toughSupplier.getWithoutException();
         if (resultSet == null || !Standard.silentError(resultSet::next)) {
-            return null;
+            return defaultValue;
         }
         final R r = toughFunction.applyWithoutException(resultSet);
         Standard.silentError(resultSet::close);
@@ -1964,6 +1968,10 @@ public class YouTubeDatabase<C extends AbstractConnector> extends AbstractDataba
     
     private static int resultSetToPlaylistCount(ResultSet resultSet) {
         return resultSetToR(resultSet, (resultSet_) -> resultSet_.getInt(1));
+    }
+    
+    private static boolean resultSetHasNext(ResultSet resultSet) {
+        return resultSet != null/* && Standard.silentError(resultSet::next)*/;
     }
     
     private static AuthorizationToken resultSetToAuthorizationToken(ResultSet resultSet) {

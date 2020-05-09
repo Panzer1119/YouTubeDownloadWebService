@@ -44,9 +44,10 @@ import java.util.List;
 public class YouTubeDownloadWebServiceController {
     
     @RequestMapping(value = "/requesters/byTag/{tag}", method = RequestMethod.GET)
-    public String getRequesterByTag(@PathVariable(value = "tag") String tag, @RequestParam(value = "authToken") String authToken) {
+    public String getRequesterByTag(ServerHttpResponse serverHttpResponse, @PathVariable(value = "tag") String tag, @RequestParam(value = "authToken") String authToken) {
         //if (!isValidToken(authToken)) {
         if (!useToken(authToken)) {
+            serverHttpResponse.setStatusCode(HttpStatus.UNAUTHORIZED);
             return String.format("Unauthorized authToken"); //TODO How to return the right HttpStatus?
         }
         //useToken(authToken);
@@ -180,17 +181,19 @@ public class YouTubeDownloadWebServiceController {
     // NEW ENDPOINTS
     
     @RequestMapping(value = "/requesters/byTag/{tag}", method = RequestMethod.POST)
-    public JsonObject addRequesterByTag(@PathVariable(value = "tag") String tag, @RequestParam(value = "name", defaultValue = "") String name, @RequestParam(value = AbstractToken.KEY_TOKEN) String token) {
+    public String addRequesterByTag(ServerHttpResponse serverHttpResponse, @PathVariable(value = "tag") String tag, @RequestParam(value = "name", defaultValue = "") String name, @RequestParam(value = AbstractToken.KEY_TOKEN) String token) {
         if (!useToken(token)) {
+            serverHttpResponse.setStatusCode(HttpStatus.UNAUTHORIZED);
             return null; //TODO How to return the right HttpStatus?
         }
+        System.out.println("checking for: " + tag);
         return YouTubeDownloadWebService.useDatabaseOrNull((database) -> {
             if (database.hasRequester(tag)) {
-                return database.getRequesterByTag(tag).toJsonObject();
+                return database.getRequesterByTag(tag).toJsonObject().toString();
             }
             final DatabaseRequester databaseRequester = new DatabaseRequester(-2, tag, name.isEmpty() ? tag : name);
             database.addRequester(databaseRequester);
-            return databaseRequester.toJsonObject();
+            return databaseRequester.toJsonObject().toString();
         });
     }
     
