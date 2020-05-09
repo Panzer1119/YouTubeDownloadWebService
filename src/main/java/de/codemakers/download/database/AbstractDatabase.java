@@ -85,8 +85,6 @@ public abstract class AbstractDatabase<T extends AbstractDatabase, C extends Abs
     
     public abstract List<String> getVideoIdsByUploaderId(String uploaderId);
     
-    public abstract int getVideoCountByPlaylistId(String playlistId);
-    
     public abstract int getVideoCountByChannelId(String channelId);
     
     public abstract int getVideoCountByUploaderId(String uploaderId);
@@ -114,6 +112,10 @@ public abstract class AbstractDatabase<T extends AbstractDatabase, C extends Abs
     public abstract int getPlaylistCountByUploaderId(String uploaderId);
     
     public abstract int getIndexInPlaylist(String playlistId, String videoId);
+    
+    public abstract int getVideoCountByPlaylistId(String playlistId);
+    
+    public abstract int getPlaylistCountByVideoId(String playlistId);
     
     public abstract boolean uploaderCreatedPlaylist(String uploaderId, String playlistId);
     

@@ -226,6 +226,10 @@ public class YouTubeDatabaseConstants {
      * 1. Argument: Uploader ID
      */
     public static final String QUERY_TABLE_PLAYLIST_SELECT_ALL_UPLOADER_ID = String.format("SELECT * FROM %s WHERE %s = ?;", IDENTIFIER_TABLE_PLAYLIST, IDENTIFIER_TABLE_PLAYLIST_COLUMN_UPLOADER_ID);
+    /**
+     * 1. Argument: Uploader ID
+     */
+    public static final String QUERY_TABLE_PLAYLIST_COUNT_BY_UPLOADER_ID = String.format("SELECT COUNT(*) FROM %s WHERE %s = ?;", IDENTIFIER_TABLE_PLAYLIST, IDENTIFIER_TABLE_PLAYLIST_COLUMN_UPLOADER_ID);
     // Table: Playlist Videos
     /**
      * No arguments
@@ -245,6 +249,14 @@ public class YouTubeDatabaseConstants {
      * 2. Argument: Video ID
      */
     public static final String QUERY_TABLE_PLAYLIST_VIDEOS_SELECT_BY_PLAYLIST_ID_AND_VIDEO_ID = String.format("SELECT * FROM %s WHERE %s = ? AND %s = ?;", IDENTIFIER_TABLE_PLAYLIST_VIDEOS, IDENTIFIER_TABLE_PLAYLIST_VIDEOS_COLUMN_PLAYLIST_ID, IDENTIFIER_TABLE_PLAYLIST_VIDEOS_COLUMN_VIDEO_ID);
+    /**
+     * 1. Argument: Playlist ID
+     */
+    public static final String QUERY_TABLE_PLAYLIST_VIDEOS_COUNT_BY_PLAYLIST_ID = String.format("SELECT COUNT(*) FROM %s WHERE %s = ?;", IDENTIFIER_TABLE_PLAYLIST_VIDEOS, IDENTIFIER_TABLE_PLAYLIST_VIDEOS_COLUMN_PLAYLIST_ID);
+    /**
+     * 1. Argument: Video ID
+     */
+    public static final String QUERY_TABLE_PLAYLIST_VIDEOS_COUNT_BY_VIDEO_ID = String.format("SELECT COUNT(*) FROM %s WHERE %s = ?;", IDENTIFIER_TABLE_PLAYLIST_VIDEOS, IDENTIFIER_TABLE_PLAYLIST_VIDEOS_COLUMN_VIDEO_ID);
     // Table: Requester
     /**
      * No arguments
@@ -293,6 +305,14 @@ public class YouTubeDatabaseConstants {
      * 1. Argument: Uploader ID
      */
     public static final String QUERY_TABLE_VIDEO_SELECT_ALL_BY_UPLOADER_ID = String.format("SELECT * FROM %s WHERE %s = ?;", IDENTIFIER_TABLE_VIDEO, IDENTIFIER_TABLE_VIDEO_COLUMN_UPLOADER_ID);
+    /**
+     * 1. Argument: Channel ID
+     */
+    public static final String QUERY_TABLE_VIDEO_COUNT_BY_CHANNEL_ID = String.format("SELECT COUNT(*) FROM %s WHERE %s = ?;", IDENTIFIER_TABLE_VIDEO, IDENTIFIER_TABLE_VIDEO_COLUMN_CHANNEL_ID);
+    /**
+     * 1. Argument: Uploader ID
+     */
+    public static final String QUERY_TABLE_VIDEO_COUNT_BY_UPLOADER_ID = String.format("SELECT COUNT(*) FROM %s WHERE %s = ?;", IDENTIFIER_TABLE_VIDEO, IDENTIFIER_TABLE_VIDEO_COLUMN_UPLOADER_ID);
     // Table: Video Logs
     /**
      * No arguments
@@ -427,6 +447,8 @@ public class YouTubeDatabaseConstants {
      * 1. Argument: Tag
      * <br>
      * 2. Argument: Name
+     * <br>
+     * 3. Argument: Created
      */
     public static final String QUERY_TABLE_REQUESTER_INSERT = String.format("INSERT INTO %s (%s, %s, %s) VALUES (?, ?, ?);", IDENTIFIER_TABLE_REQUESTER, IDENTIFIER_TABLE_REQUESTER_COLUMN_TAG, IDENTIFIER_TABLE_REQUESTER_COLUMN_NAME, IDENTIFIER_TABLE_REQUESTER_COLUMN_CREATED);
     // Table: Token

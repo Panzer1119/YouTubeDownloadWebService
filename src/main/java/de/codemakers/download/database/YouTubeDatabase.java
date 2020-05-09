@@ -67,11 +67,14 @@ public class YouTubeDatabase<C extends AbstractConnector> extends AbstractDataba
     private transient PreparedStatement preparedStatement_getAllPlaylists = null;
     private transient PreparedStatement preparedStatement_getPlaylistByPlaylistId = null;
     private transient PreparedStatement preparedStatement_getPlaylistsByUploaderId = null;
+    private transient PreparedStatement preparedStatement_getPlaylistCountByUploaderId = null;
     // Table: Playlist Videos
     private transient PreparedStatement preparedStatement_getAllPlaylistVideos = null;
     private transient PreparedStatement preparedStatement_getPlaylistVideosByVideoId = null;
     private transient PreparedStatement preparedStatement_getPlaylistVideosByPlaylistId = null;
     private transient PreparedStatement preparedStatement_getPlaylistVideoByPlaylistIdAndVideoId = null;
+    private transient PreparedStatement preparedStatement_getVideoCountByPlaylistId = null;
+    private transient PreparedStatement preparedStatement_getPlaylistCountByVideoId = null;
     // Table: Requester
     private transient PreparedStatement preparedStatement_getAllRequesters = null;
     private transient PreparedStatement preparedStatement_getRequesterByRequesterId = null;
@@ -87,6 +90,8 @@ public class YouTubeDatabase<C extends AbstractConnector> extends AbstractDataba
     private transient PreparedStatement preparedStatement_getVideoByVideoId = null;
     private transient PreparedStatement preparedStatement_getVideosByChannelId = null;
     private transient PreparedStatement preparedStatement_getVideosByUploaderId = null;
+    private transient PreparedStatement preparedStatement_getVideoCountByChannelId = null;
+    private transient PreparedStatement preparedStatement_getVideoCountByUploaderId = null;
     // Table: Video Logs
     private transient PreparedStatement preparedStatement_getAllVideoLogs = null;
     private transient PreparedStatement preparedStatement_getVideoLogsByVideoId = null;
@@ -280,11 +285,14 @@ public class YouTubeDatabase<C extends AbstractConnector> extends AbstractDataba
         preparedStatement_getAllPlaylists = createPreparedStatement(YouTubeDatabaseConstants.QUERY_TABLE_PLAYLIST_SELECT_ALL);
         preparedStatement_getPlaylistByPlaylistId = createPreparedStatement(YouTubeDatabaseConstants.QUERY_TABLE_PLAYLIST_SELECT_BY_PLAYLIST_ID);
         preparedStatement_getPlaylistsByUploaderId = createPreparedStatement(YouTubeDatabaseConstants.QUERY_TABLE_PLAYLIST_SELECT_ALL_UPLOADER_ID);
+        preparedStatement_getPlaylistCountByUploaderId = createPreparedStatement(YouTubeDatabaseConstants.QUERY_TABLE_PLAYLIST_COUNT_BY_UPLOADER_ID);
         // Table: Playlist Videos
         preparedStatement_getAllPlaylistVideos = createPreparedStatement(YouTubeDatabaseConstants.QUERY_TABLE_PLAYLIST_VIDEOS_SELECT_ALL);
         preparedStatement_getPlaylistVideosByVideoId = createPreparedStatement(YouTubeDatabaseConstants.QUERY_TABLE_PLAYLIST_VIDEOS_SELECT_ALL_BY_VIDEO_ID);
         preparedStatement_getPlaylistVideosByPlaylistId = createPreparedStatement(YouTubeDatabaseConstants.QUERY_TABLE_PLAYLIST_VIDEOS_SELECT_ALL_BY_PLAYLIST_ID);
         preparedStatement_getPlaylistVideoByPlaylistIdAndVideoId = createPreparedStatement(YouTubeDatabaseConstants.QUERY_TABLE_PLAYLIST_VIDEOS_SELECT_BY_PLAYLIST_ID_AND_VIDEO_ID);
+        preparedStatement_getVideoCountByPlaylistId = createPreparedStatement(YouTubeDatabaseConstants.QUERY_TABLE_PLAYLIST_VIDEOS_COUNT_BY_PLAYLIST_ID);
+        preparedStatement_getPlaylistCountByVideoId = createPreparedStatement(YouTubeDatabaseConstants.QUERY_TABLE_PLAYLIST_VIDEOS_COUNT_BY_VIDEO_ID);
         // Table: Requester
         preparedStatement_getAllRequesters = createPreparedStatement(YouTubeDatabaseConstants.QUERY_TABLE_REQUESTER_SELECT_ALL);
         preparedStatement_getRequesterByRequesterId = createPreparedStatement(YouTubeDatabaseConstants.QUERY_TABLE_REQUESTER_SELECT_BY_REQUESTER_ID);
@@ -300,6 +308,8 @@ public class YouTubeDatabase<C extends AbstractConnector> extends AbstractDataba
         preparedStatement_getVideoByVideoId = createPreparedStatement(YouTubeDatabaseConstants.QUERY_TABLE_VIDEO_SELECT_BY_VIDEO_ID);
         preparedStatement_getVideosByChannelId = createPreparedStatement(YouTubeDatabaseConstants.QUERY_TABLE_VIDEO_SELECT_ALL_BY_CHANNEL_ID);
         preparedStatement_getVideosByUploaderId = createPreparedStatement(YouTubeDatabaseConstants.QUERY_TABLE_VIDEO_SELECT_ALL_BY_UPLOADER_ID);
+        preparedStatement_getVideoCountByChannelId = createPreparedStatement(YouTubeDatabaseConstants.QUERY_TABLE_VIDEO_COUNT_BY_CHANNEL_ID);
+        preparedStatement_getVideoCountByUploaderId = createPreparedStatement(YouTubeDatabaseConstants.QUERY_TABLE_VIDEO_COUNT_BY_UPLOADER_ID);
         // Table: Video Logs
         preparedStatement_getAllVideoLogs = createPreparedStatement(YouTubeDatabaseConstants.QUERY_TABLE_VIDEO_LOGS_SELECT_ALL);
         preparedStatement_getVideoLogsByVideoId = createPreparedStatement(YouTubeDatabaseConstants.QUERY_TABLE_VIDEO_LOGS_SELECT_ALL_BY_VIDEO_ID);
@@ -456,11 +466,14 @@ public class YouTubeDatabase<C extends AbstractConnector> extends AbstractDataba
         IOUtil.closeQuietly(preparedStatement_getAllPlaylists);
         IOUtil.closeQuietly(preparedStatement_getPlaylistByPlaylistId);
         IOUtil.closeQuietly(preparedStatement_getPlaylistsByUploaderId);
+        IOUtil.closeQuietly(preparedStatement_getPlaylistCountByUploaderId);
         // Table: Playlist Videos
         IOUtil.closeQuietly(preparedStatement_getAllPlaylistVideos);
         IOUtil.closeQuietly(preparedStatement_getPlaylistVideosByVideoId);
         IOUtil.closeQuietly(preparedStatement_getPlaylistVideosByPlaylistId);
         IOUtil.closeQuietly(preparedStatement_getPlaylistVideoByPlaylistIdAndVideoId);
+        IOUtil.closeQuietly(preparedStatement_getVideoCountByPlaylistId);
+        IOUtil.closeQuietly(preparedStatement_getPlaylistCountByVideoId);
         // Table: Requester
         IOUtil.closeQuietly(preparedStatement_getAllRequesters);
         IOUtil.closeQuietly(preparedStatement_getRequesterByRequesterId);
@@ -476,6 +489,8 @@ public class YouTubeDatabase<C extends AbstractConnector> extends AbstractDataba
         IOUtil.closeQuietly(preparedStatement_getVideoByVideoId);
         IOUtil.closeQuietly(preparedStatement_getVideosByChannelId);
         IOUtil.closeQuietly(preparedStatement_getVideosByUploaderId);
+        IOUtil.closeQuietly(preparedStatement_getVideoCountByChannelId);
+        IOUtil.closeQuietly(preparedStatement_getVideoCountByUploaderId);
         // Table: Video Logs
         IOUtil.closeQuietly(preparedStatement_getAllVideoLogs);
         IOUtil.closeQuietly(preparedStatement_getVideoLogsByVideoId);
@@ -839,18 +854,29 @@ public class YouTubeDatabase<C extends AbstractConnector> extends AbstractDataba
     }
     
     @Override
-    public int getVideoCountByPlaylistId(String playlistId) {
-        throw new NotYetImplementedRuntimeException(); //TODO
-    }
-    
-    @Override
     public int getVideoCountByChannelId(String channelId) {
-        throw new NotYetImplementedRuntimeException(); //TODO
+        if (!isConnected() || channelId == null || channelId.isEmpty()) {
+            return -1;
+        }
+        synchronized (preparedStatement_getVideoCountByChannelId) {
+            if (!setPreparedStatement(preparedStatement_getVideoCountByChannelId, channelId)) {
+                return -1;
+            }
+            return useResultSetAndClose(preparedStatement_getVideoCountByChannelId::executeQuery, YouTubeDatabase::resultSetToVideoCount);
+        }
     }
     
     @Override
     public int getVideoCountByUploaderId(String uploaderId) {
-        throw new NotYetImplementedRuntimeException(); //TODO
+        if (!isConnected() || uploaderId == null || uploaderId.isEmpty()) {
+            return -1;
+        }
+        synchronized (preparedStatement_getVideoCountByUploaderId) {
+            if (!setPreparedStatement(preparedStatement_getVideoCountByUploaderId, uploaderId)) {
+                return -1;
+            }
+            return useResultSetAndClose(preparedStatement_getVideoCountByUploaderId::executeQuery, YouTubeDatabase::resultSetToVideoCount);
+        }
     }
     
     @Override
@@ -957,7 +983,7 @@ public class YouTubeDatabase<C extends AbstractConnector> extends AbstractDataba
             if (!setPreparedStatement(preparedStatement_getPlaylistVideosByVideoId, videoId)) {
                 return null;
             }
-            return useResultSetAndClose(preparedStatement_getPlaylistVideosByVideoId::executeQuery, de.codemakers.download.databaseOLD.YouTubeDatabase::resultSetPlaylistIdsFromPlaylistVideos);
+            return useResultSetAndClose(preparedStatement_getPlaylistVideosByVideoId::executeQuery, YouTubeDatabase::resultSetPlaylistIdsFromPlaylistVideos);
         }
     }
     
@@ -976,7 +1002,15 @@ public class YouTubeDatabase<C extends AbstractConnector> extends AbstractDataba
     
     @Override
     public int getPlaylistCountByUploaderId(String uploaderId) {
-        throw new NotYetImplementedRuntimeException(); //TODO
+        if (!isConnected() || uploaderId == null || uploaderId.isEmpty()) {
+            return -1;
+        }
+        synchronized (preparedStatement_getPlaylistCountByUploaderId) {
+            if (!setPreparedStatement(preparedStatement_getPlaylistCountByUploaderId, uploaderId)) {
+                return -1;
+            }
+            return useResultSetAndClose(preparedStatement_getPlaylistCountByUploaderId::executeQuery, YouTubeDatabase::resultSetToPlaylistCount);
+        }
     }
     
     @Override
@@ -989,6 +1023,32 @@ public class YouTubeDatabase<C extends AbstractConnector> extends AbstractDataba
                 return -1;
             }
             return useResultSetAndClose(preparedStatement_getPlaylistVideoByPlaylistIdAndVideoId::executeQuery, YouTubeDatabase::resultSetToPlaylistIndex);
+        }
+    }
+    
+    @Override
+    public int getVideoCountByPlaylistId(String playlistId) {
+        if (!isConnected() || playlistId == null || playlistId.isEmpty()) {
+            return -1;
+        }
+        synchronized (preparedStatement_getVideoCountByPlaylistId) {
+            if (!setPreparedStatement(preparedStatement_getVideoCountByPlaylistId, playlistId)) {
+                return -1;
+            }
+            return useResultSetAndClose(preparedStatement_getVideoCountByPlaylistId::executeQuery, YouTubeDatabase::resultSetToVideoCount);
+        }
+    }
+    
+    @Override
+    public int getPlaylistCountByVideoId(String videoId) {
+        if (!isConnected() || videoId == null || videoId.isEmpty()) {
+            return -1;
+        }
+        synchronized (preparedStatement_getPlaylistCountByVideoId) {
+            if (!setPreparedStatement(preparedStatement_getPlaylistCountByVideoId, videoId)) {
+                return -1;
+            }
+            return useResultSetAndClose(preparedStatement_getPlaylistCountByVideoId::executeQuery, YouTubeDatabase::resultSetToPlaylistCount);
         }
     }
     
@@ -1482,7 +1542,7 @@ public class YouTubeDatabase<C extends AbstractConnector> extends AbstractDataba
             return false;
         }
         synchronized (preparedStatement_setTokenByToken) {
-            if (!setPreparedStatement(preparedStatement_setTokenByToken, authorizationToken.getToken(), authorizationToken.getLevel().name(), authorizationToken.getCreated().toEpochMilli(), authorizationToken.getExpiration() == null ? 0 : authorizationToken.getExpiration().toEpochMilli(), authorizationToken.getUsed(), token)) {
+            if (!setPreparedStatement(preparedStatement_setTokenByToken, authorizationToken.getToken(), authorizationToken.getLevel().name(), authorizationToken.getCreated().toEpochMilli(), authorizationToken.getExpiration() == null ? 0 : authorizationToken.getExpiration().toEpochMilli(), authorizationToken.getTimesUsed(), token)) {
                 return false;
             }
             return Standard.silentError(() -> preparedStatement_setTokenByToken.executeUpdate()) > 0;
@@ -1871,41 +1931,13 @@ public class YouTubeDatabase<C extends AbstractConnector> extends AbstractDataba
         return resultSetToR(resultSet, (resultSet_) -> resultSet_.getInt(YouTubeDatabaseConstants.IDENTIFIER_TABLE_PLAYLIST_VIDEOS_COLUMN_PLAYLIST_INDEX));
     }
     
+    private static int resultSetToVideoCount(ResultSet resultSet) {
+        return resultSetToR(resultSet, (resultSet_) -> resultSet_.getInt(1));
+    }
     
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
+    private static int resultSetToPlaylistCount(ResultSet resultSet) {
+        return resultSetToR(resultSet, (resultSet_) -> resultSet_.getInt(1));
+    }
     
     private static AuthorizationToken resultSetToAuthorizationToken(ResultSet resultSet) {
         if (resultSet == null) {
