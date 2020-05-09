@@ -35,6 +35,8 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
 
 public class YouTubeDatabase<C extends AbstractConnector> extends AbstractDatabase<YouTubeDatabase, C, DatabaseYouTubeVideo, DatabaseYouTubePlaylist, DatabaseYouTubeChannel, DatabaseYouTubeUploader, DatabaseMediaFile, DatabaseExtraFile, DatabaseRequester, DatabaseQueuedYouTubeVideo> {
     
@@ -603,488 +605,1145 @@ public class YouTubeDatabase<C extends AbstractConnector> extends AbstractDataba
     }
     
     @Override
-    public int getLastInsertId() {
-        throw new NotYetImplementedRuntimeException();
+    public int getLastInsertId() { //TODO Test this
+        if (!isConnected()) {
+            return -1;
+        }
+        synchronized (preparedStatement_getLastInsertId) {
+            return useResultSetAndClose(preparedStatement_getLastInsertId::executeQuery, (resultSet) -> resultSet.getInt(1));
+        }
     }
     
     @Override
     public List<AuthorizationToken> getAllAuthorizationTokens() {
-        throw new NotYetImplementedRuntimeException();
+        if (!isConnected()) {
+            return null;
+        }
+        synchronized (preparedStatement_getAllTokens) {
+            return useResultSetAndClose(preparedStatement_getAllTokens::executeQuery, YouTubeDatabase::resultSetToAuthorizationTokens);
+        }
     }
     
     @Override
     public AuthorizationToken getAuthorizationTokenByToken(String token) {
-        throw new NotYetImplementedRuntimeException();
+        if (!isConnected() || token == null || token.isEmpty()) {
+            return null;
+        }
+        synchronized (preparedStatement_getTokenByToken) {
+            if (!setPreparedStatement(preparedStatement_getTokenByToken, token)) {
+                return null;
+            }
+            return useResultSetAndClose(preparedStatement_getTokenByToken::executeQuery, YouTubeDatabase::resultSetToAuthorizationToken);
+        }
     }
     
     @Override
     public boolean hasAuthorizationToken(String token) {
-        throw new NotYetImplementedRuntimeException();
+        if (!isConnected() || token == null || token.isEmpty()) {
+            return false;
+        }
+        synchronized (preparedStatement_getTokenByToken) {
+            if (!setPreparedStatement(preparedStatement_getTokenByToken, token)) {
+                return false;
+            }
+            return useResultSetAndClose(preparedStatement_getTokenByToken::executeQuery, ResultSet::next);
+        }
     }
     
     @Override
     public boolean hasChannel(String channelId) {
-        throw new NotYetImplementedRuntimeException();
+        if (!isConnected() || channelId == null || channelId.isEmpty()) {
+            return false;
+        }
+        synchronized (preparedStatement_getChannelByChannelId) {
+            if (!setPreparedStatement(preparedStatement_getChannelByChannelId, channelId)) {
+                return false;
+            }
+            return useResultSetAndClose(preparedStatement_getChannelByChannelId::executeQuery, ResultSet::next);
+        }
     }
     
     @Override
     public boolean hasUploader(String uploaderId) {
-        throw new NotYetImplementedRuntimeException();
+        if (!isConnected() || uploaderId == null || uploaderId.isEmpty()) {
+            return false;
+        }
+        synchronized (preparedStatement_getUploaderByUploaderId) {
+            if (!setPreparedStatement(preparedStatement_getUploaderByUploaderId, uploaderId)) {
+                return false;
+            }
+            return useResultSetAndClose(preparedStatement_getUploaderByUploaderId::executeQuery, ResultSet::next);
+        }
     }
     
     @Override
     public boolean hasRequester(int requesterId) {
-        throw new NotYetImplementedRuntimeException();
+        if (!isConnected() || requesterId < -1) {
+            return false;
+        }
+        synchronized (preparedStatement_getRequesterByRequesterId) {
+            if (!setPreparedStatement(preparedStatement_getRequesterByRequesterId, requesterId)) {
+                return false;
+            }
+            return useResultSetAndClose(preparedStatement_getRequesterByRequesterId::executeQuery, ResultSet::next);
+        }
     }
     
     @Override
     public boolean hasQueuedVideo(int queuedVideoId) {
-        throw new NotYetImplementedRuntimeException();
+        if (!isConnected() || queuedVideoId < 0) {
+            return false;
+        }
+        synchronized (preparedStatement_getQueuedVideoById) {
+            if (!setPreparedStatement(preparedStatement_getQueuedVideoById, queuedVideoId)) {
+                return false;
+            }
+            return useResultSetAndClose(preparedStatement_getQueuedVideoById::executeQuery, ResultSet::next);
+        }
     }
     
     @Override
     public boolean hasVideo(String videoId) {
-        throw new NotYetImplementedRuntimeException();
+        if (!isConnected() || videoId == null || videoId.isEmpty()) {
+            return false;
+        }
+        synchronized (preparedStatement_getVideoByVideoId) {
+            if (!setPreparedStatement(preparedStatement_getVideoByVideoId, videoId)) {
+                return false;
+            }
+            return useResultSetAndClose(preparedStatement_getVideoByVideoId::executeQuery, ResultSet::next);
+        }
     }
     
     @Override
     public boolean hasPlaylist(String playlistId) {
-        throw new NotYetImplementedRuntimeException();
+        if (!isConnected() || playlistId == null || playlistId.isEmpty()) {
+            return false;
+        }
+        synchronized (preparedStatement_getPlaylistByPlaylistId) {
+            if (!setPreparedStatement(preparedStatement_getPlaylistByPlaylistId, playlistId)) {
+                return false;
+            }
+            return useResultSetAndClose(preparedStatement_getPlaylistByPlaylistId::executeQuery, ResultSet::next);
+        }
     }
     
     @Override
     public DatabaseYouTubeVideo getVideoByVideoId(String videoId) {
-        throw new NotYetImplementedRuntimeException();
+        if (!isConnected() || videoId == null || videoId.isEmpty()) {
+            return null;
+        }
+        synchronized (preparedStatement_getVideoByVideoId) {
+            if (!setPreparedStatement(preparedStatement_getVideoByVideoId, videoId)) {
+                return null;
+            }
+            return useResultSetAndClose(preparedStatement_getVideoByVideoId::executeQuery, this::resultSetToDatabaseYouTubeVideo);
+        }
     }
     
     @Override
     public List<DatabaseYouTubeVideo> getAllVideos() {
-        throw new NotYetImplementedRuntimeException();
+        if (!isConnected()) {
+            return null;
+        }
+        synchronized (preparedStatement_getAllVideos) {
+            return useResultSetAndClose(preparedStatement_getAllVideos::executeQuery, this::resultSetToDatabaseYouTubeVideos);
+        }
     }
     
     @Override
     public List<DatabaseYouTubeVideo> getVideosByPlaylistId(String playlistId) {
-        throw new NotYetImplementedRuntimeException();
+        if (!isConnected() || playlistId == null || playlistId.isEmpty()) {
+            return null;
+        }
+        final List<String> videoIds = getVideoIdsByPlaylistId(playlistId);
+        if (videoIds == null || videoIds.isEmpty()) {
+            return null;
+        }
+        return videoIds.stream().map(this::getVideoByVideoId).filter(Objects::nonNull).collect(Collectors.toList());
     }
     
     @Override
     public List<DatabaseYouTubeVideo> getVideosByChannelId(String channelId) {
-        throw new NotYetImplementedRuntimeException();
+        if (!isConnected() || channelId == null || channelId.isEmpty()) {
+            return null;
+        }
+        synchronized (preparedStatement_getVideosByChannelId) {
+            if (!setPreparedStatement(preparedStatement_getVideosByChannelId, channelId)) {
+                return null; //TODO Hmm Should this be an empty list?
+            }
+            return useResultSetAndClose(preparedStatement_getVideosByChannelId::executeQuery, this::resultSetToDatabaseYouTubeVideos);
+        }
     }
     
     @Override
     public List<DatabaseYouTubeVideo> getVideosByUploaderId(String uploaderId) {
-        throw new NotYetImplementedRuntimeException();
+        if (!isConnected() || uploaderId == null || uploaderId.isEmpty()) {
+            return null;
+        }
+        synchronized (preparedStatement_getVideosByUploaderId) {
+            if (!setPreparedStatement(preparedStatement_getVideosByUploaderId, uploaderId)) {
+                return null; //TODO Hmm Should this be an empty list?
+            }
+            return useResultSetAndClose(preparedStatement_getVideosByUploaderId::executeQuery, this::resultSetToDatabaseYouTubeVideos);
+        }
     }
     
     @Override
     public List<String> getAllVideoIds() {
-        throw new NotYetImplementedRuntimeException();
+        if (!isConnected()) {
+            return null;
+        }
+        synchronized (preparedStatement_getAllVideos) {
+            return useResultSetAndClose(preparedStatement_getAllVideos::executeQuery, YouTubeDatabase::resultSetVideoIdsFromVideos);
+        }
     }
     
     @Override
     public List<String> getVideoIdsByPlaylistId(String playlistId) {
-        throw new NotYetImplementedRuntimeException();
+        if (!isConnected() || playlistId == null || playlistId.isEmpty()) {
+            return null;
+        }
+        synchronized (preparedStatement_getPlaylistVideosByPlaylistId) {
+            if (!setPreparedStatement(preparedStatement_getPlaylistVideosByPlaylistId, playlistId)) {
+                return null;
+            }
+            return useResultSetAndClose(preparedStatement_getPlaylistVideosByPlaylistId::executeQuery, YouTubeDatabase::resultSetVideoIdsFromPlaylistVideos);
+        }
     }
     
     @Override
     public List<String> getVideoIdsByChannelId(String channelId) {
-        throw new NotYetImplementedRuntimeException();
+        if (!isConnected() || channelId == null || channelId.isEmpty()) {
+            return null;
+        }
+        synchronized (preparedStatement_getVideosByChannelId) {
+            if (!setPreparedStatement(preparedStatement_getVideosByChannelId, channelId)) {
+                return null; //TODO Hmm Should this be an empty list?
+            }
+            return useResultSetAndClose(preparedStatement_getVideosByChannelId::executeQuery, YouTubeDatabase::resultSetVideoIdsFromVideos);
+        }
     }
     
     @Override
     public List<String> getVideoIdsByUploaderId(String uploaderId) {
-        throw new NotYetImplementedRuntimeException();
+        if (!isConnected() || uploaderId == null || uploaderId.isEmpty()) {
+            return null;
+        }
+        synchronized (preparedStatement_getVideosByUploaderId) {
+            if (!setPreparedStatement(preparedStatement_getVideosByUploaderId, uploaderId)) {
+                return null; //TODO Hmm Should this be an empty list?
+            }
+            return useResultSetAndClose(preparedStatement_getVideosByUploaderId::executeQuery, YouTubeDatabase::resultSetVideoIdsFromVideos);
+        }
     }
     
     @Override
     public int getVideoCountByPlaylistId(String playlistId) {
-        throw new NotYetImplementedRuntimeException();
+        throw new NotYetImplementedRuntimeException(); //TODO
     }
     
     @Override
     public int getVideoCountByChannelId(String channelId) {
-        throw new NotYetImplementedRuntimeException();
+        throw new NotYetImplementedRuntimeException(); //TODO
     }
     
     @Override
     public int getVideoCountByUploaderId(String uploaderId) {
-        throw new NotYetImplementedRuntimeException();
+        throw new NotYetImplementedRuntimeException(); //TODO
     }
     
     @Override
     public boolean playlistContainsVideo(String playlistId, String videoId) {
-        throw new NotYetImplementedRuntimeException();
+        if (!isConnected() || playlistId == null || playlistId.isEmpty() || videoId == null || videoId.isEmpty()) {
+            return false;
+        }
+        synchronized (preparedStatement_getPlaylistVideoByPlaylistIdAndVideoId) {
+            if (!setPreparedStatement(preparedStatement_getPlaylistVideoByPlaylistIdAndVideoId, playlistId, videoId)) {
+                return false;
+            }
+            return useResultSetAndClose(preparedStatement_getPlaylistVideoByPlaylistIdAndVideoId::executeQuery, ResultSet::next);
+        }
     }
     
     @Override
     public boolean channelHasVideo(String channelId, String videoId) {
-        throw new NotYetImplementedRuntimeException();
+        if (!isConnected() || channelId == null || channelId.isEmpty() || videoId == null || videoId.isEmpty()) {
+            return false;
+        }
+        final DatabaseYouTubeVideo databaseYouTubeVideo = getVideoByVideoId(videoId);
+        if (databaseYouTubeVideo == null) {
+            return false;
+        }
+        return Objects.equals(channelId, databaseYouTubeVideo.getChannelId());
     }
     
     @Override
     public boolean uploaderUploadedVideo(String uploaderId, String videoId) {
-        throw new NotYetImplementedRuntimeException();
+        if (!isConnected() || uploaderId == null || uploaderId.isEmpty() || videoId == null || videoId.isEmpty()) {
+            return false;
+        }
+        final DatabaseYouTubeVideo databaseYouTubeVideo = getVideoByVideoId(videoId);
+        if (databaseYouTubeVideo == null) {
+            return false;
+        }
+        return Objects.equals(uploaderId, databaseYouTubeVideo.getUploaderId());
     }
     
     @Override
     public DatabaseYouTubePlaylist getPlaylistByPlaylistId(String playlistId) {
-        throw new NotYetImplementedRuntimeException();
+        if (!isConnected() || playlistId == null || playlistId.isEmpty()) {
+            return null;
+        }
+        synchronized (preparedStatement_getPlaylistByPlaylistId) {
+            if (!setPreparedStatement(preparedStatement_getPlaylistByPlaylistId, playlistId)) {
+                return null;
+            }
+            return useResultSetAndClose(preparedStatement_getPlaylistByPlaylistId::executeQuery, this::resultSetToDatabaseYouTubePlaylist);
+        }
     }
     
     @Override
     public List<DatabaseYouTubePlaylist> getAllPlaylists() {
-        throw new NotYetImplementedRuntimeException();
+        if (!isConnected()) {
+            return null;
+        }
+        synchronized (preparedStatement_getAllPlaylists) {
+            return useResultSetAndClose(preparedStatement_getAllPlaylists::executeQuery, this::resultSetToDatabaseYouTubePlaylists);
+        }
     }
     
     @Override
     public List<DatabaseYouTubePlaylist> getPlaylistsByVideoId(String videoId) {
-        throw new NotYetImplementedRuntimeException();
+        if (!isConnected() || videoId == null || videoId.isEmpty()) {
+            return null;
+        }
+        final List<String> playlistIds = getPlaylistIdsByVideoId(videoId);
+        if (playlistIds == null || playlistIds.isEmpty()) {
+            return null;
+        }
+        return playlistIds.stream().map(this::getPlaylistByPlaylistId).filter(Objects::nonNull).collect(Collectors.toList());
     }
     
     @Override
     public List<DatabaseYouTubePlaylist> getPlaylistsByUploaderId(String uploaderId) {
-        throw new NotYetImplementedRuntimeException();
+        if (!isConnected() || uploaderId == null || uploaderId.isEmpty()) {
+            return null;
+        }
+        synchronized (preparedStatement_getPlaylistsByUploaderId) {
+            if (!setPreparedStatement(preparedStatement_getPlaylistsByUploaderId, uploaderId)) {
+                return null; //TODO Hmm Should this be an empty list?
+            }
+            return useResultSetAndClose(preparedStatement_getPlaylistsByUploaderId::executeQuery, this::resultSetToDatabaseYouTubePlaylists);
+        }
     }
     
     @Override
     public List<String> getAllPlaylistIds() {
-        throw new NotYetImplementedRuntimeException();
+        if (!isConnected()) {
+            return null;
+        }
+        synchronized (preparedStatement_getAllPlaylists) {
+            return useResultSetAndClose(preparedStatement_getAllPlaylists::executeQuery, YouTubeDatabase::resultSetPlaylistIdsFromPlaylists);
+        }
     }
     
     @Override
     public List<String> getPlaylistIdsByVideoId(String videoId) {
-        throw new NotYetImplementedRuntimeException();
+        if (!isConnected() || videoId == null || videoId.isEmpty()) {
+            return null;
+        }
+        synchronized (preparedStatement_getPlaylistVideosByVideoId) {
+            if (!setPreparedStatement(preparedStatement_getPlaylistVideosByVideoId, videoId)) {
+                return null;
+            }
+            return useResultSetAndClose(preparedStatement_getPlaylistVideosByVideoId::executeQuery, de.codemakers.download.databaseOLD.YouTubeDatabase::resultSetPlaylistIdsFromPlaylistVideos);
+        }
     }
     
     @Override
     public List<String> getPlaylistIdsByUploaderId(String uploaderId) {
-        throw new NotYetImplementedRuntimeException();
+        if (!isConnected() || uploaderId == null || uploaderId.isEmpty()) {
+            return null;
+        }
+        synchronized (preparedStatement_getPlaylistsByUploaderId) {
+            if (!setPreparedStatement(preparedStatement_getPlaylistsByUploaderId, uploaderId)) {
+                return null; //TODO Hmm Should this be an empty list?
+            }
+            return useResultSetAndClose(preparedStatement_getPlaylistsByUploaderId::executeQuery, YouTubeDatabase::resultSetPlaylistIdsFromPlaylists);
+        }
     }
     
     @Override
     public int getPlaylistCountByUploaderId(String uploaderId) {
-        throw new NotYetImplementedRuntimeException();
+        throw new NotYetImplementedRuntimeException(); //TODO
     }
     
     @Override
     public int getIndexInPlaylist(String playlistId, String videoId) {
-        throw new NotYetImplementedRuntimeException();
+        if (!isConnected() || playlistId == null || playlistId.isEmpty() || videoId == null || videoId.isEmpty()) {
+            return -1;
+        }
+        synchronized (preparedStatement_getPlaylistVideoByPlaylistIdAndVideoId) {
+            if (!setPreparedStatement(preparedStatement_getPlaylistVideoByPlaylistIdAndVideoId, playlistId, videoId)) {
+                return -1;
+            }
+            return useResultSetAndClose(preparedStatement_getPlaylistVideoByPlaylistIdAndVideoId::executeQuery, YouTubeDatabase::resultSetToPlaylistIndex);
+        }
     }
     
     @Override
     public boolean uploaderCreatedPlaylist(String uploaderId, String playlistId) {
-        throw new NotYetImplementedRuntimeException();
+        if (!isConnected() || uploaderId == null || uploaderId.isEmpty() || playlistId == null || playlistId.isEmpty()) {
+            return false;
+        }
+        final DatabaseYouTubePlaylist databaseYouTubePlaylist = getPlaylistByPlaylistId(playlistId);
+        if (databaseYouTubePlaylist == null) {
+            return false;
+        }
+        return Objects.equals(uploaderId, databaseYouTubePlaylist.getUploaderId());
     }
     
     @Override
     public List<DatabaseYouTubeChannel> getAllChannels() {
-        throw new NotYetImplementedRuntimeException();
+        if (!isConnected()) {
+            return null;
+        }
+        synchronized (preparedStatement_getAllChannels) {
+            return useResultSetAndClose(preparedStatement_getAllChannels::executeQuery, this::resultSetToDatabaseYouTubeChannels);
+        }
     }
     
     @Override
     public List<String> getAllChannelIds() {
-        throw new NotYetImplementedRuntimeException();
+        if (!isConnected()) {
+            return null;
+        }
+        synchronized (preparedStatement_getAllChannels) {
+            return useResultSetAndClose(preparedStatement_getAllChannels::executeQuery, YouTubeDatabase::resultSetChannelIdsFromChannels);
+        }
     }
     
     @Override
     public DatabaseYouTubeChannel getChannelByChannelId(String channelId) {
-        throw new NotYetImplementedRuntimeException();
+        if (!isConnected() || channelId == null || channelId.isEmpty()) {
+            return null;
+        }
+        synchronized (preparedStatement_getChannelByChannelId) {
+            if (!setPreparedStatement(preparedStatement_getChannelByChannelId, channelId)) {
+                return null;
+            }
+            return useResultSetAndClose(preparedStatement_getChannelByChannelId::executeQuery, this::resultSetToDatabaseYouTubeChannel);
+        }
     }
     
     @Override
     public List<DatabaseYouTubeUploader> getAllUploaders() {
-        throw new NotYetImplementedRuntimeException();
+        if (!isConnected()) {
+            return null;
+        }
+        synchronized (preparedStatement_getAllUploaders) {
+            return useResultSetAndClose(preparedStatement_getAllUploaders::executeQuery, this::resultSetToDatabaseYouTubeUploaders);
+        }
     }
     
     @Override
     public List<String> getAllUploaderIds() {
-        throw new NotYetImplementedRuntimeException();
+        if (!isConnected()) {
+            return null;
+        }
+        synchronized (preparedStatement_getAllChannels) {
+            return useResultSetAndClose(preparedStatement_getAllChannels::executeQuery, YouTubeDatabase::resultSetUploaderIdsFromUploaders);
+        }
     }
     
     @Override
     public DatabaseYouTubeUploader getUploaderByUploaderId(String uploaderId) {
-        throw new NotYetImplementedRuntimeException();
+        if (!isConnected() || uploaderId == null || uploaderId.isEmpty()) {
+            return null;
+        }
+        synchronized (preparedStatement_getUploaderByUploaderId) {
+            if (!setPreparedStatement(preparedStatement_getUploaderByUploaderId, uploaderId)) {
+                return null;
+            }
+            return useResultSetAndClose(preparedStatement_getUploaderByUploaderId::executeQuery, this::resultSetToDatabaseYouTubeUploader);
+        }
     }
     
     @Override
     public DatabaseMediaFile getMediaFileByVideoIdAndFile(String videoId, String file) {
-        throw new NotYetImplementedRuntimeException();
+        if (!isConnected() || videoId == null || videoId.isEmpty() || file == null || file.isEmpty()) {
+            return null;
+        }
+        synchronized (preparedStatement_getFileMediaByVideoIdAndFile) {
+            if (!setPreparedStatement(preparedStatement_getFileMediaByVideoIdAndFile, videoId)) {
+                return null; //TODO Hmm Should this be an empty list?
+            }
+            return useResultSetAndClose(preparedStatement_getFileMediaByVideoIdAndFile::executeQuery, this::resultSetToDatabaseMediaFile);
+        }
     }
     
     @Override
     public List<DatabaseMediaFile> getMediaFilesByVideoId(String videoId) {
-        throw new NotYetImplementedRuntimeException();
+        if (!isConnected() || videoId == null || videoId.isEmpty()) {
+            return null;
+        }
+        synchronized (preparedStatement_getFilesMediaByVideoId) {
+            if (!setPreparedStatement(preparedStatement_getFilesMediaByVideoId, videoId)) {
+                return null; //TODO Hmm Should this be an empty list?
+            }
+            return useResultSetAndClose(preparedStatement_getFilesMediaByVideoId::executeQuery, this::resultSetToDatabaseMediaFiles);
+        }
     }
     
     @Override
     public DatabaseExtraFile getExtraFileByVideoIdAndFile(String videoId, String file) {
-        throw new NotYetImplementedRuntimeException();
+        if (!isConnected() || videoId == null || videoId.isEmpty() || file == null || file.isEmpty()) {
+            return null;
+        }
+        synchronized (preparedStatement_getFileExtraByVideoIdAndFile) {
+            if (!setPreparedStatement(preparedStatement_getFileExtraByVideoIdAndFile, videoId)) {
+                return null; //TODO Hmm Should this be an empty list?
+            }
+            return useResultSetAndClose(preparedStatement_getFileExtraByVideoIdAndFile::executeQuery, this::resultSetToDatabaseExtraFile);
+        }
     }
     
     @Override
     public List<DatabaseExtraFile> getExtraFilesByVideoId(String videoId) {
-        throw new NotYetImplementedRuntimeException();
+        if (!isConnected() || videoId == null || videoId.isEmpty()) {
+            return null;
+        }
+        synchronized (preparedStatement_getFilesExtraByVideoId) {
+            if (!setPreparedStatement(preparedStatement_getFilesExtraByVideoId, videoId)) {
+                return null; //TODO Hmm Should this be an empty list?
+            }
+            return useResultSetAndClose(preparedStatement_getFilesExtraByVideoId::executeQuery, this::resultSetToDatabaseExtraFiles);
+        }
     }
     
     @Override
     public List<DatabaseRequester> getAllRequesters() {
-        throw new NotYetImplementedRuntimeException();
+        if (!isConnected()) {
+            return null;
+        }
+        synchronized (preparedStatement_getAllRequesters) {
+            return useResultSetAndClose(preparedStatement_getAllRequesters::executeQuery, this::resultSetToDatabaseRequesters);
+        }
     }
     
     @Override
     public List<Integer> getAllRequesterIds() {
-        throw new NotYetImplementedRuntimeException();
+        if (!isConnected()) {
+            return null;
+        }
+        synchronized (preparedStatement_getAllRequesters) {
+            return useResultSetAndClose(preparedStatement_getAllRequesters::executeQuery, YouTubeDatabase::resultSetRequesterIdsFromRequesters);
+        }
     }
     
     @Override
     public DatabaseRequester getRequesterByRequesterId(int requesterId) {
-        throw new NotYetImplementedRuntimeException();
+        if (!isConnected()) {
+            return null;
+        }
+        synchronized (preparedStatement_getRequesterByRequesterId) {
+            if (!setPreparedStatement(preparedStatement_getRequesterByRequesterId, requesterId)) {
+                return null;
+            }
+            return useResultSetAndClose(preparedStatement_getRequesterByRequesterId::executeQuery, this::resultSetToDatabaseRequester);
+        }
     }
     
     @Override
     public DatabaseRequester getRequesterByRequesterId(String tag) {
-        throw new NotYetImplementedRuntimeException();
+        if (!isConnected()) {
+            return null;
+        }
+        synchronized (preparedStatement_getRequesterByTag) {
+            if (!setPreparedStatement(preparedStatement_getRequesterByTag, tag)) {
+                return null;
+            }
+            return useResultSetAndClose(preparedStatement_getRequesterByTag::executeQuery, this::resultSetToDatabaseRequester);
+        }
     }
     
     @Override
     public DatabaseQueuedYouTubeVideo getQueuedVideoById(int id) {
-        throw new NotYetImplementedRuntimeException();
+        if (!isConnected()) {
+            return null;
+        }
+        synchronized (preparedStatement_getQueuedVideoById) {
+            if (!setPreparedStatement(preparedStatement_getQueuedVideoById, id)) {
+                return null;
+            }
+            return useResultSetAndClose(preparedStatement_getQueuedVideoById::executeQuery, this::resultSetToDatabaseQueuedYouTubeVideo);
+        }
     }
     
     @Override
     public List<DatabaseQueuedYouTubeVideo> getAllQueuedVideos() {
-        throw new NotYetImplementedRuntimeException();
+        if (!isConnected()) {
+            return null;
+        }
+        synchronized (preparedStatement_getAllQueuedVideos) {
+            return useResultSetAndClose(preparedStatement_getAllQueuedVideos::executeQuery, this::resultSetToDatabaseQueuedYouTubeVideos);
+        }
     }
     
     @Override
     public List<String> getQueuedVideoIdsByVideoId(String videoId) {
-        throw new NotYetImplementedRuntimeException();
+        if (!isConnected()) {
+            return null;
+        }
+        synchronized (preparedStatement_getQueuedVideosByVideoId) {
+            if (!setPreparedStatement(preparedStatement_getQueuedVideosByVideoId, videoId)) {
+                return null;
+            }
+            return useResultSetAndClose(preparedStatement_getQueuedVideosByVideoId::executeQuery, YouTubeDatabase::resultSetVideoIdsFromQueuedVideos);
+        }
     }
     
     @Override
     public List<DatabaseQueuedYouTubeVideo> getQueuedVideosByVideoId(String videoId) {
-        throw new NotYetImplementedRuntimeException();
+        if (!isConnected() || videoId == null || videoId.isEmpty()) {
+            return null;
+        }
+        synchronized (preparedStatement_getQueuedVideosByVideoId) {
+            if (!setPreparedStatement(preparedStatement_getQueuedVideosByVideoId, videoId)) {
+                return null;
+            }
+            return useResultSetAndClose(preparedStatement_getQueuedVideosByVideoId::executeQuery, this::resultSetToDatabaseQueuedYouTubeVideos);
+        }
     }
     
     @Override
     public List<String> getQueuedVideoIdsByRequesterId(int requesterId) {
-        throw new NotYetImplementedRuntimeException();
+        if (!isConnected()) {
+            return null;
+        }
+        synchronized (preparedStatement_getQueuedVideosByRequesterId) {
+            if (!setPreparedStatement(preparedStatement_getQueuedVideosByRequesterId, requesterId)) {
+                return null;
+            }
+            return useResultSetAndClose(preparedStatement_getQueuedVideosByRequesterId::executeQuery, YouTubeDatabase::resultSetVideoIdsFromQueuedVideos);
+        }
     }
     
     @Override
     public List<DatabaseQueuedYouTubeVideo> getQueuedVideosByRequesterId(int requesterId) {
-        throw new NotYetImplementedRuntimeException();
+        if (!isConnected()) {
+            return null;
+        }
+        synchronized (preparedStatement_getQueuedVideosByRequesterId) {
+            if (!setPreparedStatement(preparedStatement_getQueuedVideosByRequesterId, requesterId)) {
+                return null;
+            }
+            return useResultSetAndClose(preparedStatement_getQueuedVideosByRequesterId::executeQuery, this::resultSetToDatabaseQueuedYouTubeVideos);
+        }
     }
     
     @Override
     public DatabaseQueuedYouTubeVideo getNextQueuedVideo() {
-        throw new NotYetImplementedRuntimeException();
+        if (!isConnected()) {
+            return null;
+        }
+        synchronized (preparedStatement_getNextQueuedVideo) {
+            return useResultSetAndClose(preparedStatement_getNextQueuedVideo::executeQuery, this::resultSetToDatabaseQueuedYouTubeVideo);
+        }
     }
     
     @Override
     public List<DatabaseQueuedYouTubeVideo> getNextQueuedVideos() {
-        throw new NotYetImplementedRuntimeException();
+        if (!isConnected()) {
+            return null;
+        }
+        synchronized (preparedStatement_getNextQueuedVideos) {
+            return useResultSetAndClose(preparedStatement_getNextQueuedVideos::executeQuery, this::resultSetToDatabaseQueuedYouTubeVideos);
+        }
     }
     
     @Override
     public DatabaseYouTubeChannel createChannel(String channelId, String name) {
-        throw new NotYetImplementedRuntimeException();
+        final DatabaseYouTubeChannel databaseYouTubeChannel = new DatabaseYouTubeChannel(channelId, name);
+        databaseYouTubeChannel.setDatabase(this);
+        if (!addChannel(databaseYouTubeChannel)) {
+            return null;
+        }
+        return databaseYouTubeChannel;
     }
     
     @Override
     public DatabaseYouTubeUploader createUploader(String uploaderId, String name) {
-        throw new NotYetImplementedRuntimeException();
+        final DatabaseYouTubeUploader databaseYouTubeUploader = new DatabaseYouTubeUploader(uploaderId, name);
+        databaseYouTubeUploader.setDatabase(this);
+        if (!addUploader(databaseYouTubeUploader)) {
+            return null;
+        }
+        return databaseYouTubeUploader;
     }
     
     @Override
     public DatabaseRequester createRequester(String tag, String name) {
-        throw new NotYetImplementedRuntimeException();
+        final DatabaseRequester databaseRequester = new DatabaseRequester(tag, name);
+        databaseRequester.setDatabase(this);
+        if (!addRequester(databaseRequester)) {
+            return null;
+        }
+        return databaseRequester;
     }
     
     @Override
     public DatabaseYouTubeVideo createVideo(String videoId, String channelId, String uploaderId, String title, String altTitle, long duration, Instant uploadTimestamp) {
-        throw new NotYetImplementedRuntimeException();
+        final DatabaseYouTubeVideo databaseYouTubeVideo = new DatabaseYouTubeVideo(videoId, channelId, uploaderId, title, altTitle, duration, uploadTimestamp);
+        databaseYouTubeVideo.setDatabase(this);
+        if (!addVideo(databaseYouTubeVideo)) {
+            return null;
+        }
+        return databaseYouTubeVideo;
     }
     
     @Override
     public DatabaseQueuedYouTubeVideo createQueuedVideo(String videoId, int priority, Instant requestedTimestamp, int requesterId, String fileType, String arguments, String configFile, String outputDirectory, QueuedVideoState state) {
-        throw new NotYetImplementedRuntimeException();
+        final DatabaseQueuedYouTubeVideo databaseQueuedYouTubeVideo = new DatabaseQueuedYouTubeVideo(videoId, priority, requestedTimestamp, requesterId, fileType, arguments, configFile, outputDirectory, state);
+        databaseQueuedYouTubeVideo.setDatabase(this);
+        if (!addQueuedVideo(databaseQueuedYouTubeVideo)) {
+            return null;
+        }
+        return databaseQueuedYouTubeVideo;
     }
     
     @Override
     public boolean addVideoToPlaylist(DatabaseYouTubePlaylist playlist, DatabaseYouTubeVideo video, int index) {
-        throw new NotYetImplementedRuntimeException();
+        if (playlist == null || video == null) {
+            return false;
+        }
+        return addVideoToPlaylist(playlist.getPlaylistId(), video.getVideoId(), index);
     }
     
     @Override
     public boolean addVideoToPlaylist(String playlistId, String videoId, int index) {
-        throw new NotYetImplementedRuntimeException();
+        if (!isConnected() || playlistId == null || playlistId.isEmpty() || videoId == null || videoId.isEmpty()) {
+            return false;
+        }
+        //TODO Only add, if it's not already in?
+        synchronized (preparedStatement_addPlaylistVideo) {
+            if (!setPreparedStatement(preparedStatement_addPlaylistVideo, playlistId, videoId, index)) {
+                return false;
+            }
+            return Standard.silentError(() -> preparedStatement_addPlaylistVideo.executeUpdate()) > 0;
+        }
     }
     
     @Override
     public boolean addVideoToPlaylists(DatabaseYouTubeVideo video, List<DatabaseYouTubePlaylist> playlists) {
-        throw new NotYetImplementedRuntimeException();
+        if (video == null || playlists == null) {
+            return false;
+        }
+        return addVideoToPlaylists(video.getVideoId(), playlists.stream().filter(Objects::nonNull).map(DatabaseYouTubePlaylist::getPlaylistId).collect(Collectors.toList()));
     }
     
     @Override
     public boolean addVideoToPlaylists(String videoId, List<String> playlistIds) {
-        throw new NotYetImplementedRuntimeException();
+        if (videoId == null || playlistIds == null) {
+            return false;
+        }
+        boolean good = true;
+        for (String playlistId : playlistIds) {
+            if (!addVideoToPlaylist(playlistId, videoId)) {
+                good = false;
+            }
+        }
+        return good;
     }
     
     @Override
     public boolean addVideosToPlaylist(DatabaseYouTubePlaylist playlist, List<DatabaseYouTubeVideo> videos) {
-        throw new NotYetImplementedRuntimeException();
+        if (playlist == null || videos == null) {
+            return false;
+        }
+        return addVideosToPlaylist(playlist.getPlaylistId(), videos.stream().filter(Objects::nonNull).map(DatabaseYouTubeVideo::getVideoId).collect(Collectors.toList()));
     }
     
     @Override
     public boolean addVideosToPlaylist(String playlistId, List<String> videoIds) {
-        throw new NotYetImplementedRuntimeException();
+        if (playlistId == null || videoIds == null) {
+            return false;
+        }
+        boolean good = true;
+        for (String videoId : videoIds) {
+            if (!addVideoToPlaylist(playlistId, videoId)) {
+                good = false;
+            }
+        }
+        return good;
     }
     
     @Override
     public boolean addPlaylist(DatabaseYouTubePlaylist playlist) {
-        throw new NotYetImplementedRuntimeException();
+        if (!isConnected() || playlist == null) {
+            return false;
+        }
+        synchronized (preparedStatement_addPlaylist) {
+            if (!setPreparedStatement(preparedStatement_addPlaylist, playlist.getPlaylistId(), playlist.getTitle(), playlist.getPlaylist(), playlist.getUploaderId())) {
+                return false;
+            }
+            return Standard.silentError(() -> preparedStatement_addPlaylist.executeUpdate()) > 0;
+        }
     }
     
     @Override
     public boolean addAuthorizationToken(AuthorizationToken authorizationToken) {
-        throw new NotYetImplementedRuntimeException();
+        if (!isConnected() || authorizationToken == null) {
+            return false;
+        }
+        synchronized (preparedStatement_addToken) {
+            if (!setPreparedStatement(preparedStatement_addToken, authorizationToken.getToken(), authorizationToken.getLevel().name(), authorizationToken.getCreated().toEpochMilli(), authorizationToken.getExpiration() == null ? 0 : authorizationToken.getExpiration().toEpochMilli())) {
+                return false;
+            }
+            return Standard.silentError(() -> preparedStatement_addToken.executeUpdate()) > 0;
+        }
     }
     
     @Override
     public boolean addQueuedVideo(DatabaseQueuedYouTubeVideo queuedVideo) {
-        throw new NotYetImplementedRuntimeException();
+        if (!isConnected() || queuedVideo == null) {
+            return false;
+        }
+        synchronized (preparedStatement_addQueuedVideo) {
+            if (!setPreparedStatement(preparedStatement_addQueuedVideo, queuedVideo.getVideoId(), queuedVideo.getPriority(), queuedVideo.getRequestedAsTimestamp(), queuedVideo.getRequesterId(), queuedVideo.getFileType(), queuedVideo.getArguments(), queuedVideo.getConfigFile(), queuedVideo.getOutputDirectory(), queuedVideo.getState().name())) {
+                return false;
+            }
+            final boolean success = Standard.silentError(() -> preparedStatement_addQueuedVideo.executeUpdate()) > 0;
+            final int id = getLastInsertId();
+            queuedVideo.setId(id);
+            return success;
+        }
     }
     
     @Override
     public boolean addVideo(DatabaseYouTubeVideo video) {
-        throw new NotYetImplementedRuntimeException();
+        if (!isConnected() || video == null) {
+            return false;
+        }
+        synchronized (preparedStatement_addVideo) {
+            if (!setPreparedStatement(preparedStatement_addVideo, video.getVideoId(), video.getChannelId(), video.getUploaderId(), video.getTitle(), video.getAltTitle(), video.getDurationMillis(), video.getUploadDateAsLong())) { //FIXME //TODO Switch to the TIMESTAMP SQL Column type
+                return false;
+            }
+            return Standard.silentError(() -> preparedStatement_addVideo.executeUpdate()) > 0;
+        }
     }
     
     @Override
     public boolean addChannel(DatabaseYouTubeChannel channel) {
-        throw new NotYetImplementedRuntimeException();
+        if (!isConnected() || channel == null) {
+            return false;
+        }
+        synchronized (preparedStatement_addChannel) {
+            if (!setPreparedStatement(preparedStatement_addChannel, channel.getChannelId(), channel.getName())) {
+                return false;
+            }
+            return Standard.silentError(() -> preparedStatement_addChannel.executeUpdate()) > 0;
+        }
     }
     
     @Override
     public boolean addUploader(DatabaseYouTubeUploader uploader) {
-        throw new NotYetImplementedRuntimeException();
+        if (!isConnected() || uploader == null) {
+            return false;
+        }
+        synchronized (preparedStatement_addUploader) {
+            if (!setPreparedStatement(preparedStatement_addUploader, uploader.getUploaderId(), uploader.getName())) {
+                return false;
+            }
+            return Standard.silentError(() -> preparedStatement_addUploader.executeUpdate()) > 0;
+        }
     }
     
     @Override
     public boolean addRequester(DatabaseRequester requester) {
-        throw new NotYetImplementedRuntimeException();
+        if (!isConnected() || requester == null) {
+            return false;
+        }
+        synchronized (preparedStatement_addRequester) {
+            if (!setPreparedStatement(preparedStatement_addRequester, requester.getTag(), requester.getName(), requester.getCreated())) {
+                return false;
+            }
+            final boolean success = Standard.silentError(() -> preparedStatement_addRequester.executeUpdate()) > 0;
+            final int id = getLastInsertId();
+            requester.setRequesterId(id);
+            return success;
+        }
     }
     
     @Override
     public boolean setAuthorizationTokenByToken(AuthorizationToken authorizationToken, String token) {
-        throw new NotYetImplementedRuntimeException();
+        if (!isConnected() || authorizationToken == null || token == null || token.isEmpty()) {
+            return false;
+        }
+        synchronized (preparedStatement_setTokenByToken) {
+            if (!setPreparedStatement(preparedStatement_setTokenByToken, authorizationToken.getToken(), authorizationToken.getLevel().name(), authorizationToken.getCreated().toEpochMilli(), authorizationToken.getExpiration() == null ? 0 : authorizationToken.getExpiration().toEpochMilli(), authorizationToken.getUsed(), token)) {
+                return false;
+            }
+            return Standard.silentError(() -> preparedStatement_setTokenByToken.executeUpdate()) > 0;
+        }
     }
     
     @Override
     public boolean setAuthorizationTokenTimesUsedByToken(String token, int timesUsed) {
-        throw new NotYetImplementedRuntimeException();
+        if (!isConnected() || token == null || token.isEmpty()) {
+            return false;
+        }
+        synchronized (preparedStatement_setTokenTimesUsedByToken) {
+            if (!setPreparedStatement(preparedStatement_setTokenTimesUsedByToken, timesUsed, token)) {
+                return false;
+            }
+            return Standard.silentError(() -> preparedStatement_setTokenTimesUsedByToken.executeUpdate()) > 0;
+        }
     }
     
     @Override
     public boolean setPlaylistVideoIndex(DatabaseYouTubePlaylist playlist, DatabaseYouTubeVideo video, int index) {
-        throw new NotYetImplementedRuntimeException();
+        if (!isConnected() || playlist == null || video == null || !playlist.containsVideo(video)) {
+            return false;
+        }
+        synchronized (preparedStatement_setPlaylistVideoByPlaylistIdAndVideoId) {
+            if (!setPreparedStatement(preparedStatement_setPlaylistVideoByPlaylistIdAndVideoId, playlist.getPlaylistId(), video.getVideoId(), index, playlist.getPlaylistId(), video.getVideoId())) {
+                return false;
+            }
+            return Standard.silentError(() -> preparedStatement_setPlaylistVideoByPlaylistIdAndVideoId.executeUpdate()) > 0;
+        }
     }
     
     @Override
     public boolean setVideoByVideoId(DatabaseYouTubeVideo video, String videoId) {
-        throw new NotYetImplementedRuntimeException();
+        if (!isConnected() || video == null || videoId == null || videoId.isEmpty()) {
+            return false;
+        }
+        synchronized (preparedStatement_setVideoByVideoId) {
+            if (!setPreparedStatement(preparedStatement_setVideoByVideoId, video.getVideoId(), video.getChannelId(), video.getUploaderId(), video.getTitle(), video.getAltTitle(), video.getDurationMillis(), video.getUploadDateAsString(), videoId)) {
+                return false;
+            }
+            return Standard.silentError(() -> preparedStatement_setVideoByVideoId.executeUpdate()) > 0;
+        }
     }
     
     @Override
     public boolean setPlaylistByPlaylistId(DatabaseYouTubePlaylist playlist, String playlistId) {
-        throw new NotYetImplementedRuntimeException();
+        if (!isConnected() || playlist == null || playlistId == null || playlistId.isEmpty()) {
+            return false;
+        }
+        synchronized (preparedStatement_setPlaylistByPlaylistId) {
+            if (!setPreparedStatement(preparedStatement_setPlaylistByPlaylistId, playlist.getPlaylistId(), playlist.getTitle(), playlist.getPlaylist(), playlist.getUploaderId(), playlistId)) {
+                return false;
+            }
+            return Standard.silentError(() -> preparedStatement_setPlaylistByPlaylistId.executeUpdate()) > 0;
+        }
     }
     
     @Override
     public boolean setMediaFileByVideoIdAndFile(DatabaseMediaFile mediaFile, String videoId, String file) {
-        throw new NotYetImplementedRuntimeException();
+        if (!isConnected() || mediaFile == null || videoId == null || videoId.isEmpty() || file == null || file.isEmpty()) {
+            return false;
+        }
+        synchronized (preparedStatement_setFileMediaByVideoIdAndFile) {
+            if (!setPreparedStatement(preparedStatement_setFileMediaByVideoIdAndFile, mediaFile.getVideoId(), mediaFile.getFile(), mediaFile.getFileType(), mediaFile.getFormat(), mediaFile.getVcodec(), mediaFile.getAcodec(), mediaFile.getWidth(), mediaFile.getHeight(), mediaFile.getFps(), mediaFile.getAsr(), videoId, file)) {
+                return false;
+            }
+            return Standard.silentError(() -> preparedStatement_setFileMediaByVideoIdAndFile.executeUpdate()) > 0;
+        }
     }
     
     @Override
     public boolean setMediaFilesByVideoId(List<DatabaseMediaFile> mediaFiles, String videoId) {
-        throw new NotYetImplementedRuntimeException();
+        if (!isConnected() || mediaFiles == null || videoId == null || videoId.isEmpty()) {
+            return false;
+        }
+        throw new NotYetImplementedRuntimeException("YouTubeDatabase::setMediaFilesByVideoId");
     }
     
     @Override
     public boolean setExtraFileByVideoIdAndFile(DatabaseExtraFile extraFile, String videoId, String file) {
-        throw new NotYetImplementedRuntimeException();
+        if (!isConnected() || extraFile == null || videoId == null || videoId.isEmpty() || file == null || file.isEmpty()) {
+            return false;
+        }
+        synchronized (preparedStatement_setFileExtraByVideoIdAndFile) {
+            if (!setPreparedStatement(preparedStatement_setFileExtraByVideoIdAndFile, extraFile.getVideoId(), extraFile.getFile(), extraFile.getFileType(), videoId, file)) {
+                return false;
+            }
+            return Standard.silentError(() -> preparedStatement_setFileExtraByVideoIdAndFile.executeUpdate()) > 0;
+        }
     }
     
     @Override
     public boolean setExtraFilesByVideoId(List<DatabaseExtraFile> extraFiles, String videoId) {
-        throw new NotYetImplementedRuntimeException();
+        if (!isConnected() || extraFiles == null || videoId == null || videoId.isEmpty()) {
+            return false;
+        }
+        throw new NotYetImplementedRuntimeException("YouTubeDatabase::setExtraFilesByVideoId");
     }
     
     @Override
     public boolean setChannelByChannelId(DatabaseYouTubeChannel channel, String channelId) {
-        throw new NotYetImplementedRuntimeException();
+        if (!isConnected() || channel == null || channelId == null || channelId.isEmpty()) {
+            return false;
+        }
+        synchronized (preparedStatement_setChannelByChannelId) {
+            if (!setPreparedStatement(preparedStatement_setChannelByChannelId, channel.getChannelId(), channel.getName(), channelId)) {
+                return false;
+            }
+            return Standard.silentError(() -> preparedStatement_setChannelByChannelId.executeUpdate()) > 0;
+        }
     }
     
     @Override
     public boolean setUploaderByUploaderId(DatabaseYouTubeUploader uploader, String uploaderId) {
-        throw new NotYetImplementedRuntimeException();
+        if (!isConnected() || uploader == null || uploaderId == null || uploaderId.isEmpty()) {
+            return false;
+        }
+        synchronized (preparedStatement_setUploaderByUploaderId) {
+            if (!setPreparedStatement(preparedStatement_setUploaderByUploaderId, uploader.getUploaderId(), uploader.getName(), uploaderId)) {
+                return false;
+            }
+            return Standard.silentError(() -> preparedStatement_setUploaderByUploaderId.executeUpdate()) > 0;
+        }
     }
     
     @Override
     public boolean setQueuedVideoById(DatabaseQueuedYouTubeVideo queuedVideo, int id) {
-        throw new NotYetImplementedRuntimeException();
+        if (!isConnected() || queuedVideo == null) {
+            return false;
+        }
+        synchronized (preparedStatement_setQueuedVideoById) {
+            if (!setPreparedStatement(preparedStatement_setQueuedVideoById, queuedVideo.getId(), queuedVideo.getVideoId(), queuedVideo.getPriority(), queuedVideo.getRequestedAsTimestamp(), queuedVideo.getArguments(), queuedVideo.getConfigFile(), queuedVideo.getOutputDirectory(), queuedVideo.getState().name(), id)) {
+                return false;
+            }
+            return Standard.silentError(() -> preparedStatement_setQueuedVideoById.executeUpdate()) > 0;
+        }
     }
     
     @Override
     public boolean setRequesterByRequesterId(DatabaseRequester requester, int requesterId) {
-        throw new NotYetImplementedRuntimeException();
+        if (!isConnected() || requester == null) {
+            return false;
+        }
+        synchronized (preparedStatement_setRequesterByRequesterId) {
+            if (!setPreparedStatement(preparedStatement_setRequesterByRequesterId, requester.getRequesterId(), requester.getTag(), requester.getName(), requesterId)) {
+                return false;
+            }
+            return Standard.silentError(() -> preparedStatement_setRequesterByRequesterId.executeUpdate()) > 0;
+        }
     }
     
     @Override
     public boolean setRequesterByRequesterTag(DatabaseRequester requester, String tag) {
-        throw new NotYetImplementedRuntimeException();
+        if (!isConnected() || requester == null || tag == null || tag.isEmpty()) {
+            return false;
+        }
+        synchronized (preparedStatement_setRequesterByTag) {
+            if (!setPreparedStatement(preparedStatement_setRequesterByTag, requester.getTag(), requester.getName(), tag)) {
+                return false;
+            }
+            return Standard.silentError(() -> preparedStatement_setRequesterByTag.executeUpdate()) > 0;
+        }
     }
     
     @Override
     public boolean removeAllAuthorizationTokens() {
-        throw new NotYetImplementedRuntimeException();
+        if (!isConnected()) {
+            return false;
+        }
+        synchronized (preparedStatement_removeAllTokens) {
+            return Standard.silentError(() -> preparedStatement_removeAllTokens.executeUpdate()) > 0;
+        }
     }
     
     @Override
     public boolean removeAuthorizationTokenByToken(String token) {
-        throw new NotYetImplementedRuntimeException();
+        if (!isConnected() || token == null || token.isEmpty()) {
+            return false;
+        }
+        synchronized (preparedStatement_removeTokenByToken) {
+            if (!setPreparedStatement(preparedStatement_removeTokenByToken, token)) {
+                return false;
+            }
+            return Standard.silentError(() -> preparedStatement_removeTokenByToken.executeUpdate()) > 0;
+        }
     }
     
     @Override
     public boolean removeVideoFromPlaylist(DatabaseYouTubePlaylist playlist, DatabaseYouTubeVideo video) {
-        throw new NotYetImplementedRuntimeException();
+        if (!isConnected() || playlist == null || video == null) {
+            return false;
+        }
+        synchronized (preparedStatement_removePlaylistVideoByPlaylistIdAndVideoId) {
+            if (!setPreparedStatement(preparedStatement_removePlaylistVideoByPlaylistIdAndVideoId, playlist.getPlaylistId(), video.getVideoId())) {
+                return false;
+            }
+            return Standard.silentError(() -> preparedStatement_removePlaylistVideoByPlaylistIdAndVideoId.executeUpdate()) > 0;
+        }
     }
     
     @Override
     public boolean removeVideoIdFromPlaylistId(String playlistId, String videoId) {
-        throw new NotYetImplementedRuntimeException();
+        if (!isConnected() || playlistId == null || videoId == null) {
+            return false;
+        }
+        synchronized (preparedStatement_removePlaylistVideoByPlaylistIdAndVideoId) {
+            if (!setPreparedStatement(preparedStatement_removePlaylistVideoByPlaylistIdAndVideoId, playlistId, videoId)) {
+                return false;
+            }
+            return Standard.silentError(() -> preparedStatement_removePlaylistVideoByPlaylistIdAndVideoId.executeUpdate()) > 0;
+        }
     }
     
     @Override
     public boolean removeAllQueuedVideos() {
-        throw new NotYetImplementedRuntimeException();
+        if (!isConnected()) {
+            return false;
+        }
+        synchronized (preparedStatement_removeAllQueuedVideos) {
+            return Standard.silentError(() -> preparedStatement_removeAllQueuedVideos.executeUpdate()) > 0;
+        }
     }
     
     @Override
     public boolean removeQueuedVideoById(int id) {
-        throw new NotYetImplementedRuntimeException();
+        if (!isConnected() || id < 0) {
+            return false;
+        }
+        synchronized (preparedStatement_removeQueuedVideoById) {
+            if (!setPreparedStatement(preparedStatement_removeQueuedVideoById, id)) {
+                return false;
+            }
+            return Standard.silentError(() -> preparedStatement_removeQueuedVideoById.executeUpdate()) > 0;
+        }
     }
     
     @Override
     public boolean removeQueuedVideosByVideoId(String videoId) {
-        throw new NotYetImplementedRuntimeException();
+        if (!isConnected() || videoId == null || videoId.isEmpty()) {
+            return false;
+        }
+        synchronized (preparedStatement_removeQueuedVideosByVideoId) {
+            if (!setPreparedStatement(preparedStatement_removeQueuedVideosByVideoId, videoId)) {
+                return false;
+            }
+            return Standard.silentError(() -> preparedStatement_removeQueuedVideosByVideoId.executeUpdate()) > 0;
+        }
     }
     
     @Override
     public boolean removeQueuedVideosByRequesterId(int requesterId) {
-        throw new NotYetImplementedRuntimeException();
+        if (!isConnected() || requesterId < 0) {
+            return false;
+        }
+        synchronized (preparedStatement_removeQueuedVideosByRequesterId) {
+            if (!setPreparedStatement(preparedStatement_removeQueuedVideosByRequesterId, requesterId)) {
+                return false;
+            }
+            return Standard.silentError(() -> preparedStatement_removeQueuedVideosByRequesterId.executeUpdate()) > 0;
+        }
     }
     
     @Override
