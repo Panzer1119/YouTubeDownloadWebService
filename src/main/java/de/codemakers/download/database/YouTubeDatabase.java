@@ -19,6 +19,7 @@ package de.codemakers.download.database;
 import de.codemakers.base.Standard;
 import de.codemakers.base.exceptions.NotYetImplementedRuntimeException;
 import de.codemakers.base.logger.Logger;
+import de.codemakers.base.util.TimeUtil;
 import de.codemakers.base.util.tough.ToughFunction;
 import de.codemakers.base.util.tough.ToughSupplier;
 import de.codemakers.download.database.entities.DatabaseEntity;
@@ -30,6 +31,8 @@ import java.sql.ResultSet;
 import java.sql.Timestamp;
 import java.sql.Types;
 import java.time.Instant;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -1207,6 +1210,240 @@ public class YouTubeDatabase<C extends AbstractConnector> extends AbstractDataba
     
     private static int resultSetToPlaylistIndex(ResultSet resultSet) {
         return resultSetToR(resultSet, (resultSet_) -> resultSet_.getInt(YouTubeDatabaseConstants.IDENTIFIER_TABLE_PLAYLIST_VIDEOS_COLUMN_PLAYLIST_INDEX));
+    }
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    private static AuthorizationToken resultSetToAuthorizationToken(ResultSet resultSet) {
+        if (resultSet == null) {
+            return null;
+        }
+        final AuthorizationToken authorizationToken = Standard.silentError(() -> new AuthorizationToken(resultSet.getString(YouTubeDatabaseConstants.IDENTIFIER_TABLE_TOKEN_COLUMN_ID), AuthorizationToken.TokenLevel.valueOf(resultSet.getString(YouTubeDatabaseConstants.IDENTIFIER_TABLE_TOKEN_COLUMN_LEVEL)), Instant.ofEpochMilli(resultSet.getLong(YouTubeDatabaseConstants.IDENTIFIER_TABLE_TOKEN_COLUMN_CREATED)), resultSet.getLong(YouTubeDatabaseConstants.IDENTIFIER_TABLE_TOKEN_COLUMN_EXPIRATION) == 0 ? null : Instant.ofEpochMilli(resultSet.getLong(YouTubeDatabaseConstants.IDENTIFIER_TABLE_TOKEN_COLUMN_EXPIRATION))));
+        if (authorizationToken != null) {
+            Standard.silentError(() -> authorizationToken.setTimesUsed(resultSet.getInt(YouTubeDatabaseConstants.IDENTIFIER_TABLE_TOKEN_COLUMN_TIMES_USED)));
+        }
+        return authorizationToken;
+    }
+    
+    private static List<AuthorizationToken> resultSetToAuthorizationTokens(ResultSet resultSet) {
+        if (resultSet == null) {
+            return null; //TODO Hmm Should this be an empty list?
+        }
+        final List<AuthorizationToken> authorizationTokens = new ArrayList<>();
+        do {
+            final AuthorizationToken authorizationToken = resultSetToAuthorizationToken(resultSet);
+            if (authorizationToken != null) {
+                authorizationTokens.add(authorizationToken);
+            }
+        } while (Standard.silentError(resultSet::next));
+        return authorizationTokens;
+    }
+    
+    private static final DateTimeFormatter DATE_TIME_FORMATTER_UPLOAD_DATE_OLD = DateTimeFormatter.ofPattern("yyyyMMdd"); //FIXME REMOVE this
+    
+    private DatabaseYouTubeVideo resultSetToDatabaseYouTubeVideo(ResultSet resultSet) {
+        if (resultSet == null) {
+            return null;
+        }
+        final String uploadDate_OLD = Standard.silentError(() -> resultSet.getString(YouTubeDatabaseConstants.IDENTIFIER_TABLE_VIDEO_COLUMN_UPLOAD_DATE)); //FIXME Convert Database entries to TIMESTAMP?
+        final Instant uploadDate = uploadDate_OLD == null ? null : LocalDate.parse(uploadDate_OLD, DATE_TIME_FORMATTER_UPLOAD_DATE_OLD).atStartOfDay().toInstant(TimeUtil.ZONE_OFFSET_UTC);
+        //final Instant uploadDate = resultSet.getTimestamp(YouTubeDatabaseConstants.IDENTIFIER_TABLE_VIDEO_COLUMN_UPLOAD_DATE).toInstant();
+        return setDatabase(Standard.silentError(() -> new DatabaseYouTubeVideo(resultSet.getString(YouTubeDatabaseConstants.IDENTIFIER_TABLE_VIDEO_COLUMN_ID), resultSet.getString(YouTubeDatabaseConstants.IDENTIFIER_TABLE_VIDEO_COLUMN_CHANNEL_ID), resultSet.getString(YouTubeDatabaseConstants.IDENTIFIER_TABLE_VIDEO_COLUMN_UPLOADER_ID), resultSet.getString(YouTubeDatabaseConstants.IDENTIFIER_TABLE_VIDEO_COLUMN_TITLE), resultSet.getString(YouTubeDatabaseConstants.IDENTIFIER_TABLE_VIDEO_COLUMN_ALT_TITLE), resultSet.getLong(YouTubeDatabaseConstants.IDENTIFIER_TABLE_VIDEO_COLUMN_DURATION), uploadDate)));
+    }
+    
+    private List<DatabaseYouTubeVideo> resultSetToDatabaseYouTubeVideos(ResultSet resultSet) {
+        if (resultSet == null) {
+            return null; //TODO Hmm Should this be an empty list?
+        }
+        final List<DatabaseYouTubeVideo> databaseYouTubeVideos = new ArrayList<>();
+        do {
+            final DatabaseYouTubeVideo databaseYouTubeVideo = resultSetToDatabaseYouTubeVideo(resultSet);
+            if (databaseYouTubeVideo != null) {
+                databaseYouTubeVideos.add(databaseYouTubeVideo);
+            }
+        } while (Standard.silentError(resultSet::next));
+        return databaseYouTubeVideos;
+    }
+    
+    private DatabaseYouTubePlaylist resultSetToDatabaseYouTubePlaylist(ResultSet resultSet) {
+        if (resultSet == null) {
+            return null;
+        }
+        return setDatabase(Standard.silentError(() -> new DatabaseYouTubePlaylist(resultSet.getString(YouTubeDatabaseConstants.IDENTIFIER_TABLE_PLAYLIST_COLUMN_ID), resultSet.getString(YouTubeDatabaseConstants.IDENTIFIER_TABLE_PLAYLIST_COLUMN_UPLOADER_ID), resultSet.getString(YouTubeDatabaseConstants.IDENTIFIER_TABLE_PLAYLIST_COLUMN_TITLE), resultSet.getString(YouTubeDatabaseConstants.IDENTIFIER_TABLE_PLAYLIST_COLUMN_PLAYLIST)))); //TODO Timestamp?
+    }
+    
+    private List<DatabaseYouTubePlaylist> resultSetToDatabaseYouTubePlaylists(ResultSet resultSet) {
+        if (resultSet == null) {
+            return null; //TODO Hmm Should this be an empty list?
+        }
+        final List<DatabaseYouTubePlaylist> databaseYouTubePlaylists = new ArrayList<>();
+        do {
+            final DatabaseYouTubePlaylist databaseYouTubePlaylist = resultSetToDatabaseYouTubePlaylist(resultSet);
+            if (databaseYouTubePlaylist != null) {
+                databaseYouTubePlaylists.add(databaseYouTubePlaylist);
+            }
+        } while (Standard.silentError(resultSet::next));
+        return databaseYouTubePlaylists;
+    }
+    
+    private DatabaseQueuedYouTubeVideo resultSetToDatabaseQueuedYouTubeVideo(ResultSet resultSet) {
+        if (resultSet == null) {
+            return null;
+        }
+        return setDatabase(Standard.silentError(() -> new DatabaseQueuedYouTubeVideo(resultSet.getInt(YouTubeDatabaseConstants.IDENTIFIER_TABLE_VIDEO_QUEUE_COLUMN_ID), resultSet.getString(YouTubeDatabaseConstants.IDENTIFIER_TABLE_VIDEO_QUEUE_COLUMN_VIDEO_ID), resultSet.getInt(YouTubeDatabaseConstants.IDENTIFIER_TABLE_VIDEO_QUEUE_COLUMN_PRIORITY), resultSet.getTimestamp(YouTubeDatabaseConstants.IDENTIFIER_TABLE_VIDEO_QUEUE_COLUMN_REQUESTED).toInstant(), resultSet.getInt(YouTubeDatabaseConstants.IDENTIFIER_TABLE_VIDEO_QUEUE_COLUMN_REQUESTER_ID), resultSet.getString(YouTubeDatabaseConstants.IDENTIFIER_TABLE_VIDEO_QUEUE_COLUMN_FILE_TYPE), resultSet.getString(YouTubeDatabaseConstants.IDENTIFIER_TABLE_VIDEO_QUEUE_COLUMN_ARGUMENTS), resultSet.getString(YouTubeDatabaseConstants.IDENTIFIER_TABLE_VIDEO_QUEUE_COLUMN_CONFIG_FILE), resultSet.getString(YouTubeDatabaseConstants.IDENTIFIER_TABLE_VIDEO_QUEUE_COLUMN_OUTPUT_DIRECTORY), QueuedVideoState.ofState(resultSet.getString(YouTubeDatabaseConstants.IDENTIFIER_TABLE_VIDEO_QUEUE_COLUMN_STATE)))));
+    }
+    
+    private List<DatabaseQueuedYouTubeVideo> resultSetToDatabaseQueuedYouTubeVideos(ResultSet resultSet) {
+        if (resultSet == null) {
+            return null; //TODO Hmm Should this be an empty list?
+        }
+        final List<DatabaseQueuedYouTubeVideo> databaseQueuedYouTubeVideos = new ArrayList<>();
+        do {
+            final DatabaseQueuedYouTubeVideo databaseQueuedYouTubeVideo = resultSetToDatabaseQueuedYouTubeVideo(resultSet);
+            if (databaseQueuedYouTubeVideo != null) {
+                databaseQueuedYouTubeVideos.add(databaseQueuedYouTubeVideo);
+            }
+        } while (Standard.silentError(resultSet::next));
+        return databaseQueuedYouTubeVideos;
+    }
+    
+    private DatabaseMediaFile resultSetToDatabaseMediaFile(ResultSet resultSet) {
+        if (resultSet == null) {
+            return null;
+        }
+        return setDatabase(Standard.silentError(() -> new DatabaseMediaFile(resultSet.getString(YouTubeDatabaseConstants.IDENTIFIER_TABLE_FILE_MEDIA_COLUMN_VIDEO_ID), resultSet.getString(YouTubeDatabaseConstants.IDENTIFIER_TABLE_FILE_MEDIA_COLUMN_FILE), resultSet.getString(YouTubeDatabaseConstants.IDENTIFIER_TABLE_FILE_MEDIA_COLUMN_FILE_TYPE), resultSet.getTimestamp(YouTubeDatabaseConstants.IDENTIFIER_TABLE_FILE_MEDIA_COLUMN_CREATED).toInstant(), resultSet.getString(YouTubeDatabaseConstants.IDENTIFIER_TABLE_FILE_MEDIA_COLUMN_FORMAT), resultSet.getString(YouTubeDatabaseConstants.IDENTIFIER_TABLE_FILE_MEDIA_COLUMN_VCODEC), resultSet.getString(YouTubeDatabaseConstants.IDENTIFIER_TABLE_FILE_MEDIA_COLUMN_ACODEC), resultSet.getInt(YouTubeDatabaseConstants.IDENTIFIER_TABLE_FILE_MEDIA_COLUMN_WIDTH), resultSet.getInt(YouTubeDatabaseConstants.IDENTIFIER_TABLE_FILE_MEDIA_COLUMN_HEIGHT), resultSet.getInt(YouTubeDatabaseConstants.IDENTIFIER_TABLE_FILE_MEDIA_COLUMN_FPS), resultSet.getInt(YouTubeDatabaseConstants.IDENTIFIER_TABLE_FILE_MEDIA_COLUMN_ASR))));
+    }
+    
+    private List<DatabaseMediaFile> resultSetToDatabaseMediaFiles(ResultSet resultSet) {
+        if (resultSet == null) {
+            return null; //TODO Hmm Should this be an empty list?
+        }
+        final List<DatabaseMediaFile> databaseMediaFiles = new ArrayList<>();
+        do {
+            final DatabaseMediaFile databaseMediaFile = resultSetToDatabaseMediaFile(resultSet);
+            if (databaseMediaFile != null) {
+                databaseMediaFiles.add(databaseMediaFile);
+            }
+        } while (Standard.silentError(resultSet::next));
+        return databaseMediaFiles;
+    }
+    
+    private DatabaseExtraFile resultSetToDatabaseExtraFile(ResultSet resultSet) {
+        if (resultSet == null) {
+            return null;
+        }
+        return setDatabase(Standard.silentError(() -> new DatabaseExtraFile(resultSet.getString(YouTubeDatabaseConstants.IDENTIFIER_TABLE_FILE_EXTRA_COLUMN_VIDEO_ID), resultSet.getString(YouTubeDatabaseConstants.IDENTIFIER_TABLE_FILE_EXTRA_COLUMN_FILE), resultSet.getString(YouTubeDatabaseConstants.IDENTIFIER_TABLE_FILE_EXTRA_COLUMN_FILE_TYPE), resultSet.getTimestamp(YouTubeDatabaseConstants.IDENTIFIER_TABLE_FILE_EXTRA_COLUMN_CREATED).toInstant())));
+    }
+    
+    private List<DatabaseExtraFile> resultSetToDatabaseExtraFiles(ResultSet resultSet) {
+        if (resultSet == null) {
+            return null; //TODO Hmm Should this be an empty list?
+        }
+        final List<DatabaseExtraFile> databaseExtraFiles = new ArrayList<>();
+        do {
+            final DatabaseExtraFile databaseExtraFile = resultSetToDatabaseExtraFile(resultSet);
+            if (databaseExtraFile != null) {
+                databaseExtraFiles.add(databaseExtraFile);
+            }
+        } while (Standard.silentError(resultSet::next));
+        return databaseExtraFiles;
+    }
+    
+    private DatabaseYouTubeChannel resultSetToDatabaseYouTubeChannel(ResultSet resultSet) {
+        if (resultSet == null) {
+            return null;
+        }
+        return setDatabase(Standard.silentError(() -> new DatabaseYouTubeChannel(resultSet.getString(YouTubeDatabaseConstants.IDENTIFIER_TABLE_CHANNEL_COLUMN_ID), resultSet.getString(YouTubeDatabaseConstants.IDENTIFIER_TABLE_CHANNEL_COLUMN_NAME)))); //TODO Timestamp?
+    }
+    
+    private List<DatabaseYouTubeChannel> resultSetToDatabaseYouTubeChannels(ResultSet resultSet) {
+        if (resultSet == null) {
+            return null; //TODO Hmm Should this be an empty list?
+        }
+        final List<DatabaseYouTubeChannel> databaseYouTubeChannels = new ArrayList<>();
+        do {
+            final DatabaseYouTubeChannel databaseYouTubeChannel = resultSetToDatabaseYouTubeChannel(resultSet);
+            if (databaseYouTubeChannel != null) {
+                databaseYouTubeChannels.add(databaseYouTubeChannel);
+            }
+        } while (Standard.silentError(resultSet::next));
+        return databaseYouTubeChannels;
+    }
+    
+    private DatabaseYouTubeUploader resultSetToDatabaseYouTubeUploader(ResultSet resultSet) {
+        if (resultSet == null) {
+            return null;
+        }
+        return setDatabase(Standard.silentError(() -> new DatabaseYouTubeUploader(resultSet.getString(YouTubeDatabaseConstants.IDENTIFIER_TABLE_UPLOADER_COLUMN_ID), resultSet.getString(YouTubeDatabaseConstants.IDENTIFIER_TABLE_UPLOADER_COLUMN_NAME)))); //TODO Timestamp?
+    }
+    
+    private List<DatabaseYouTubeUploader> resultSetToDatabaseYouTubeUploaders(ResultSet resultSet) {
+        if (resultSet == null) {
+            return null; //TODO Hmm Should this be an empty list?
+        }
+        final List<DatabaseYouTubeUploader> databaseYouTubeUploaders = new ArrayList<>();
+        do {
+            final DatabaseYouTubeUploader databaseYouTubeUploader = resultSetToDatabaseYouTubeUploader(resultSet);
+            if (databaseYouTubeUploader != null) {
+                databaseYouTubeUploaders.add(databaseYouTubeUploader);
+            }
+        } while (Standard.silentError(resultSet::next));
+        return databaseYouTubeUploaders;
+    }
+    
+    private DatabaseRequester resultSetToDatabaseRequester(ResultSet resultSet) {
+        if (resultSet == null) {
+            return null;
+        }
+        return setDatabase(Standard.silentError(() -> new DatabaseRequester(resultSet.getInt(YouTubeDatabaseConstants.IDENTIFIER_TABLE_REQUESTER_COLUMN_ID), resultSet.getString(YouTubeDatabaseConstants.IDENTIFIER_TABLE_REQUESTER_COLUMN_TAG), resultSet.getString(YouTubeDatabaseConstants.IDENTIFIER_TABLE_REQUESTER_COLUMN_NAME), resultSet.getTimestamp(YouTubeDatabaseConstants.IDENTIFIER_TABLE_REQUESTER_COLUMN_CREATED).toInstant())));
+    }
+    
+    private List<DatabaseRequester> resultSetToDatabaseRequesters(ResultSet resultSet) {
+        if (resultSet == null) {
+            return null; //TODO Hmm Should this be an empty list?
+        }
+        final List<DatabaseRequester> databaseRequesters = new ArrayList<>();
+        do {
+            final DatabaseRequester databaseRequester = resultSetToDatabaseRequester(resultSet);
+            if (databaseRequester != null) {
+                databaseRequesters.add(databaseRequester);
+            }
+        } while (Standard.silentError(resultSet::next));
+        return databaseRequesters;
     }
     
     protected static void createTables(YouTubeDatabase<?> database) {
