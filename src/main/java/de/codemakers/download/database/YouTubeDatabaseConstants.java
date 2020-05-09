@@ -100,6 +100,7 @@ public class YouTubeDatabaseConstants {
     public static final String IDENTIFIER_TABLE_REQUESTER_COLUMN_CREATED = "created";
     // Table: Token
     public static final String IDENTIFIER_TABLE_TOKEN_COLUMN_ID = "id";
+    public static final String IDENTIFIER_TABLE_TOKEN_COLUMN_TOKEN = "token";
     public static final String IDENTIFIER_TABLE_TOKEN_COLUMN_LEVEL = "level";
     public static final String IDENTIFIER_TABLE_TOKEN_COLUMN_CREATED = "created";
     public static final String IDENTIFIER_TABLE_TOKEN_COLUMN_EXPIRATION = "expiration";
@@ -285,9 +286,13 @@ public class YouTubeDatabaseConstants {
      */
     public static final String QUERY_TABLE_TOKEN_SELECT_ALL = String.format("SELECT * FROM %s;", IDENTIFIER_TABLE_TOKEN);
     /**
+     * 1. Argument: Token ID
+     */
+    public static final String QUERY_TABLE_TOKEN_SELECT_BY_TOKEN_ID = String.format("SELECT * FROM %s WHERE %s = ?;", IDENTIFIER_TABLE_TOKEN, IDENTIFIER_TABLE_TOKEN_COLUMN_ID);
+    /**
      * 1. Argument: Token
      */
-    public static final String QUERY_TABLE_TOKEN_SELECT_BY_TOKEN = String.format("SELECT * FROM %s WHERE %s = ?;", IDENTIFIER_TABLE_TOKEN, IDENTIFIER_TABLE_TOKEN_COLUMN_ID);
+    public static final String QUERY_TABLE_TOKEN_SELECT_BY_TOKEN = String.format("SELECT * FROM %s WHERE %s = ?;", IDENTIFIER_TABLE_TOKEN, IDENTIFIER_TABLE_TOKEN_COLUMN_TOKEN);
     // Table: Video
     /**
      * No arguments
@@ -461,7 +466,7 @@ public class YouTubeDatabaseConstants {
      * <br>
      * 4. Argument: Expiration
      */
-    public static final String QUERY_TABLE_TOKEN_INSERT = String.format("INSERT INTO %s (%s, %s, %s, %s) VALUES (?, ?, ?, ?);", IDENTIFIER_TABLE_TOKEN, IDENTIFIER_TABLE_TOKEN_COLUMN_ID, IDENTIFIER_TABLE_TOKEN_COLUMN_LEVEL, IDENTIFIER_TABLE_TOKEN_COLUMN_CREATED, IDENTIFIER_TABLE_TOKEN_COLUMN_EXPIRATION);
+    public static final String QUERY_TABLE_TOKEN_INSERT = String.format("INSERT INTO %s (%s, %s, %s, %s) VALUES (?, ?, ?, ?);", IDENTIFIER_TABLE_TOKEN, IDENTIFIER_TABLE_TOKEN_COLUMN_TOKEN, IDENTIFIER_TABLE_TOKEN_COLUMN_LEVEL, IDENTIFIER_TABLE_TOKEN_COLUMN_CREATED, IDENTIFIER_TABLE_TOKEN_COLUMN_EXPIRATION);
     // Table: Uploader
     /**
      * 1. Argument: Uploader ID
@@ -628,6 +633,22 @@ public class YouTubeDatabaseConstants {
     public static final String QUERY_TABLE_REQUESTER_UPDATE_BY_TAG = String.format("UPDATE %s SET %s = ?, %s = ? WHERE %s = ?;", IDENTIFIER_TABLE_REQUESTER, IDENTIFIER_TABLE_REQUESTER_COLUMN_TAG, IDENTIFIER_TABLE_REQUESTER_COLUMN_NAME, IDENTIFIER_TABLE_REQUESTER_COLUMN_TAG);
     // Table: Token
     /**
+     * 1. Argument: (New) Token ID
+     * <br>
+     * 2. Argument: Token
+     * <br>
+     * 3. Argument: Level
+     * <br>
+     * 4. Argument: Created
+     * <br>
+     * 5. Argument: Expiration
+     * <br>
+     * 6. Argument: Times used
+     * <br>
+     * 7. Argument: (Old) Token ID
+     */
+    public static final String QUERY_TABLE_TOKEN_UPDATE_BY_TOKEN_ID = String.format("UPDATE %s SET %s = ?, %s = ?, %s = ?, %s = ?, %s = ?, %s = ? WHERE %s = ?;", IDENTIFIER_TABLE_TOKEN, IDENTIFIER_TABLE_TOKEN_COLUMN_ID, IDENTIFIER_TABLE_TOKEN_COLUMN_TOKEN, IDENTIFIER_TABLE_TOKEN_COLUMN_LEVEL, IDENTIFIER_TABLE_TOKEN_COLUMN_CREATED, IDENTIFIER_TABLE_TOKEN_COLUMN_EXPIRATION, IDENTIFIER_TABLE_TOKEN_COLUMN_TIMES_USED, IDENTIFIER_TABLE_TOKEN_COLUMN_ID);
+    /**
      * 1. Argument: (New) Token
      * <br>
      * 2. Argument: Level
@@ -640,13 +661,19 @@ public class YouTubeDatabaseConstants {
      * <br>
      * 6. Argument: (Old) Token
      */
-    public static final String QUERY_TABLE_TOKEN_UPDATE_BY_TOKEN = String.format("UPDATE %s SET %s = ?, %s = ?, %s = ?, %s = ?, %s = ? WHERE %s = ?;", IDENTIFIER_TABLE_TOKEN, IDENTIFIER_TABLE_TOKEN_COLUMN_ID, IDENTIFIER_TABLE_TOKEN_COLUMN_LEVEL, IDENTIFIER_TABLE_TOKEN_COLUMN_CREATED, IDENTIFIER_TABLE_TOKEN_COLUMN_EXPIRATION, IDENTIFIER_TABLE_TOKEN_COLUMN_TIMES_USED, IDENTIFIER_TABLE_TOKEN_COLUMN_ID);
+    public static final String QUERY_TABLE_TOKEN_UPDATE_BY_TOKEN = String.format("UPDATE %s SET %s = ?, %s = ?, %s = ?, %s = ?, %s = ? WHERE %s = ?;", IDENTIFIER_TABLE_TOKEN, IDENTIFIER_TABLE_TOKEN_COLUMN_TOKEN, IDENTIFIER_TABLE_TOKEN_COLUMN_LEVEL, IDENTIFIER_TABLE_TOKEN_COLUMN_CREATED, IDENTIFIER_TABLE_TOKEN_COLUMN_EXPIRATION, IDENTIFIER_TABLE_TOKEN_COLUMN_TIMES_USED, IDENTIFIER_TABLE_TOKEN_COLUMN_TOKEN);
+    /**
+     * 1. Argument: Times used
+     * <br>
+     * 2. Argument: Token ID
+     */
+    public static final String QUERY_TABLE_TOKEN_UPDATE_USED_BY_TOKEN_ID = String.format("UPDATE %s SET %s = ? WHERE %s = ?;", IDENTIFIER_TABLE_TOKEN, IDENTIFIER_TABLE_TOKEN_COLUMN_TIMES_USED, IDENTIFIER_TABLE_TOKEN_COLUMN_ID);
     /**
      * 1. Argument: Times used
      * <br>
      * 2. Argument: Token
      */
-    public static final String QUERY_TABLE_TOKEN_UPDATE_USED_BY_TOKEN = String.format("UPDATE %s SET %s = ? WHERE %s = ?;", IDENTIFIER_TABLE_TOKEN, IDENTIFIER_TABLE_TOKEN_COLUMN_TIMES_USED, IDENTIFIER_TABLE_TOKEN_COLUMN_ID);
+    public static final String QUERY_TABLE_TOKEN_UPDATE_USED_BY_TOKEN = String.format("UPDATE %s SET %s = ? WHERE %s = ?;", IDENTIFIER_TABLE_TOKEN, IDENTIFIER_TABLE_TOKEN_COLUMN_TIMES_USED, IDENTIFIER_TABLE_TOKEN_COLUMN_TOKEN);
     // Table: Uploader
     /**
      * 1. Argument: (New) Uploader ID
@@ -831,9 +858,13 @@ public class YouTubeDatabaseConstants {
      */
     public static final String QUERY_TABLE_TOKEN_DELETE_ALL = String.format("DELETE FROM %s;", IDENTIFIER_TABLE_TOKEN);
     /**
+     * 1. Argument: Token ID
+     */
+    public static final String QUERY_TABLE_TOKEN_DELETE_BY_TOKEN_ID = String.format("DELETE FROM %s WHERE %s = ?;", IDENTIFIER_TABLE_TOKEN, IDENTIFIER_TABLE_TOKEN_COLUMN_ID);
+    /**
      * 1. Argument: Token
      */
-    public static final String QUERY_TABLE_TOKEN_DELETE_BY_TOKEN = String.format("DELETE FROM %s WHERE %s = ?;", IDENTIFIER_TABLE_TOKEN, IDENTIFIER_TABLE_TOKEN_COLUMN_ID);
+    public static final String QUERY_TABLE_TOKEN_DELETE_BY_TOKEN = String.format("DELETE FROM %s WHERE %s = ?;", IDENTIFIER_TABLE_TOKEN, IDENTIFIER_TABLE_TOKEN_COLUMN_TOKEN);
     // Table: Uploader
     /**
      * No arguments

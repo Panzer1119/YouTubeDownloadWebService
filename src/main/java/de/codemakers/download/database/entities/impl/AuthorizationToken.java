@@ -25,25 +25,36 @@ import java.util.Objects;
 
 public class AuthorizationToken extends BasicToken implements Comparable<AuthorizationToken> {
     
+    protected int id;
     protected final TokenLevel level;
     //
     private transient int timesUsed = 0;
     
-    public AuthorizationToken(String token, TokenLevel level) {
-        this(token, level, null);
+    public AuthorizationToken(int id, String token, TokenLevel level) {
+        this(id, token, level, null);
     }
     
-    public AuthorizationToken(String token, TokenLevel level, Duration validDuration) {
-        this(token, level, Instant.now(), validDuration);
+    public AuthorizationToken(int id, String token, TokenLevel level, Duration validDuration) {
+        this(id, token, level, Instant.now(), validDuration);
     }
     
-    public AuthorizationToken(String token, TokenLevel level, Instant created, Duration validDuration) {
-        this(token, level, created, validDuration == null ? null : created.plus(validDuration));
+    public AuthorizationToken(int id, String token, TokenLevel level, Instant created, Duration validDuration) {
+        this(id, token, level, created, validDuration == null ? null : created.plus(validDuration));
     }
     
-    public AuthorizationToken(String token, TokenLevel level, Instant created, Instant expiration) {
+    public AuthorizationToken(int id, String token, TokenLevel level, Instant created, Instant expiration) {
         super(token, created, expiration);
+        this.id = id;
         this.level = level == null ? TokenLevel.UNKNOWN : level;
+    }
+    
+    public int getId() {
+        return id;
+    }
+    
+    public AuthorizationToken setId(int id) {
+        this.id = id;
+        return this;
     }
     
     public TokenLevel getLevel() {
@@ -69,7 +80,7 @@ public class AuthorizationToken extends BasicToken implements Comparable<Authori
     
     @Override
     public String toString() {
-        return "DatabaseToken{" + "level=" + level + ", timesUsed=" + timesUsed + ", created=" + created + ", expiration=" + expiration + ", token='" + token + '\'' + '}';
+        return "AuthorizationToken{" + "id=" + id + ", level=" + level + ", timesUsed=" + timesUsed + ", created=" + created + ", expiration=" + expiration + ", token='" + token + '\'' + '}';
     }
     
     @Override
@@ -106,7 +117,7 @@ public class AuthorizationToken extends BasicToken implements Comparable<Authori
     }
     
     public static final AuthorizationToken generateSingleUseToken(Instant created, Instant expiration) {
-        return new AuthorizationToken(generateRandomToken(TokenLevel.SINGLE_USE), TokenLevel.SINGLE_USE, created, expiration);
+        return new AuthorizationToken(-1, generateRandomToken(TokenLevel.SINGLE_USE), TokenLevel.SINGLE_USE, created, expiration);
     }
     
     //
@@ -116,7 +127,7 @@ public class AuthorizationToken extends BasicToken implements Comparable<Authori
     }
     
     public static final AuthorizationToken generateUnlimitedUseToken(Instant created, Instant expiration) {
-        return new AuthorizationToken(generateRandomToken(TokenLevel.UNLIMITED_USE), TokenLevel.UNLIMITED_USE, created, expiration);
+        return new AuthorizationToken(-2, generateRandomToken(TokenLevel.UNLIMITED_USE), TokenLevel.UNLIMITED_USE, created, expiration);
     }
     
     //
@@ -126,7 +137,7 @@ public class AuthorizationToken extends BasicToken implements Comparable<Authori
     }
     
     public static final AuthorizationToken generateGranterToken(Instant created, Instant expiration) {
-        return new AuthorizationToken(generateRandomToken(TokenLevel.GRANTER), TokenLevel.GRANTER, created, expiration);
+        return new AuthorizationToken(-2, generateRandomToken(TokenLevel.GRANTER), TokenLevel.GRANTER, created, expiration);
     }
     
     //
@@ -136,7 +147,7 @@ public class AuthorizationToken extends BasicToken implements Comparable<Authori
     }
     
     public static final AuthorizationToken generateSuperGranterToken(Instant created, Instant expiration) {
-        return new AuthorizationToken(generateRandomToken(TokenLevel.SUPER_GRANTER), TokenLevel.SUPER_GRANTER, created, expiration);
+        return new AuthorizationToken(-2, generateRandomToken(TokenLevel.SUPER_GRANTER), TokenLevel.SUPER_GRANTER, created, expiration);
     }
     
     //
@@ -146,7 +157,7 @@ public class AuthorizationToken extends BasicToken implements Comparable<Authori
     }
     
     public static final AuthorizationToken generateAdminToken(Instant created, Instant expiration) {
-        return new AuthorizationToken(generateRandomToken(TokenLevel.ADMIN), TokenLevel.ADMIN, created, expiration);
+        return new AuthorizationToken(-2, generateRandomToken(TokenLevel.ADMIN), TokenLevel.ADMIN, created, expiration);
     }
     
     //
@@ -156,7 +167,7 @@ public class AuthorizationToken extends BasicToken implements Comparable<Authori
     }
     
     public static final AuthorizationToken generateRootToken(Instant created, Instant expiration) {
-        return new AuthorizationToken(generateRandomToken(TokenLevel.ROOT), TokenLevel.ROOT, created, expiration);
+        return new AuthorizationToken(-2, generateRandomToken(TokenLevel.ROOT), TokenLevel.ROOT, created, expiration);
     }
     
     //
@@ -232,11 +243,11 @@ public class AuthorizationToken extends BasicToken implements Comparable<Authori
         public int getLevel() {
             return level;
         }
-    
+        
         public int getLength() {
             return length;
         }
-    
+        
         public boolean isGranting() {
             return grants;
         }

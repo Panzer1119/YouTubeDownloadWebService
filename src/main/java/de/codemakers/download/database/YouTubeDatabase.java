@@ -81,6 +81,7 @@ public class YouTubeDatabase<C extends AbstractConnector> extends AbstractDataba
     private transient PreparedStatement preparedStatement_getRequesterByTag = null;
     // Table: Token
     private transient PreparedStatement preparedStatement_getAllTokens = null;
+    private transient PreparedStatement preparedStatement_getTokenByTokenId = null;
     private transient PreparedStatement preparedStatement_getTokenByToken = null;
     // Table: Uploader
     private transient PreparedStatement preparedStatement_getAllUploaders = null;
@@ -151,7 +152,9 @@ public class YouTubeDatabase<C extends AbstractConnector> extends AbstractDataba
     private transient PreparedStatement preparedStatement_setRequesterByRequesterId = null;
     private transient PreparedStatement preparedStatement_setRequesterByTag = null;
     // Table: Token
+    private transient PreparedStatement preparedStatement_setTokenByTokenId = null;
     private transient PreparedStatement preparedStatement_setTokenByToken = null;
+    private transient PreparedStatement preparedStatement_setTokenTimesUsedByTokenId = null;
     private transient PreparedStatement preparedStatement_setTokenTimesUsedByToken = null;
     // Table: Uploader
     private transient PreparedStatement preparedStatement_setUploaderByUploaderId = null;
@@ -197,6 +200,7 @@ public class YouTubeDatabase<C extends AbstractConnector> extends AbstractDataba
     private transient PreparedStatement preparedStatement_removeRequesterByTag = null;
     // Table: Token
     private transient PreparedStatement preparedStatement_removeAllTokens = null;
+    private transient PreparedStatement preparedStatement_removeTokenByTokenId = null;
     private transient PreparedStatement preparedStatement_removeTokenByToken = null;
     // Table: Uploader
     private transient PreparedStatement preparedStatement_removeAllUploaders = null;
@@ -299,6 +303,7 @@ public class YouTubeDatabase<C extends AbstractConnector> extends AbstractDataba
         preparedStatement_getRequesterByTag = createPreparedStatement(YouTubeDatabaseConstants.QUERY_TABLE_REQUESTER_SELECT_BY_TAG);
         // Table: Token
         preparedStatement_getAllTokens = createPreparedStatement(YouTubeDatabaseConstants.QUERY_TABLE_TOKEN_SELECT_ALL);
+        preparedStatement_getTokenByTokenId = createPreparedStatement(YouTubeDatabaseConstants.QUERY_TABLE_TOKEN_SELECT_BY_TOKEN_ID);
         preparedStatement_getTokenByToken = createPreparedStatement(YouTubeDatabaseConstants.QUERY_TABLE_TOKEN_SELECT_BY_TOKEN);
         // Table: Uploader
         preparedStatement_getAllUploaders = createPreparedStatement(YouTubeDatabaseConstants.QUERY_TABLE_UPLOADER_SELECT_ALL);
@@ -369,7 +374,9 @@ public class YouTubeDatabase<C extends AbstractConnector> extends AbstractDataba
         preparedStatement_setRequesterByRequesterId = createPreparedStatement(YouTubeDatabaseConstants.QUERY_TABLE_REQUESTER_UPDATE_BY_REQUESTER_ID);
         preparedStatement_setRequesterByTag = createPreparedStatement(YouTubeDatabaseConstants.QUERY_TABLE_REQUESTER_UPDATE_BY_TAG);
         // Table: Token
+        preparedStatement_setTokenByTokenId = createPreparedStatement(YouTubeDatabaseConstants.QUERY_TABLE_TOKEN_UPDATE_BY_TOKEN_ID);
         preparedStatement_setTokenByToken = createPreparedStatement(YouTubeDatabaseConstants.QUERY_TABLE_TOKEN_UPDATE_BY_TOKEN);
+        preparedStatement_setTokenTimesUsedByTokenId = createPreparedStatement(YouTubeDatabaseConstants.QUERY_TABLE_TOKEN_UPDATE_USED_BY_TOKEN_ID);
         preparedStatement_setTokenTimesUsedByToken = createPreparedStatement(YouTubeDatabaseConstants.QUERY_TABLE_TOKEN_UPDATE_USED_BY_TOKEN);
         // Table: Uploader
         preparedStatement_setUploaderByUploaderId = createPreparedStatement(YouTubeDatabaseConstants.QUERY_TABLE_UPLOADER_UPDATE_BY_UPLOADER_ID);
@@ -415,6 +422,7 @@ public class YouTubeDatabase<C extends AbstractConnector> extends AbstractDataba
         preparedStatement_removeRequesterByTag = createPreparedStatement(YouTubeDatabaseConstants.QUERY_TABLE_REQUESTER_DELETE_BY_TAG);
         // Table: Token
         preparedStatement_removeAllTokens = createPreparedStatement(YouTubeDatabaseConstants.QUERY_TABLE_TOKEN_DELETE_ALL);
+        preparedStatement_removeTokenByTokenId = createPreparedStatement(YouTubeDatabaseConstants.QUERY_TABLE_TOKEN_DELETE_BY_TOKEN_ID);
         preparedStatement_removeTokenByToken = createPreparedStatement(YouTubeDatabaseConstants.QUERY_TABLE_TOKEN_DELETE_BY_TOKEN);
         // Table: Uploader
         preparedStatement_removeAllUploaders = createPreparedStatement(YouTubeDatabaseConstants.QUERY_TABLE_UPLOADER_DELETE_ALL);
@@ -480,6 +488,7 @@ public class YouTubeDatabase<C extends AbstractConnector> extends AbstractDataba
         IOUtil.closeQuietly(preparedStatement_getRequesterByTag);
         // Table: Token
         IOUtil.closeQuietly(preparedStatement_getAllTokens);
+        IOUtil.closeQuietly(preparedStatement_getTokenByTokenId);
         IOUtil.closeQuietly(preparedStatement_getTokenByToken);
         // Table: Uploader
         IOUtil.closeQuietly(preparedStatement_getAllUploaders);
@@ -550,7 +559,9 @@ public class YouTubeDatabase<C extends AbstractConnector> extends AbstractDataba
         IOUtil.closeQuietly(preparedStatement_setRequesterByRequesterId);
         IOUtil.closeQuietly(preparedStatement_setRequesterByTag);
         // Table: Token
+        IOUtil.closeQuietly(preparedStatement_setTokenByTokenId);
         IOUtil.closeQuietly(preparedStatement_setTokenByToken);
+        IOUtil.closeQuietly(preparedStatement_setTokenTimesUsedByTokenId);
         IOUtil.closeQuietly(preparedStatement_setTokenTimesUsedByToken);
         // Table: Uploader
         IOUtil.closeQuietly(preparedStatement_setUploaderByUploaderId);
@@ -596,6 +607,7 @@ public class YouTubeDatabase<C extends AbstractConnector> extends AbstractDataba
         IOUtil.closeQuietly(preparedStatement_removeRequesterByTag);
         // Table: Token
         IOUtil.closeQuietly(preparedStatement_removeAllTokens);
+        IOUtil.closeQuietly(preparedStatement_removeTokenByTokenId);
         IOUtil.closeQuietly(preparedStatement_removeTokenByToken);
         // Table: Uploader
         IOUtil.closeQuietly(preparedStatement_removeAllUploaders);
@@ -1461,7 +1473,10 @@ public class YouTubeDatabase<C extends AbstractConnector> extends AbstractDataba
             if (!setPreparedStatement(preparedStatement_addToken, authorizationToken.getToken(), authorizationToken.getLevel().name(), authorizationToken.getCreated().toEpochMilli(), authorizationToken.getExpiration() == null ? 0 : authorizationToken.getExpiration().toEpochMilli())) {
                 return false;
             }
-            return Standard.silentError(() -> preparedStatement_addToken.executeUpdate()) > 0;
+            final boolean success = Standard.silentError(() -> preparedStatement_addToken.executeUpdate()) > 0;
+            final int id = getLastInsertId();
+            authorizationToken.setId(id);
+            return success;
         }
     }
     
@@ -1943,7 +1958,7 @@ public class YouTubeDatabase<C extends AbstractConnector> extends AbstractDataba
         if (resultSet == null) {
             return null;
         }
-        final AuthorizationToken authorizationToken = Standard.silentError(() -> new AuthorizationToken(resultSet.getString(YouTubeDatabaseConstants.IDENTIFIER_TABLE_TOKEN_COLUMN_ID), AuthorizationToken.TokenLevel.valueOf(resultSet.getString(YouTubeDatabaseConstants.IDENTIFIER_TABLE_TOKEN_COLUMN_LEVEL)), Instant.ofEpochMilli(resultSet.getLong(YouTubeDatabaseConstants.IDENTIFIER_TABLE_TOKEN_COLUMN_CREATED)), resultSet.getLong(YouTubeDatabaseConstants.IDENTIFIER_TABLE_TOKEN_COLUMN_EXPIRATION) == 0 ? null : Instant.ofEpochMilli(resultSet.getLong(YouTubeDatabaseConstants.IDENTIFIER_TABLE_TOKEN_COLUMN_EXPIRATION))));
+        final AuthorizationToken authorizationToken = Standard.silentError(() -> new AuthorizationToken(resultSet.getInt(YouTubeDatabaseConstants.IDENTIFIER_TABLE_TOKEN_COLUMN_ID), resultSet.getString(YouTubeDatabaseConstants.IDENTIFIER_TABLE_TOKEN_COLUMN_TOKEN), AuthorizationToken.TokenLevel.valueOf(resultSet.getString(YouTubeDatabaseConstants.IDENTIFIER_TABLE_TOKEN_COLUMN_LEVEL)), Instant.ofEpochMilli(resultSet.getLong(YouTubeDatabaseConstants.IDENTIFIER_TABLE_TOKEN_COLUMN_CREATED)), resultSet.getLong(YouTubeDatabaseConstants.IDENTIFIER_TABLE_TOKEN_COLUMN_EXPIRATION) == 0 ? null : Instant.ofEpochMilli(resultSet.getLong(YouTubeDatabaseConstants.IDENTIFIER_TABLE_TOKEN_COLUMN_EXPIRATION))));
         if (authorizationToken != null) {
             Standard.silentError(() -> authorizationToken.setTimesUsed(resultSet.getInt(YouTubeDatabaseConstants.IDENTIFIER_TABLE_TOKEN_COLUMN_TIMES_USED)));
         }
