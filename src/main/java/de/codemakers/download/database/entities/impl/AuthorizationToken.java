@@ -50,7 +50,7 @@ public class AuthorizationToken extends BasicToken implements Comparable<Authori
         return level;
     }
     
-    protected AuthorizationToken setTimesUsed(int timesUsed) {
+    public AuthorizationToken setTimesUsed(int timesUsed) {
         this.timesUsed = timesUsed;
         return this;
     }

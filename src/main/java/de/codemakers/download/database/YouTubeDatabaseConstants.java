@@ -102,7 +102,7 @@ public class YouTubeDatabaseConstants {
     public static final String IDENTIFIER_TABLE_TOKEN_COLUMN_LEVEL = "level";
     public static final String IDENTIFIER_TABLE_TOKEN_COLUMN_CREATED = "created";
     public static final String IDENTIFIER_TABLE_TOKEN_COLUMN_EXPIRATION = "expiration";
-    public static final String IDENTIFIER_TABLE_TOKEN_COLUMN_USED = "used";
+    public static final String IDENTIFIER_TABLE_TOKEN_COLUMN_TIMES_USED = "times_used";
     // Table: Uploader
     public static final String IDENTIFIER_TABLE_UPLOADER_COLUMN_ID = "id";
     public static final String IDENTIFIER_TABLE_UPLOADER_COLUMN_NAME = "name";
@@ -617,13 +617,13 @@ public class YouTubeDatabaseConstants {
      * <br>
      * 6. Argument: (Old) Token
      */
-    public static final String QUERY_TABLE_TOKEN_UPDATE_BY_TOKEN = String.format("UPDATE %s SET %s = ?, %s = ?, %s = ?, %s = ?, %s = ? WHERE %s = ?;", IDENTIFIER_TABLE_TOKEN, IDENTIFIER_TABLE_TOKEN_COLUMN_ID, IDENTIFIER_TABLE_TOKEN_COLUMN_LEVEL, IDENTIFIER_TABLE_TOKEN_COLUMN_CREATED, IDENTIFIER_TABLE_TOKEN_COLUMN_EXPIRATION, IDENTIFIER_TABLE_TOKEN_COLUMN_USED, IDENTIFIER_TABLE_TOKEN_COLUMN_ID);
+    public static final String QUERY_TABLE_TOKEN_UPDATE_BY_TOKEN = String.format("UPDATE %s SET %s = ?, %s = ?, %s = ?, %s = ?, %s = ? WHERE %s = ?;", IDENTIFIER_TABLE_TOKEN, IDENTIFIER_TABLE_TOKEN_COLUMN_ID, IDENTIFIER_TABLE_TOKEN_COLUMN_LEVEL, IDENTIFIER_TABLE_TOKEN_COLUMN_CREATED, IDENTIFIER_TABLE_TOKEN_COLUMN_EXPIRATION, IDENTIFIER_TABLE_TOKEN_COLUMN_TIMES_USED, IDENTIFIER_TABLE_TOKEN_COLUMN_ID);
     /**
      * 1. Argument: Times used
      * <br>
      * 2. Argument: Token
      */
-    public static final String QUERY_TABLE_TOKEN_UPDATE_USED_BY_TOKEN = String.format("UPDATE %s SET %s = ? WHERE %s = ?;", IDENTIFIER_TABLE_TOKEN, IDENTIFIER_TABLE_TOKEN_COLUMN_USED, IDENTIFIER_TABLE_TOKEN_COLUMN_ID);
+    public static final String QUERY_TABLE_TOKEN_UPDATE_USED_BY_TOKEN = String.format("UPDATE %s SET %s = ? WHERE %s = ?;", IDENTIFIER_TABLE_TOKEN, IDENTIFIER_TABLE_TOKEN_COLUMN_TIMES_USED, IDENTIFIER_TABLE_TOKEN_COLUMN_ID);
     // Table: Uploader
     /**
      * 1. Argument: (New) Uploader ID
