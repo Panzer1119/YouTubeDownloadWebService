@@ -44,27 +44,30 @@ public class YouTubeDownloadWebServiceController {
     
     @RequestMapping(value = "/requesters/byTag/{tag}", method = RequestMethod.GET)
     public String getRequesterByTag(@PathVariable(value = "tag") String tag, @RequestParam(value = "authToken") String authToken) {
-        if (!isValidToken(authToken)) {
+        //if (!isValidToken(authToken)) {
+        if (!useToken(authToken)) {
             return String.format("Unauthorized authToken"); //TODO How to return the right HttpStatus?
         }
-        useToken(authToken);
+        //useToken(authToken);
         //TODO Return jsonObject form of the Requester object
         return String.format("{%n\"tag\":\"%s\",%n\"timestamp\":\"%s\"%n%n}", tag, ZonedDateTime.now().toString());
     }
     
     @RequestMapping(value = "/requesters/{requester_id}", method = RequestMethod.GET)
     public String getRequester(@PathVariable(value = "requester_id") int requesterId, @RequestParam(value = "authToken") String authToken) {
-        if (!isValidToken(authToken)) {
+        //if (!isValidToken(authToken)) {
+        if (!useToken(authToken)) {
             return String.format("Unauthorized authToken"); //TODO How to return the right HttpStatus?
         }
-        useToken(authToken);
+        //useToken(authToken);
         //TODO Return jsonObject form of the Requester object
         return String.format("{%n\"requesterId\":%d,%n\"timestamp\":\"%s\"%n%n}", requesterId, ZonedDateTime.now().toString());
     }
     
     @RequestMapping(value = "/request/{video_id}", method = RequestMethod.POST)
     public String request(@PathVariable(value = "video_id") String videoId, @RequestParam(value = "priority", defaultValue = "-1") int priority, @RequestParam(value = "requesterId", defaultValue = "-1") int requesterId, @RequestParam(value = "fileType", defaultValue = "B") String fileType, @RequestParam(value = "authToken") String authToken) {
-        if (!isValidToken(authToken)) {
+        //if (!isValidToken(authToken)) {
+        if (!useToken(authToken)) {
             return String.format("Unauthorized authToken"); //TODO How to return the right HttpStatus?
         }
         //TODO Hmmm restrict priority to level of permission?
@@ -88,7 +91,8 @@ public class YouTubeDownloadWebServiceController {
     
     @RequestMapping(value = "/download/{video_id}", method = RequestMethod.GET)
     public Mono<Void> download(ServerHttpResponse serverHttpResponse, @PathVariable(value = "video_id") String videoId, @RequestParam(value = "fileType", defaultValue = "B") String fileType, @RequestParam(value = "authToken") String authToken) {
-        if (!isValidToken(authToken)) {
+        //if (!isValidToken(authToken)) {
+        if (!useToken(authToken)) {
             serverHttpResponse.setStatusCode(HttpStatus.UNAUTHORIZED);
             //TODO Does this work?
             return null;
@@ -110,23 +114,25 @@ public class YouTubeDownloadWebServiceController {
             //TODO Does this work?
             return null;
         }
-        useToken(authToken);
+        //useToken(authToken);
         return zeroCopyHttpOutputMessage.writeWith(file, 0, file.length());
     }
     
     @RequestMapping(value = "/download/videoIds/byPlaylistId/{playlist_id}", method = RequestMethod.GET)
     public List<String> downloadVideoIdsByPlaylistId(@PathVariable(value = "playlist_id") String playlistId, @RequestParam(value = "authToken") String authToken) {
-        if (!isValidToken(authToken)) {
+        //if (!isValidToken(authToken)) {
+        if (!useToken(authToken)) {
             return null; //TODO How to return the right HttpStatus?
         }
-        useToken(authToken);
+        //useToken(authToken);
         //return YouTubeDL.downloadVideoIdsFromURL(String.format("https://www.youtube.com/playlist?list=%s", playlistId));
         throw new NotYetImplementedRuntimeException();
     }
     
     @RequestMapping(value = "/generate/authorizationToken", method = RequestMethod.GET)
     public String generateAuthorizationToken(@RequestParam(value = "unlimited", defaultValue = "0") boolean unlimited, @RequestParam(value = "granting", defaultValue = "0") boolean granting, @RequestParam(value = "duration", defaultValue = "100000") long durationMillis, @RequestParam(value = "authToken") String authToken) {
-        if (!isValidToken(authToken)) {
+        //if (!isValidToken(authToken)) {
+        if (!useToken(authToken)) {
             return String.format("Unauthorized authToken"); //TODO How to return the right HttpStatus?
         }
         final AuthorizationToken authorizationTokenMaster = getAuthorizationToken(authToken);
@@ -151,7 +157,7 @@ public class YouTubeDownloadWebServiceController {
         if (!YouTubeDownloadWebService.useDatabaseOrFalse((database) -> database.addAuthorizationToken(authorizationTokenSlave))) {
             return String.format("Internal Error"); //TODO How to return the right HttpStatus?
         }
-        useToken(authToken);
+        //useToken(authToken);
         return authorizationTokenSlave.toJson();
     }
     
@@ -170,16 +176,13 @@ public class YouTubeDownloadWebServiceController {
         return YouTubeDownloadWebService.useDatabaseOrFalse((database) -> database.useTokenOnce(token));
     }
     
-    
     // NEW ENDPOINTS
-    
     
     @RequestMapping(value = "/videos/byVideoId/{video_id}", method = RequestMethod.GET)
     public JsonObject getVideoByVideoId(@PathVariable(value = "video_id") String videoId, @RequestParam(value = AbstractToken.KEY_TOKEN) String token) {
-        if (!isTokenValid(token)) {
+        if (!useToken(token)) {
             return null; //TODO How to return the right HttpStatus?
         }
-        useTokenOnce(token);
         return YouTubeDownloadWebService.useDatabaseOrNull((database) -> {
             final DatabaseYouTubeVideo video = database.getVideoByVideoId(videoId);
             if (video == null) {
@@ -188,7 +191,6 @@ public class YouTubeDownloadWebServiceController {
             return video.toJsonObject();
         });
     }
-    
     
     private static final boolean isTokenValid(String token) {
         throw new NotYetImplementedRuntimeException();
