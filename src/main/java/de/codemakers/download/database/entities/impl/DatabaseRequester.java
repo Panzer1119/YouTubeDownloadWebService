@@ -19,6 +19,7 @@ package de.codemakers.download.database.entities.impl;
 import de.codemakers.download.database.YouTubeDatabase;
 import de.codemakers.download.database.entities.DatabaseEntity;
 
+import java.time.Instant;
 import java.util.List;
 
 public class DatabaseRequester implements DatabaseEntity<DatabaseRequester, YouTubeDatabase<?>> {
@@ -27,6 +28,7 @@ public class DatabaseRequester implements DatabaseEntity<DatabaseRequester, YouT
     protected int requesterId;
     protected String tag;
     protected String name;
+    protected Instant created = Instant.now();
     
     public DatabaseRequester() {
         this(null, null);
@@ -40,6 +42,11 @@ public class DatabaseRequester implements DatabaseEntity<DatabaseRequester, YouT
         this.requesterId = requesterId;
         this.tag = tag;
         this.name = name;
+    }
+    
+    public DatabaseRequester(int requesterId, String tag, String name, Instant created) {
+        this(requesterId, tag, name);
+        this.created = created;
     }
     
     public int getRequesterId() {
@@ -66,6 +73,15 @@ public class DatabaseRequester implements DatabaseEntity<DatabaseRequester, YouT
     
     public DatabaseRequester setName(String name) {
         this.name = name;
+        return this;
+    }
+    
+    public Instant getCreated() {
+        return created;
+    }
+    
+    public DatabaseRequester setCreated(Instant created) {
+        this.created = created;
         return this;
     }
     
@@ -115,11 +131,12 @@ public class DatabaseRequester implements DatabaseEntity<DatabaseRequester, YouT
         setRequesterId(databaseRequester.getRequesterId());
         setTag(databaseRequester.getTag());
         setName(databaseRequester.getName());
+        setCreated(databaseRequester.getCreated());
     }
     
     @Override
     public String toString() {
-        return "DatabaseRequester{" + "database=" + database + ", requesterId=" + requesterId + ", tag='" + tag + '\'' + ", name='" + name + '\'' + '}';
+        return "DatabaseRequester{" + "database=" + database + ", requesterId=" + requesterId + ", tag='" + tag + '\'' + ", name='" + name + '\'' + ", created=" + created + '}';
     }
     
 }

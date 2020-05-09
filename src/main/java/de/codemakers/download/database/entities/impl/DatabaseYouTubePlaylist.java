@@ -21,6 +21,7 @@ import de.codemakers.download.database.entities.DatabaseEntity;
 import de.codemakers.download.entities.impl.BasicYouTubePlaylist;
 import de.codemakers.download.sources.impl.YouTubeSource;
 
+import java.time.Instant;
 import java.util.List;
 
 public class DatabaseYouTubePlaylist extends BasicYouTubePlaylist<DatabaseYouTubePlaylist, DatabaseYouTubeVideo> implements DatabaseEntity<DatabaseYouTubePlaylist, YouTubeDatabase<?>> {
@@ -45,6 +46,11 @@ public class DatabaseYouTubePlaylist extends BasicYouTubePlaylist<DatabaseYouTub
     
     public DatabaseYouTubePlaylist(String playlistId, String uploaderId, String title, String playlist) {
         super(playlistId, uploaderId, title, playlist);
+    }
+    
+    public DatabaseYouTubePlaylist(String playlistId, String uploaderId, String title, String playlist, Instant timestamp) {
+        this(playlistId, uploaderId, title, playlist);
+        setTimestamp(timestamp);
     }
     
     public DatabaseYouTubePlaylist(YouTubeSource source, String uploaderId, String title, String playlist) {

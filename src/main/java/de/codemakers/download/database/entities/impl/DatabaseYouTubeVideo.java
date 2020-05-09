@@ -22,6 +22,7 @@ import de.codemakers.download.entities.impl.BasicYouTubePlaylist;
 import de.codemakers.download.entities.impl.BasicYouTubeVideo;
 import de.codemakers.download.sources.impl.YouTubeSource;
 
+import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
@@ -52,6 +53,11 @@ public class DatabaseYouTubeVideo extends BasicYouTubeVideo<DatabaseYouTubeVideo
     
     public DatabaseYouTubeVideo(String videoId, String channelId, String uploaderId, String title, String altTitle, long durationMillis) {
         super(videoId, channelId, uploaderId, title, altTitle, durationMillis);
+    }
+    
+    public DatabaseYouTubeVideo(String videoId, String channelId, String uploaderId, String title, String altTitle, long durationMillis, Instant timestamp) {
+        this(videoId, channelId, uploaderId, title, altTitle, durationMillis);
+        setTimestamp(timestamp);
     }
     
     public DatabaseYouTubeVideo(YouTubeSource source, String channelId, String uploaderId, String title, String altTitle, long durationMillis) {

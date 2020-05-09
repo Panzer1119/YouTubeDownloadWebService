@@ -97,6 +97,7 @@ public class YouTubeDatabaseConstants {
     public static final String IDENTIFIER_TABLE_REQUESTER_COLUMN_ID = "id";
     public static final String IDENTIFIER_TABLE_REQUESTER_COLUMN_TAG = "tag";
     public static final String IDENTIFIER_TABLE_REQUESTER_COLUMN_NAME = "name";
+    public static final String IDENTIFIER_TABLE_REQUESTER_COLUMN_CREATED = "created";
     // Table: Token
     public static final String IDENTIFIER_TABLE_TOKEN_COLUMN_ID = "id";
     public static final String IDENTIFIER_TABLE_TOKEN_COLUMN_LEVEL = "level";
@@ -427,7 +428,7 @@ public class YouTubeDatabaseConstants {
      * <br>
      * 2. Argument: Name
      */
-    public static final String QUERY_TABLE_REQUESTER_INSERT = String.format("INSERT INTO %s (%s, %s) VALUES (?, ?);", IDENTIFIER_TABLE_REQUESTER, IDENTIFIER_TABLE_REQUESTER_COLUMN_TAG, IDENTIFIER_TABLE_REQUESTER_COLUMN_NAME);
+    public static final String QUERY_TABLE_REQUESTER_INSERT = String.format("INSERT INTO %s (%s, %s, %s) VALUES (?, ?, ?);", IDENTIFIER_TABLE_REQUESTER, IDENTIFIER_TABLE_REQUESTER_COLUMN_TAG, IDENTIFIER_TABLE_REQUESTER_COLUMN_NAME, IDENTIFIER_TABLE_REQUESTER_COLUMN_CREATED);
     // Table: Token
     /**
      * 1. Argument: Token
