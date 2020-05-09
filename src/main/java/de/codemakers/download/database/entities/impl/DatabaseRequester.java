@@ -16,6 +16,7 @@
 
 package de.codemakers.download.database.entities.impl;
 
+import com.google.gson.JsonObject;
 import de.codemakers.download.database.YouTubeDatabase;
 import de.codemakers.download.database.entities.DatabaseEntity;
 
@@ -23,6 +24,11 @@ import java.time.Instant;
 import java.util.List;
 
 public class DatabaseRequester implements DatabaseEntity<DatabaseRequester, YouTubeDatabase<?>> {
+    
+    public static final String KEY_REQUESTER_ID = "id";
+    public static final String KEY_TAG = "tag";
+    public static final String KEY_NAME = "name";
+    public static final String KEY_TIMESTAMP = "created";
     
     private transient YouTubeDatabase<?> database = null;
     protected int requesterId;
@@ -132,6 +138,16 @@ public class DatabaseRequester implements DatabaseEntity<DatabaseRequester, YouT
         setTag(databaseRequester.getTag());
         setName(databaseRequester.getName());
         setCreated(databaseRequester.getCreated());
+    }
+    
+    @Override
+    public JsonObject toJsonObject() {
+        final JsonObject jsonObject = new JsonObject();
+        jsonObject.addProperty(KEY_REQUESTER_ID, getRequesterId());
+        jsonObject.addProperty(KEY_TAG, getTag());
+        jsonObject.addProperty(KEY_NAME, getName());
+        jsonObject.addProperty(KEY_TIMESTAMP, getCreated() == null ? -1 : getCreated().toEpochMilli());
+        return jsonObject;
     }
     
     @Override

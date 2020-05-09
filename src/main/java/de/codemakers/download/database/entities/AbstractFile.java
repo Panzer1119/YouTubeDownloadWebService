@@ -16,11 +16,17 @@
 
 package de.codemakers.download.database.entities;
 
+import com.google.gson.JsonObject;
 import de.codemakers.download.database.YouTubeDatabase;
 
 import java.time.Instant;
 
 public abstract class AbstractFile<T extends AbstractFile> implements DatabaseEntity<T, YouTubeDatabase<?>> {
+    
+    public static final String KEY_VIDEO_ID = "videoId";
+    public static final String KEY_FILE = "file";
+    public static final String KEY_FILE_TYPE = "fileType";
+    public static final String KEY_TIMESTAMP = "created";
     
     private transient YouTubeDatabase<?> database = null;
     protected String videoId;
@@ -93,6 +99,16 @@ public abstract class AbstractFile<T extends AbstractFile> implements DatabaseEn
     @Override
     public String toString() {
         return "AbstractFile{" + "database=" + database + ", videoId='" + videoId + '\'' + ", file='" + file + '\'' + ", fileType='" + fileType + '\'' + ", created=" + created + '}';
+    }
+    
+    @Override
+    public JsonObject toJsonObject() {
+        final JsonObject jsonObject = new JsonObject();
+        jsonObject.addProperty(KEY_VIDEO_ID, getVideoId());
+        jsonObject.addProperty(KEY_FILE, getFile());
+        jsonObject.addProperty(KEY_FILE_TYPE, getFileType());
+        jsonObject.addProperty(KEY_TIMESTAMP, getCreated() == null ? -1 : getCreated().toEpochMilli());
+        return jsonObject;
     }
     
 }

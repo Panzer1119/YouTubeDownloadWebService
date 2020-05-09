@@ -22,6 +22,7 @@ import de.codemakers.base.exceptions.NotYetImplementedRuntimeException;
 import de.codemakers.base.logger.Logger;
 import de.codemakers.download.database.entities.impl.AuthorizationToken;
 import de.codemakers.download.database.entities.impl.DatabaseQueuedYouTubeVideo;
+import de.codemakers.download.database.entities.impl.DatabaseRequester;
 import de.codemakers.download.database.entities.impl.DatabaseYouTubeVideo;
 import de.codemakers.download.entities.AbstractToken;
 import de.codemakers.io.file.AdvancedFile;
@@ -177,6 +178,21 @@ public class YouTubeDownloadWebServiceController {
     }
     
     // NEW ENDPOINTS
+    
+    @RequestMapping(value = "/requesters/byTag/{tag}", method = RequestMethod.POST)
+    public JsonObject addRequesterByTag(@PathVariable(value = "tag") String tag, @RequestParam(value = "name", defaultValue = "") String name, @RequestParam(value = AbstractToken.KEY_TOKEN) String token) {
+        if (!useToken(token)) {
+            return null; //TODO How to return the right HttpStatus?
+        }
+        return YouTubeDownloadWebService.useDatabaseOrNull((database) -> {
+            if (database.hasRequester(tag)) {
+                return database.getRequesterByTag(tag).toJsonObject();
+            }
+            final DatabaseRequester databaseRequester = new DatabaseRequester(-2, tag, name.isEmpty() ? tag : name);
+            database.addRequester(databaseRequester);
+            return databaseRequester.toJsonObject();
+        });
+    }
     
     @RequestMapping(value = "/videos/byVideoId/{video_id}", method = RequestMethod.GET)
     public JsonObject getVideoByVideoId(@PathVariable(value = "video_id") String videoId, @RequestParam(value = AbstractToken.KEY_TOKEN) String token) {

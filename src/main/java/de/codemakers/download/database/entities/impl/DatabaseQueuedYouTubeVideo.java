@@ -16,6 +16,7 @@
 
 package de.codemakers.download.database.entities.impl;
 
+import com.google.gson.JsonObject;
 import de.codemakers.base.exceptions.NotYetImplementedRuntimeException;
 import de.codemakers.base.util.interfaces.StringResolver;
 import de.codemakers.download.database.YouTubeDatabase;
@@ -27,6 +28,17 @@ import java.time.Instant;
 import java.util.Objects;
 
 public class DatabaseQueuedYouTubeVideo implements DatabaseEntity<DatabaseQueuedYouTubeVideo, YouTubeDatabase<?>> {
+    
+    public static final String KEY_ID = "id";
+    public static final String KEY_VIDEO_ID = "videoId";
+    public static final String KEY_PRIORITY = "priority";
+    public static final String KEY_TIMESTAMP = "requested";
+    public static final String KEY_REQUESTER_ID = "requesterId";
+    public static final String KEY_FILE_TYPE = "fileType";
+    public static final String KEY_ARGUMENTS = "arguments";
+    public static final String KEY_CONFIG_FILE = "configFile";
+    public static final String KEY_OUTPUT_DIRECTORY = "outputDirectory";
+    public static final String KEY_STATE = "state";
     
     private transient YouTubeDatabase<?> database = null;
     protected int id;
@@ -260,6 +272,22 @@ public class DatabaseQueuedYouTubeVideo implements DatabaseEntity<DatabaseQueued
     @Override
     public String toString() {
         return "DatabaseQueuedYouTubeVideo{" + "database=" + database + ", id=" + id + ", videoId='" + videoId + '\'' + ", priority=" + priority + ", requested=" + requested + ", requesterId=" + requesterId + ", fileType='" + fileType + '\'' + ", arguments='" + arguments + '\'' + ", configFile='" + configFile + '\'' + ", outputDirectory='" + outputDirectory + '\'' + ", state=" + state + ", configFileResolved='" + configFileResolved + '\'' + ", outputDirectoryResolved='" + outputDirectoryResolved + '\'' + '}';
+    }
+    
+    @Override
+    public JsonObject toJsonObject() {
+        final JsonObject jsonObject = new JsonObject();
+        jsonObject.addProperty(KEY_ID, getId());
+        jsonObject.addProperty(KEY_VIDEO_ID, getVideoId());
+        jsonObject.addProperty(KEY_PRIORITY, getPriority());
+        jsonObject.addProperty(KEY_TIMESTAMP, getRequested() == null ? -1 : getRequested().toEpochMilli());
+        jsonObject.addProperty(KEY_REQUESTER_ID, getRequesterId());
+        jsonObject.addProperty(KEY_FILE_TYPE, getFileType());
+        jsonObject.addProperty(KEY_ARGUMENTS, getArguments());
+        jsonObject.addProperty(KEY_CONFIG_FILE, getConfigFile());
+        jsonObject.addProperty(KEY_OUTPUT_DIRECTORY, getOutputDirectory());
+        jsonObject.addProperty(KEY_STATE, getState().name());
+        return jsonObject;
     }
     
 }

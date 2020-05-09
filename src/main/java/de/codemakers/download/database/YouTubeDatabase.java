@@ -715,6 +715,18 @@ public class YouTubeDatabase<C extends AbstractConnector> extends AbstractDataba
             return useResultSetAndClose(preparedStatement_getRequesterByRequesterId::executeQuery, ResultSet::next);
         }
     }
+    @Override
+    public boolean hasRequester(String tag) {
+        if (!isConnected() || tag == null || tag.isEmpty()) {
+            return false;
+        }
+        synchronized (preparedStatement_getRequesterByTag) {
+            if (!setPreparedStatement(preparedStatement_getRequesterByTag, tag)) {
+                return false;
+            }
+            return useResultSetAndClose(preparedStatement_getRequesterByTag::executeQuery, ResultSet::next);
+        }
+    }
     
     @Override
     public boolean hasQueuedVideo(int queuedVideoId) {
@@ -1228,7 +1240,7 @@ public class YouTubeDatabase<C extends AbstractConnector> extends AbstractDataba
     }
     
     @Override
-    public DatabaseRequester getRequesterByRequesterId(String tag) {
+    public DatabaseRequester getRequesterByTag(String tag) {
         if (!isConnected()) {
             return null;
         }

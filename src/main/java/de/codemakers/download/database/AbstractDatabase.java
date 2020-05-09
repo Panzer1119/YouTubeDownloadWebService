@@ -61,6 +61,8 @@ public abstract class AbstractDatabase<T extends AbstractDatabase, C extends Abs
     
     public abstract boolean hasRequester(int requesterId);
     
+    public abstract boolean hasRequester(String tag);
+    
     public abstract boolean hasQueuedVideo(int queuedVideoId);
     
     public abstract boolean hasVideo(String videoId);
@@ -145,7 +147,7 @@ public abstract class AbstractDatabase<T extends AbstractDatabase, C extends Abs
     
     public abstract R getRequesterByRequesterId(int requesterId);
     
-    public abstract R getRequesterByRequesterId(String tag);
+    public abstract R getRequesterByTag(String tag);
     
     public abstract Q getQueuedVideoById(int id);
     

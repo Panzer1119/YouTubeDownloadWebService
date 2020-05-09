@@ -16,11 +16,20 @@
 
 package de.codemakers.download.database.entities.impl;
 
+import com.google.gson.JsonObject;
 import de.codemakers.download.database.entities.AbstractFile;
 
 import java.time.Instant;
 
 public class DatabaseMediaFile extends AbstractFile<DatabaseMediaFile> {
+    
+    public static final String KEY_FORMAT = "format";
+    public static final String KEY_VCODEC = "vcodec";
+    public static final String KEY_ACODEC = "acodec";
+    public static final String KEY_WIDTH = "width";
+    public static final String KEY_HEIGHT = "height";
+    public static final String KEY_FPS = "fps";
+    public static final String KEY_ASR = "asr";
     
     protected String format = null;
     protected String vcodec = null;
@@ -151,6 +160,19 @@ public class DatabaseMediaFile extends AbstractFile<DatabaseMediaFile> {
     @Override
     public String toString() {
         return "DatabaseMediaFile{" + "format='" + format + '\'' + ", vcodec='" + vcodec + '\'' + ", acodec='" + acodec + '\'' + ", width=" + width + ", height=" + height + ", fps=" + fps + ", asr=" + asr + ", videoId='" + videoId + '\'' + ", file='" + file + '\'' + ", fileType='" + fileType + '\'' + ", created=" + created + '}';
+    }
+    
+    @Override
+    public JsonObject toJsonObject() {
+        final JsonObject jsonObject = super.toJsonObject();
+        jsonObject.addProperty(KEY_FORMAT, getFormat());
+        jsonObject.addProperty(KEY_VCODEC, getVcodec());
+        jsonObject.addProperty(KEY_ACODEC, getAcodec());
+        jsonObject.addProperty(KEY_WIDTH, getWidth());
+        jsonObject.addProperty(KEY_HEIGHT, getHeight());
+        jsonObject.addProperty(KEY_FPS, getFps());
+        jsonObject.addProperty(KEY_ASR, getAsr());
+        return jsonObject;
     }
     
 }

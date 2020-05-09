@@ -16,6 +16,7 @@
 
 package de.codemakers.download.database.entities;
 
+import com.google.gson.JsonObject;
 import de.codemakers.base.util.tough.ToughFunction;
 import de.codemakers.download.database.AbstractDatabase;
 
@@ -55,5 +56,7 @@ public interface DatabaseEntity<T extends DatabaseEntity, D extends AbstractData
         }
         return databaseFunction.applyWithoutException(database);
     }
+    
+    JsonObject toJsonObject();
     
 }
