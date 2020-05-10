@@ -16,7 +16,6 @@
 
 package de.codemakers.download;
 
-import com.google.gson.JsonObject;
 import de.codemakers.base.Standard;
 import de.codemakers.base.exceptions.NotYetImplementedRuntimeException;
 import de.codemakers.base.logger.Logger;
@@ -43,10 +42,11 @@ import java.util.List;
 @RestController
 public class YouTubeDownloadWebServiceController {
     
+    @Deprecated
     @RequestMapping(value = "/requesters/byTag/{tag}", method = RequestMethod.GET)
     public String getRequesterByTag(ServerHttpResponse serverHttpResponse, @PathVariable(value = "tag") String tag, @RequestParam(value = "authToken") String authToken) {
         //if (!isValidToken(authToken)) {
-        if (!useToken(authToken)) {
+        if (!useTokenOnce(authToken)) {
             serverHttpResponse.setStatusCode(HttpStatus.UNAUTHORIZED);
             return String.format("Unauthorized authToken"); //TODO How to return the right HttpStatus?
         }
@@ -55,10 +55,11 @@ public class YouTubeDownloadWebServiceController {
         return String.format("{%n\"tag\":\"%s\",%n\"timestamp\":\"%s\"%n%n}", tag, ZonedDateTime.now().toString());
     }
     
+    @Deprecated
     @RequestMapping(value = "/requesters/{requester_id}", method = RequestMethod.GET)
     public String getRequester(@PathVariable(value = "requester_id") int requesterId, @RequestParam(value = "authToken") String authToken) {
         //if (!isValidToken(authToken)) {
-        if (!useToken(authToken)) {
+        if (!useTokenOnce(authToken)) {
             return String.format("Unauthorized authToken"); //TODO How to return the right HttpStatus?
         }
         //useToken(authToken);
@@ -66,10 +67,11 @@ public class YouTubeDownloadWebServiceController {
         return String.format("{%n\"requesterId\":%d,%n\"timestamp\":\"%s\"%n%n}", requesterId, ZonedDateTime.now().toString());
     }
     
+    @Deprecated
     @RequestMapping(value = "/request/{video_id}", method = RequestMethod.POST)
     public String request(@PathVariable(value = "video_id") String videoId, @RequestParam(value = "priority", defaultValue = "-1") int priority, @RequestParam(value = "requesterId", defaultValue = "-1") int requesterId, @RequestParam(value = "fileType", defaultValue = "B") String fileType, @RequestParam(value = "authToken") String authToken) {
         //if (!isValidToken(authToken)) {
-        if (!useToken(authToken)) {
+        if (!useTokenOnce(authToken)) {
             return String.format("Unauthorized authToken"); //TODO How to return the right HttpStatus?
         }
         //TODO Hmmm restrict priority to level of permission?
@@ -91,10 +93,11 @@ public class YouTubeDownloadWebServiceController {
         return String.format("Video queued for Download...?");
     }
     
+    @Deprecated
     @RequestMapping(value = "/download/{video_id}", method = RequestMethod.GET)
     public Mono<Void> download(ServerHttpResponse serverHttpResponse, @PathVariable(value = "video_id") String videoId, @RequestParam(value = "fileType", defaultValue = "B") String fileType, @RequestParam(value = "authToken") String authToken) {
         //if (!isValidToken(authToken)) {
-        if (!useToken(authToken)) {
+        if (!useTokenOnce(authToken)) {
             serverHttpResponse.setStatusCode(HttpStatus.UNAUTHORIZED);
             //TODO Does this work?
             return null;
@@ -120,10 +123,11 @@ public class YouTubeDownloadWebServiceController {
         return zeroCopyHttpOutputMessage.writeWith(file, 0, file.length());
     }
     
+    @Deprecated
     @RequestMapping(value = "/download/videoIds/byPlaylistId/{playlist_id}", method = RequestMethod.GET)
     public List<String> downloadVideoIdsByPlaylistId(@PathVariable(value = "playlist_id") String playlistId, @RequestParam(value = "authToken") String authToken) {
         //if (!isValidToken(authToken)) {
-        if (!useToken(authToken)) {
+        if (!useTokenOnce(authToken)) {
             return null; //TODO How to return the right HttpStatus?
         }
         //useToken(authToken);
@@ -131,10 +135,11 @@ public class YouTubeDownloadWebServiceController {
         throw new NotYetImplementedRuntimeException();
     }
     
+    @Deprecated
     @RequestMapping(value = "/generate/authorizationToken", method = RequestMethod.GET)
     public String generateAuthorizationToken(@RequestParam(value = "unlimited", defaultValue = "0") boolean unlimited, @RequestParam(value = "granting", defaultValue = "0") boolean granting, @RequestParam(value = "duration", defaultValue = "100000") long durationMillis, @RequestParam(value = "authToken") String authToken) {
         //if (!isValidToken(authToken)) {
-        if (!useToken(authToken)) {
+        if (!useTokenOnce(authToken)) {
             return String.format("Unauthorized authToken"); //TODO How to return the right HttpStatus?
         }
         final AuthorizationToken authorizationTokenMaster = getAuthorizationToken(authToken);
@@ -163,64 +168,63 @@ public class YouTubeDownloadWebServiceController {
         return authorizationTokenSlave.toJson();
     }
     
-    @Deprecated
-    private static final boolean isValidToken(String token) {
-        return YouTubeDownloadWebService.useDatabaseOrFalse((database) -> database.isTokenValid(token));
-    }
-    
-    @Deprecated
-    private static final AuthorizationToken getAuthorizationToken(String token) {
-        return YouTubeDownloadWebService.useDatabaseOrNull((database) -> database.getAuthorizationTokenByToken(token));
-    }
-    
-    @Deprecated
-    private static final boolean useToken(String token) {
-        return YouTubeDownloadWebService.useDatabaseOrFalse((database) -> database.useTokenOnce(token));
-    }
-    
     // NEW ENDPOINTS
     
     @RequestMapping(value = "/requesters/byTag/{tag}", method = RequestMethod.POST)
-    public String addRequesterByTag(ServerHttpResponse serverHttpResponse, @PathVariable(value = "tag") String tag, @RequestParam(value = "name", defaultValue = "") String name, @RequestParam(value = AbstractToken.KEY_TOKEN) String token) {
-        if (!useToken(token)) {
+    public String addRequesterByTag(ServerHttpResponse serverHttpResponse, @PathVariable(value = "tag") String tag, @RequestParam(value = DatabaseRequester.KEY_NAME, defaultValue = "") String name, @RequestParam(value = AbstractToken.KEY_TOKEN) String token) {
+        if (!useTokenOnce(token)) {
             serverHttpResponse.setStatusCode(HttpStatus.UNAUTHORIZED);
-            return null; //TODO How to return the right HttpStatus?
+            return "Unauthorized";
         }
-        System.out.println("checking for: " + tag);
         return YouTubeDownloadWebService.useDatabaseOrNull((database) -> {
-            if (database.hasRequester(tag)) {
-                return database.getRequesterByTag(tag).toJsonObject().toString();
+            try {
+                if (database.hasRequester(tag)) {
+                    serverHttpResponse.setStatusCode(HttpStatus.OK);
+                    return database.getRequesterByTag(tag).toJsonObject().toString();
+                }
+                final DatabaseRequester databaseRequester = new DatabaseRequester(-2, tag, name.isEmpty() ? tag : name);
+                database.addRequester(databaseRequester);
+                serverHttpResponse.setStatusCode(HttpStatus.CREATED);
+                return databaseRequester.toJsonObject().toString();
+            } catch (Exception ex) {
+                serverHttpResponse.setStatusCode(HttpStatus.INTERNAL_SERVER_ERROR);
+                throw ex;
             }
-            final DatabaseRequester databaseRequester = new DatabaseRequester(-2, tag, name.isEmpty() ? tag : name);
-            database.addRequester(databaseRequester);
-            return databaseRequester.toJsonObject().toString();
         });
     }
     
     @RequestMapping(value = "/videos/byVideoId/{video_id}", method = RequestMethod.GET)
-    public JsonObject getVideoByVideoId(@PathVariable(value = "video_id") String videoId, @RequestParam(value = AbstractToken.KEY_TOKEN) String token) {
-        if (!useToken(token)) {
-            return null; //TODO How to return the right HttpStatus?
+    public String getVideoByVideoId(ServerHttpResponse serverHttpResponse, @PathVariable(value = "video_id") String videoId, @RequestParam(value = AbstractToken.KEY_TOKEN) String token) {
+        if (!useTokenOnce(token)) {
+            serverHttpResponse.setStatusCode(HttpStatus.UNAUTHORIZED);
+            return "Unauthorized";
         }
         return YouTubeDownloadWebService.useDatabaseOrNull((database) -> {
-            final DatabaseYouTubeVideo video = database.getVideoByVideoId(videoId);
-            if (video == null) {
-                return null;
+            try {
+                final DatabaseYouTubeVideo video = database.getVideoByVideoId(videoId);
+                if (video == null) {
+                    serverHttpResponse.setStatusCode(HttpStatus.NOT_FOUND);
+                    return "Video Not Found";
+                }
+                serverHttpResponse.setStatusCode(HttpStatus.OK);
+                return video.toJsonObject().toString();
+            } catch (Exception ex) {
+                serverHttpResponse.setStatusCode(HttpStatus.INTERNAL_SERVER_ERROR);
+                throw ex;
             }
-            return video.toJsonObject();
         });
     }
     
     private static final boolean isTokenValid(String token) {
-        throw new NotYetImplementedRuntimeException();
+        return YouTubeDownloadWebService.useDatabaseOrFalse((database) -> database.isTokenValid(token));
     }
     
-    private static final AuthorizationToken getAuthorizationTokenNEW(String token) {
-        throw new NotYetImplementedRuntimeException();
+    private static final AuthorizationToken getAuthorizationToken(String token) {
+        return YouTubeDownloadWebService.useDatabaseOrNull((database) -> database.getAuthorizationTokenByToken(token));
     }
     
     private static final boolean useTokenOnce(String token) {
-        throw new NotYetImplementedRuntimeException();
+        return YouTubeDownloadWebService.useDatabaseOrFalse((database) -> database.useTokenOnce(token));
     }
     
 }
