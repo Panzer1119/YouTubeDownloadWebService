@@ -305,11 +305,11 @@ public class YouTubeDatabaseConstants {
     /**
      * 1. Argument: Channel ID
      */
-    public static final String QUERY_TABLE_VIDEO_SELECT_ALL_BY_CHANNEL_ID = String.format("SELECT * FROM %s WHERE %s = ?;", IDENTIFIER_TABLE_VIDEO, IDENTIFIER_TABLE_VIDEO_COLUMN_CHANNEL_ID);
+    public static final String QUERY_TABLE_VIDEO_SELECT_ALL_BY_CHANNEL_ID = String.format("SELECT * FROM %s WHERE %s = ? ORDER BY %s;", IDENTIFIER_TABLE_VIDEO, IDENTIFIER_TABLE_VIDEO_COLUMN_CHANNEL_ID, IDENTIFIER_TABLE_VIDEO_COLUMN_UPLOAD_DATE);
     /**
      * 1. Argument: Uploader ID
      */
-    public static final String QUERY_TABLE_VIDEO_SELECT_ALL_BY_UPLOADER_ID = String.format("SELECT * FROM %s WHERE %s = ?;", IDENTIFIER_TABLE_VIDEO, IDENTIFIER_TABLE_VIDEO_COLUMN_UPLOADER_ID);
+    public static final String QUERY_TABLE_VIDEO_SELECT_ALL_BY_UPLOADER_ID = String.format("SELECT * FROM %s WHERE %s = ? ORDER BY %s;", IDENTIFIER_TABLE_VIDEO, IDENTIFIER_TABLE_VIDEO_COLUMN_UPLOADER_ID, IDENTIFIER_TABLE_VIDEO_COLUMN_UPLOAD_DATE);
     /**
      * 1. Argument: Channel ID
      */
