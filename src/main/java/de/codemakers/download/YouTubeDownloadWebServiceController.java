@@ -765,7 +765,7 @@ public class YouTubeDownloadWebServiceController {
     }
     
     @RequestMapping(value = "/uploaders/byUploaderId/{uploader_id}/createdPlaylist/{playlist_id}", method = RequestMethod.GET)
-    public String uploaderCreatedPlaylist(ServerHttpResponse serverHttpResponse, @PathVariable(value = "uploader_id") String uploaderId, @PathVariable(value = "playlist_id") String playlistId, @PathVariable(value = "video_id") String videoId, @RequestParam(value = AbstractToken.KEY_TOKEN) String token) {
+    public String uploaderCreatedPlaylist(ServerHttpResponse serverHttpResponse, @PathVariable(value = "uploader_id") String uploaderId, @PathVariable(value = "playlist_id") String playlistId, @RequestParam(value = AbstractToken.KEY_TOKEN) String token) {
         if (!useTokenOnce(token)) {
             serverHttpResponse.setStatusCode(HttpStatus.UNAUTHORIZED);
             return "Unauthorized";
