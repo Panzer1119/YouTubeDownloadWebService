@@ -331,7 +331,7 @@ public class YouTubeDownloadWebServiceController {
                 final DatabaseYouTubeUploader uploader = database.getUploaderByUploaderId(uploaderId);
                 if (uploader == null) {
                     serverHttpResponse.setStatusCode(HttpStatus.NOT_FOUND);
-                    return "Channel Not Found";
+                    return "Uploader Not Found";
                 }
                 final List<DatabaseYouTubeVideo> videos = uploader.getUploadedVideos();
                 if (videos.isEmpty()) {
@@ -360,7 +360,7 @@ public class YouTubeDownloadWebServiceController {
                 final DatabaseYouTubeUploader uploader = database.getUploaderByUploaderId(uploaderId);
                 if (uploader == null) {
                     serverHttpResponse.setStatusCode(HttpStatus.NOT_FOUND);
-                    return "Channel Not Found";
+                    return "Uploader Not Found";
                 }
                 final List<String> videoIds = uploader.getUploadedVideoIds();
                 if (videoIds.isEmpty()) {
@@ -389,7 +389,7 @@ public class YouTubeDownloadWebServiceController {
                 final int count = database.getVideoCountByChannelId(channelId);
                 if (count == -1) {
                     serverHttpResponse.setStatusCode(HttpStatus.NOT_FOUND);
-                    return "Playlist Not Found";
+                    return "Channel Not Found";
                 }
                 serverHttpResponse.setStatusCode(HttpStatus.OK);
                 final JsonObject jsonObject = new JsonObject();
@@ -413,7 +413,7 @@ public class YouTubeDownloadWebServiceController {
                 final int count = database.getVideoCountByUploaderId(uploaderId);
                 if (count == -1) {
                     serverHttpResponse.setStatusCode(HttpStatus.NOT_FOUND);
-                    return "Playlist Not Found";
+                    return "Uploader Not Found";
                 }
                 serverHttpResponse.setStatusCode(HttpStatus.OK);
                 final JsonObject jsonObject = new JsonObject();
@@ -426,9 +426,167 @@ public class YouTubeDownloadWebServiceController {
         });
     }
     
+    @RequestMapping(value = "/playlists/byPlaylistId/{playlist_id}", method = RequestMethod.GET)
+    public String getPlaylistByPlaylistId(ServerHttpResponse serverHttpResponse, @PathVariable(value = "playlist_id") String playlistId, @RequestParam(value = AbstractToken.KEY_TOKEN) String token) {
+        if (!useTokenOnce(token)) {
+            serverHttpResponse.setStatusCode(HttpStatus.UNAUTHORIZED);
+            return "Unauthorized";
+        }
+        return YouTubeDownloadWebService.useDatabaseOrNull((database) -> {
+            try {
+                final DatabaseYouTubePlaylist playlist = database.getPlaylistByPlaylistId(playlistId);
+                if (playlist == null) {
+                    serverHttpResponse.setStatusCode(HttpStatus.NOT_FOUND);
+                    return "Playlist Not Found";
+                }
+                serverHttpResponse.setStatusCode(HttpStatus.OK);
+                return playlist.toJsonObject().toString();
+            } catch (Exception ex) {
+                serverHttpResponse.setStatusCode(HttpStatus.INTERNAL_SERVER_ERROR);
+                throw ex;
+            }
+        });
+    }
     
+    @RequestMapping(value = "/playlists/byVideoId/{video_id}", method = RequestMethod.GET)
+    public String getPlaylistsByVideoId(ServerHttpResponse serverHttpResponse, @PathVariable(value = "video_id") String videoId, @RequestParam(value = AbstractToken.KEY_TOKEN) String token) {
+        if (!useTokenOnce(token)) {
+            serverHttpResponse.setStatusCode(HttpStatus.UNAUTHORIZED);
+            return "Unauthorized";
+        }
+        return YouTubeDownloadWebService.useDatabaseOrNull((database) -> {
+            try {
+                final DatabaseYouTubeVideo video = database.getVideoByVideoId(videoId);
+                if (video == null) {
+                    serverHttpResponse.setStatusCode(HttpStatus.NOT_FOUND);
+                    return "Video Not Found";
+                }
+                final List<DatabaseYouTubePlaylist> playlists = video.getPlaylists();
+                if (playlists.isEmpty()) {
+                    //serverHttpResponse.setStatusCode(HttpStatus.NO_CONTENT);
+                    //return "Playlist Found, But No Videos Found";
+                }
+                serverHttpResponse.setStatusCode(HttpStatus.OK);
+                final JsonArray jsonArray = new JsonArray();
+                playlists.stream().map(DatabaseYouTubePlaylist::toJsonObject).forEach(jsonArray::add);
+                return jsonArray.toString();
+            } catch (Exception ex) {
+                serverHttpResponse.setStatusCode(HttpStatus.INTERNAL_SERVER_ERROR);
+                throw ex;
+            }
+        });
+    }
     
+    @RequestMapping(value = "/playlists/byVideoId/{video_id}/getIds", method = RequestMethod.GET)
+    public String getPlaylistIdsByVideoId(ServerHttpResponse serverHttpResponse, @PathVariable(value = "video_id") String videoId, @RequestParam(value = AbstractToken.KEY_TOKEN) String token) {
+        if (!useTokenOnce(token)) {
+            serverHttpResponse.setStatusCode(HttpStatus.UNAUTHORIZED);
+            return "Unauthorized";
+        }
+        return YouTubeDownloadWebService.useDatabaseOrNull((database) -> {
+            try {
+                final DatabaseYouTubeVideo video = database.getVideoByVideoId(videoId);
+                if (video == null) {
+                    serverHttpResponse.setStatusCode(HttpStatus.NOT_FOUND);
+                    return "Video Not Found";
+                }
+                final List<String> playlistIds = video.getPlaylistIds();
+                if (playlistIds.isEmpty()) {
+                    //serverHttpResponse.setStatusCode(HttpStatus.NO_CONTENT);
+                    //return "Playlist Found, But No Videos Found";
+                }
+                serverHttpResponse.setStatusCode(HttpStatus.OK);
+                final JsonArray jsonArray = new JsonArray();
+                playlistIds.forEach(jsonArray::add);
+                return jsonArray.toString();
+            } catch (Exception ex) {
+                serverHttpResponse.setStatusCode(HttpStatus.INTERNAL_SERVER_ERROR);
+                throw ex;
+            }
+        });
+    }
     
+    @RequestMapping(value = "/playlists/byUploaderId/{uploader_id}", method = RequestMethod.GET)
+    public String getPlaylistsByUploaderId(ServerHttpResponse serverHttpResponse, @PathVariable(value = "uploader_id") String uploaderId, @RequestParam(value = AbstractToken.KEY_TOKEN) String token) {
+        if (!useTokenOnce(token)) {
+            serverHttpResponse.setStatusCode(HttpStatus.UNAUTHORIZED);
+            return "Unauthorized";
+        }
+        return YouTubeDownloadWebService.useDatabaseOrNull((database) -> {
+            try {
+                final DatabaseYouTubeUploader uploader = database.getUploaderByUploaderId(uploaderId);
+                if (uploaderId == null) {
+                    serverHttpResponse.setStatusCode(HttpStatus.NOT_FOUND);
+                    return "Uploader Not Found";
+                }
+                final List<DatabaseYouTubePlaylist> playlists = uploader.getCreatedPlaylists();
+                if (playlists.isEmpty()) {
+                    //serverHttpResponse.setStatusCode(HttpStatus.NO_CONTENT);
+                    //return "Playlist Found, But No Videos Found";
+                }
+                serverHttpResponse.setStatusCode(HttpStatus.OK);
+                final JsonArray jsonArray = new JsonArray();
+                playlists.stream().map(DatabaseYouTubePlaylist::toJsonObject).forEach(jsonArray::add);
+                return jsonArray.toString();
+            } catch (Exception ex) {
+                serverHttpResponse.setStatusCode(HttpStatus.INTERNAL_SERVER_ERROR);
+                throw ex;
+            }
+        });
+    }
+    
+    @RequestMapping(value = "/playlists/byUploaderId/{uploader_id}/getIds", method = RequestMethod.GET)
+    public String getPlaylistIdsByUploaderId(ServerHttpResponse serverHttpResponse, @PathVariable(value = "uploader_id") String uploaderId, @RequestParam(value = AbstractToken.KEY_TOKEN) String token) {
+        if (!useTokenOnce(token)) {
+            serverHttpResponse.setStatusCode(HttpStatus.UNAUTHORIZED);
+            return "Unauthorized";
+        }
+        return YouTubeDownloadWebService.useDatabaseOrNull((database) -> {
+            try {
+                final DatabaseYouTubeUploader uploader = database.getUploaderByUploaderId(uploaderId);
+                if (uploaderId == null) {
+                    serverHttpResponse.setStatusCode(HttpStatus.NOT_FOUND);
+                    return "Uploader Not Found";
+                }
+                final List<String> playlistIds = uploader.getCreatedPlaylistIds();
+                if (playlistIds.isEmpty()) {
+                    //serverHttpResponse.setStatusCode(HttpStatus.NO_CONTENT);
+                    //return "Playlist Found, But No Videos Found";
+                }
+                serverHttpResponse.setStatusCode(HttpStatus.OK);
+                final JsonArray jsonArray = new JsonArray();
+                playlistIds.forEach(jsonArray::add);
+                return jsonArray.toString();
+            } catch (Exception ex) {
+                serverHttpResponse.setStatusCode(HttpStatus.INTERNAL_SERVER_ERROR);
+                throw ex;
+            }
+        });
+    }
+    
+    @RequestMapping(value = "/playlists/byPlaylistId/{playlist_id}/getIndex/{video_id}", method = RequestMethod.GET)
+    public String getVideoCountByPlaylistId(ServerHttpResponse serverHttpResponse, @PathVariable(value = "playlist_id") String playlistId, @PathVariable(value = "video_id") String videoId, @RequestParam(value = AbstractToken.KEY_TOKEN) String token) {
+        if (!useTokenOnce(token)) {
+            serverHttpResponse.setStatusCode(HttpStatus.UNAUTHORIZED);
+            return "Unauthorized";
+        }
+        return YouTubeDownloadWebService.useDatabaseOrNull((database) -> {
+            try {
+                final int index = database.getIndexInPlaylist(playlistId, videoId);
+                if (index == -2) {
+                    serverHttpResponse.setStatusCode(HttpStatus.NOT_FOUND);
+                    return "Playlist Not Found";
+                }
+                serverHttpResponse.setStatusCode(HttpStatus.OK);
+                final JsonObject jsonObject = new JsonObject();
+                jsonObject.addProperty("index", index);
+                return jsonObject.toString();
+            } catch (Exception ex) {
+                serverHttpResponse.setStatusCode(HttpStatus.INTERNAL_SERVER_ERROR);
+                throw ex;
+            }
+        });
+    }
     
     @RequestMapping(value = "/videos/byPlaylistId/{playlist_id}/getCount", method = RequestMethod.GET)
     public String getVideoCountByPlaylistId(ServerHttpResponse serverHttpResponse, @PathVariable(value = "playlist_id") String playlistId, @RequestParam(value = AbstractToken.KEY_TOKEN) String token) {
@@ -454,6 +612,79 @@ public class YouTubeDownloadWebServiceController {
         });
     }
     
+    @RequestMapping(value = "/playlists/byVideoId/{video_id}/getCount", method = RequestMethod.GET)
+    public String getPlaylistCountByVideoId(ServerHttpResponse serverHttpResponse, @PathVariable(value = "video_id") String videoId, @RequestParam(value = AbstractToken.KEY_TOKEN) String token) {
+        if (!useTokenOnce(token)) {
+            serverHttpResponse.setStatusCode(HttpStatus.UNAUTHORIZED);
+            return "Unauthorized";
+        }
+        return YouTubeDownloadWebService.useDatabaseOrNull((database) -> {
+            try {
+                final int count = database.getPlaylistCountByVideoId(videoId);
+                if (count == -1) {
+                    serverHttpResponse.setStatusCode(HttpStatus.NOT_FOUND);
+                    return "Video Not Found";
+                }
+                serverHttpResponse.setStatusCode(HttpStatus.OK);
+                final JsonObject jsonObject = new JsonObject();
+                jsonObject.addProperty("count", count);
+                return jsonObject.toString();
+            } catch (Exception ex) {
+                serverHttpResponse.setStatusCode(HttpStatus.INTERNAL_SERVER_ERROR);
+                throw ex;
+            }
+        });
+    }
+    
+    @RequestMapping(value = "/playlists/byUploaderId/{uploader_id}/getCount", method = RequestMethod.GET)
+    public String getPlaylistCountByUploaderId(ServerHttpResponse serverHttpResponse, @PathVariable(value = "uploader_id") String uploaderId, @RequestParam(value = AbstractToken.KEY_TOKEN) String token) {
+        if (!useTokenOnce(token)) {
+            serverHttpResponse.setStatusCode(HttpStatus.UNAUTHORIZED);
+            return "Unauthorized";
+        }
+        return YouTubeDownloadWebService.useDatabaseOrNull((database) -> {
+            try {
+                final int count = database.getPlaylistCountByUploaderId(uploaderId);
+                if (count == -1) {
+                    serverHttpResponse.setStatusCode(HttpStatus.NOT_FOUND);
+                    return "Uploader Not Found";
+                }
+                serverHttpResponse.setStatusCode(HttpStatus.OK);
+                final JsonObject jsonObject = new JsonObject();
+                jsonObject.addProperty("count", count);
+                return jsonObject.toString();
+            } catch (Exception ex) {
+                serverHttpResponse.setStatusCode(HttpStatus.INTERNAL_SERVER_ERROR);
+                throw ex;
+            }
+        });
+    }
+    
+    @RequestMapping(value = "/playlists/byPlaylistId/{playlist_id}/containsVideo/{video_id}", method = RequestMethod.GET)
+    public String getPlaylistCountByUploaderId(ServerHttpResponse serverHttpResponse, @PathVariable(value = "playlist_id") String playlistId, @PathVariable(value = "video_id") String videoId, @RequestParam(value = AbstractToken.KEY_TOKEN) String token) {
+        if (!useTokenOnce(token)) {
+            serverHttpResponse.setStatusCode(HttpStatus.UNAUTHORIZED);
+            return "Unauthorized";
+        }
+        return YouTubeDownloadWebService.useDatabaseOrNull((database) -> {
+            try {
+                final boolean contains = database.playlistContainsVideo(playlistId, videoId);
+                /* //FIXME Check if Playlist/Video even exists?
+                if (count == -1) {
+                    serverHttpResponse.setStatusCode(HttpStatus.NOT_FOUND);
+                    return "Uploader Not Found";
+                }
+                */
+                serverHttpResponse.setStatusCode(HttpStatus.OK);
+                final JsonObject jsonObject = new JsonObject();
+                jsonObject.addProperty("contains", contains);
+                return jsonObject.toString();
+            } catch (Exception ex) {
+                serverHttpResponse.setStatusCode(HttpStatus.INTERNAL_SERVER_ERROR);
+                throw ex;
+            }
+        });
+    }
     
     
     
