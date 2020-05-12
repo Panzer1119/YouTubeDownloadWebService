@@ -393,7 +393,7 @@ public class YouTubeDownloadWebServiceController {
                 }
                 serverHttpResponse.setStatusCode(HttpStatus.OK);
                 final JsonObject jsonObject = new JsonObject();
-                jsonObject.addProperty("count", count);
+                jsonObject.addProperty("result", count);
                 return jsonObject.toString();
             } catch (Exception ex) {
                 serverHttpResponse.setStatusCode(HttpStatus.INTERNAL_SERVER_ERROR);
@@ -417,7 +417,7 @@ public class YouTubeDownloadWebServiceController {
                 }
                 serverHttpResponse.setStatusCode(HttpStatus.OK);
                 final JsonObject jsonObject = new JsonObject();
-                jsonObject.addProperty("count", count);
+                jsonObject.addProperty("result", count);
                 return jsonObject.toString();
             } catch (Exception ex) {
                 serverHttpResponse.setStatusCode(HttpStatus.INTERNAL_SERVER_ERROR);
@@ -579,7 +579,7 @@ public class YouTubeDownloadWebServiceController {
                 }
                 serverHttpResponse.setStatusCode(HttpStatus.OK);
                 final JsonObject jsonObject = new JsonObject();
-                jsonObject.addProperty("index", index);
+                jsonObject.addProperty("result", index);
                 return jsonObject.toString();
             } catch (Exception ex) {
                 serverHttpResponse.setStatusCode(HttpStatus.INTERNAL_SERVER_ERROR);
@@ -603,7 +603,7 @@ public class YouTubeDownloadWebServiceController {
                 }
                 serverHttpResponse.setStatusCode(HttpStatus.OK);
                 final JsonObject jsonObject = new JsonObject();
-                jsonObject.addProperty("count", count);
+                jsonObject.addProperty("result", count);
                 return jsonObject.toString();
             } catch (Exception ex) {
                 serverHttpResponse.setStatusCode(HttpStatus.INTERNAL_SERVER_ERROR);
@@ -627,7 +627,7 @@ public class YouTubeDownloadWebServiceController {
                 }
                 serverHttpResponse.setStatusCode(HttpStatus.OK);
                 final JsonObject jsonObject = new JsonObject();
-                jsonObject.addProperty("count", count);
+                jsonObject.addProperty("result", count);
                 return jsonObject.toString();
             } catch (Exception ex) {
                 serverHttpResponse.setStatusCode(HttpStatus.INTERNAL_SERVER_ERROR);
@@ -651,7 +651,7 @@ public class YouTubeDownloadWebServiceController {
                 }
                 serverHttpResponse.setStatusCode(HttpStatus.OK);
                 final JsonObject jsonObject = new JsonObject();
-                jsonObject.addProperty("count", count);
+                jsonObject.addProperty("result", count);
                 return jsonObject.toString();
             } catch (Exception ex) {
                 serverHttpResponse.setStatusCode(HttpStatus.INTERNAL_SERVER_ERROR);
