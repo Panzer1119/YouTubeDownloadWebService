@@ -361,7 +361,7 @@ public class YouTubeDatabaseConstants {
     /**
      * No arguments
      */
-    public static final String QUERY_TABLE_VIDEO_QUEUE_SELECT_NEXT = String.format("SELECT * FROM %s WHERE %s = '%s' ORDER BY %s DESC, %s, %s LIMIT 1;", IDENTIFIER_TABLE_VIDEO_QUEUE, IDENTIFIER_TABLE_VIDEO_QUEUE_COLUMN_PRIORITY, IDENTIFIER_TABLE_VIDEO_QUEUE_COLUMN_REQUESTED, IDENTIFIER_TABLE_VIDEO_QUEUE_COLUMN_ID, IDENTIFIER_TABLE_VIDEO_QUEUE_COLUMN_STATE, QueuedVideoState.QUEUED.name());
+    public static final String QUERY_TABLE_VIDEO_QUEUE_SELECT_NEXT = String.format("SELECT * FROM %s WHERE %s = '%s' ORDER BY %s DESC, %s, %s LIMIT 1;", IDENTIFIER_TABLE_VIDEO_QUEUE, IDENTIFIER_TABLE_VIDEO_QUEUE_COLUMN_PRIORITY, IDENTIFIER_TABLE_VIDEO_QUEUE_COLUMN_REQUESTED, IDENTIFIER_TABLE_VIDEO_QUEUE_COLUMN_ID, IDENTIFIER_TABLE_VIDEO_QUEUE_COLUMN_STATE, QueuedVideoState.QUEUED.name()); //FIXME The QUEUED State is at the wrong position in this list of Strings?! Same goes for the String above "QUERY_TABLE_VIDEO_QUEUE_SELECT_ALL_NEXT" //And check if this commit is properly signed and recognized by Gitea!
     //
     // // Inserts
     // Table: Channel
