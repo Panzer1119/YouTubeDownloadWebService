@@ -103,10 +103,6 @@ public class YouTubeDatabase<C extends AbstractConnector> extends AbstractDataba
     private transient PreparedStatement preparedStatement_getQueuedVideoById = null;
     private transient PreparedStatement preparedStatement_getQueuedVideosByVideoId = null;
     private transient PreparedStatement preparedStatement_getQueuedVideosByRequesterId = null;
-    @Deprecated
-    private transient PreparedStatement preparedStatement_getNextQueuedVideos = null; //REMOVE
-    @Deprecated
-    private transient PreparedStatement preparedStatement_getNextQueuedVideo = null; //REMOVE
     private transient PreparedStatement preparedStatement_getNextQueuedVideoAndMarkAsStarted = null;
     //
     // // Inserts / Adds
@@ -328,8 +324,6 @@ public class YouTubeDatabase<C extends AbstractConnector> extends AbstractDataba
         preparedStatement_getQueuedVideoById = createPreparedStatement(YouTubeDatabaseConstants.QUERY_TABLE_VIDEO_QUEUE_SELECT_BY_ID);
         preparedStatement_getQueuedVideosByVideoId = createPreparedStatement(YouTubeDatabaseConstants.QUERY_TABLE_VIDEO_QUEUE_SELECT_ALL_BY_VIDEO_ID);
         preparedStatement_getQueuedVideosByRequesterId = createPreparedStatement(YouTubeDatabaseConstants.QUERY_TABLE_VIDEO_QUEUE_SELECT_ALL_BY_REQUESTER_ID);
-        preparedStatement_getNextQueuedVideos = createPreparedStatement(YouTubeDatabaseConstants.QUERY_TABLE_VIDEO_QUEUE_SELECT_ALL_NEXT); //REMOVE
-        preparedStatement_getNextQueuedVideo = createPreparedStatement(YouTubeDatabaseConstants.QUERY_TABLE_VIDEO_QUEUE_SELECT_NEXT); //REMOVE
         preparedStatement_getNextQueuedVideoAndMarkAsStarted = createPreparedStatement(YouTubeDatabaseConstants.QUERY_TABLE_VIDEO_QUEUE_SELECT_NEXT_AND_MARK_AS_STARTED);
         //
         // // Inserts / Adds
@@ -514,8 +508,6 @@ public class YouTubeDatabase<C extends AbstractConnector> extends AbstractDataba
         IOUtil.closeQuietly(preparedStatement_getQueuedVideoById);
         IOUtil.closeQuietly(preparedStatement_getQueuedVideosByVideoId);
         IOUtil.closeQuietly(preparedStatement_getQueuedVideosByRequesterId);
-        IOUtil.closeQuietly(preparedStatement_getNextQueuedVideos); //REMOVE
-        IOUtil.closeQuietly(preparedStatement_getNextQueuedVideo); //REMOVE
         IOUtil.closeQuietly(preparedStatement_getNextQueuedVideoAndMarkAsStarted);
         //
         // // Inserts / Adds
@@ -1362,26 +1354,6 @@ public class YouTubeDatabase<C extends AbstractConnector> extends AbstractDataba
                 Logger.handleError(ex);
                 return null;
             }
-        }
-    }
-    
-    @Deprecated
-    public DatabaseQueuedYouTubeVideo getNextQueuedVideo() {
-        if (!isConnected()) {
-            return null;
-        }
-        synchronized (preparedStatement_getNextQueuedVideo) {
-            return useResultSetAndClose(preparedStatement_getNextQueuedVideo::executeQuery, this::resultSetToDatabaseQueuedYouTubeVideo);
-        }
-    }
-    
-    @Deprecated
-    public List<DatabaseQueuedYouTubeVideo> getNextQueuedVideos() {
-        if (!isConnected()) {
-            return null;
-        }
-        synchronized (preparedStatement_getNextQueuedVideos) {
-            return useResultSetAndClose(preparedStatement_getNextQueuedVideos::executeQuery, this::resultSetToDatabaseQueuedYouTubeVideos);
         }
     }
     
