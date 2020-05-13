@@ -161,9 +161,7 @@ public abstract class AbstractDatabase<T extends AbstractDatabase, C extends Abs
     
     public abstract List<Q> getQueuedVideosByRequesterId(int requesterId);
     
-    public abstract Q getNextQueuedVideo();
-    
-    public abstract List<Q> getNextQueuedVideos();
+    public abstract Q getNextQueuedVideoAndMarkAsStarted();
     
     // SQL Adds
     
